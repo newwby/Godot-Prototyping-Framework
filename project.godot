@@ -13,3 +13,7 @@ config_version=5
 config/name="Godot Prototyping Framework"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GlobalLog="*res://src/gpf/autoload/global_log.gd"
