@@ -105,7 +105,7 @@ func _ready():
 	# (parent gameGlobal class, for ddat-gpf singletons, disables by default)
 	_change_permission(self, true)
 	# print startup info
-	_on_ready()
+	_on_logger_startup()
 
 
 # deprecated behaviour for log saving to disk
@@ -130,42 +130,6 @@ func critical(
 		arg_error_message,
 		arg_show_on_elevated_only: bool = false) -> void:
 	_log(arg_caller, arg_error_message, 1, arg_show_on_elevated_only)
-
-
-# blocks logging permission to the object specified by argument
-# no logs will show in console if log permissions are disabled
-func disable_log_permissions(
-		arg_caller: Object,
-		arg_store_permission: bool = false) -> void:
-	if arg_store_permission:
-		store_permission(arg_caller)
-	_change_permission(arg_caller, false)
-
-
-# applies elevated permission to the object specified by argument
-# elevated logs (logs with the 'is_elevated' arg set to true) will show in
-#	the console only if the caller has elevated permissions
-# if arg_store_permission is set true, will record the current log permission
-#	before seting the new permission (see 'store_permission')
-func elevate_log_permissions(
-		arg_caller: Object,
-		arg_store_permission: bool = false) -> void:
-	if arg_store_permission:
-		store_permission(arg_caller)
-	_change_permission(arg_caller, true)
-
-
-# allows logging permission to the object specified by argument
-# standard logs (logs with the 'is_elevated' arg set to false) will show for 
-#	the console if the caller has enabled permissions, but elevated (see
-#	'elevate_log_permissions') logs will not
-# by default objects are assumed to have enabled log permissions
-func enable_log_permissions(
-		arg_caller: Object,
-		arg_store_permission: bool = false) -> void:
-	if arg_store_permission:
-		store_permission(arg_caller)
-	_change_permission(arg_caller, null)
 
 
 # debug ('elevated') logs only appear in the debugger/output/console if the object
@@ -251,6 +215,42 @@ func reset_permission(arg_caller: Object) -> int:
 		return OK
 	else:
 		return ERR_INVALID_PARAMETER
+
+
+# allows logging permission to the object specified by argument
+# standard logs (logs with the 'is_elevated' arg set to false) will show for 
+#	the console if the caller has enabled permissions, but elevated (see
+#	'set_permission_elevated') logs will not
+# by default objects are assumed to have enabled log permissions
+func set_permission_default(
+		arg_caller: Object,
+		arg_store_permission: bool = false) -> void:
+	if arg_store_permission:
+		store_permission(arg_caller)
+	_change_permission(arg_caller, null)
+
+
+# blocks logging permission to the object specified by argument
+# no logs will show in console if log permissions are disabled
+func set_permission_disabled(
+		arg_caller: Object,
+		arg_store_permission: bool = false) -> void:
+	if arg_store_permission:
+		store_permission(arg_caller)
+	_change_permission(arg_caller, false)
+
+
+# applies elevated permission to the object specified by argument
+# elevated logs (logs with the 'is_elevated' arg set to true) will show in
+#	the console only if the caller has elevated permissions
+# if arg_store_permission is set true, will record the current log permission
+#	before seting the new permission (see 'store_permission')
+func set_permission_elevated(
+		arg_caller: Object,
+		arg_store_permission: bool = false) -> void:
+	if arg_store_permission:
+		store_permission(arg_caller)
+	_change_permission(arg_caller, true)
 
 
 # get the current log permission state of a caller and save it to the
@@ -376,7 +376,7 @@ func _log(
 	_output_log(log_record)
 
 
-func _on_ready() -> void:
+func _on_logger_startup() -> void:
 	# get basic information on the user
 	var user_datetime = Time.get_datetime_dict_from_system()
 	
