@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" path="res://src/gpf/tests/global_log/test_root.gd" id="1_w0r7v"]
 
-[node name="TestRoot" type="Node2D"]
+[node name="TestRoot" type="Node"]
 script = ExtResource("1_w0r7v")
