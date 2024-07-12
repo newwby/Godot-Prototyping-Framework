@@ -14,6 +14,7 @@ config/name="Godot Prototyping Framework"
 config/description="Godot 4 conversion of the Godot Prototyping Framework.
 
 Not all DDAT-GPF 3.5 features are currently available; features are being converted over one at a time, as demand arises. Unlike the previous modular structure this version of the framework is a one-size fits all plugin which has optional install flags for different modules."
+config/tags=PackedStringArray("plugin")
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://gpf_icon.png"
 
