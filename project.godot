@@ -20,4 +20,9 @@ config/icon="res://gpf_icon.png"
 
 [autoload]
 
-GlobalLog="*res://src/gpf/autoload/global_log.gd"
+GlobalLog="*res://addons/gpf/autoload/global_log.gd"
+GlobalData="*res://addons/gpf/autoload/global_data.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gpf/plugin.cfg")
