@@ -1,4 +1,4 @@
-extends Node
+extends GlobalBase
 
 #class_name GlobalData
 
