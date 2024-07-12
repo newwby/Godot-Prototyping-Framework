@@ -1,4 +1,4 @@
-extends GlobalBase
+extends Node
 
 #class_name GlobalLog
 
