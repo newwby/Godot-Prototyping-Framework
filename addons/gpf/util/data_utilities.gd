@@ -1,10 +1,10 @@
 extends Node
 
-class_name DataHandler
+class_name DataUtility
 
 ##############################################################################
 
-# DataHandler is collection of static data management methods
+# DataUtility is collection of static data management methods
 
 ##############################################################################
 
@@ -58,29 +58,6 @@ const DATA_PATHS := {
 	# path for the runtime framework
 	DATA_PATH_PREFIXES.GAME_SAVE : "user://saves/",
 }
-
-
-##############################################################################
-
-# virtual methods
-
-
-# enable verbose logging here if required
-#static func _ready():
-#	verbose_logging = true
-#
-#	# example string method behaviour
-#	var file_path = "res://src/ddat-gpf/core/autoload/global_debug.gd"
-#	var get_base_dir = file_path.get_base_dir()
-#	var get_basename = file_path.get_basename()
-#	var get_extension = file_path.get_extension()
-#	var get_file = file_path.get_file()
-#	print("{0}: {1}".format(["file_path", file_path]))
-#	print("{0}: {1}".format(["get_base_dir", get_base_dir]))
-#	print("{0}: {1}".format(["get_basename", get_basename]))
-#	print("{0}: {1}".format(["get_extension", get_extension]))
-#	print("{0}: {1}".format(["get_file", get_file]))
-
 
 ##############################################################################
 
