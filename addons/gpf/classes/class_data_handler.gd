@@ -1,14 +1,12 @@
 extends Node
 
-#class_name GlobalData
+class_name DataHandler
 
 ##############################################################################
-#
-# DDAT Data Manager provides robust and simplified interpretations of the core
-# Godot data management methods, and a structure for future DDAT packages.
-#
-# DEPENDENCIES
-# Set as an autoload *AFTER* DDAT_Core.GlobalDebug
+
+# DataHandler is collection of static data management methods
+
+##############################################################################
 
 #//TODO
 #// add (reintroduce) save/load method pair for json-dict
@@ -33,9 +31,6 @@ extends Node
 #// update load_resource to try and load resource on fail state
 
 ##############################################################################
-
-#05. signals
-#06. enums
 
 # for use with const DATA_PATHS and calling the 'build_path' method
 enum DATA_PATH_PREFIXES {USER, LOCAL, GAME_SAVE}
@@ -71,7 +66,7 @@ const DATA_PATHS := {
 
 
 # enable verbose logging here if required
-#func _ready():
+#static func _ready():
 #	verbose_logging = true
 #
 #	# example string method behaviour
@@ -92,37 +87,10 @@ const DATA_PATHS := {
 # public methods
 
 
-# DEPRECATED
-# unnecessary method, simpler to do this with concatenation
-func build_path(
-		arg_data_path_key,
-		arg_file_name: String = "",
-		arg_directory_path: String = ""
-		) -> String:
-	var full_data_path: String = ""
-	var get_fixed_data_path: String
-	if arg_data_path_key in DATA_PATHS.keys():
-		if typeof(DATA_PATHS[arg_data_path_key]) == TYPE_STRING:
-			get_fixed_data_path = DATA_PATHS[arg_data_path_key]
-			full_data_path = full_data_path + get_fixed_data_path
-	else:
-		GlobalLog.error(self,
-				"arg_data_path_key {k} not found".format({"k": arg_data_path_key}))
-		return ""
-	
-	if arg_directory_path != "":
-		full_data_path = full_data_path + arg_directory_path
-	if arg_file_name != "":
-		full_data_path = full_data_path + arg_file_name
-	
-	# return the path
-	return full_data_path
-
-
 # returns an invalid file name with all invalid characters (as specified by
 # 'is_valid_filename' method) replaced with a given replacement character
 # replaces all spaces and sets string to lowercase (option to disable each)
-func clean_file_name(
+static func clean_file_name(
 		arg_file_name: String,
 		arg_replace_char: String = "_",
 		arg_replace_spaces: bool = true,
@@ -148,7 +116,7 @@ func clean_file_name(
 ##2, arg_write_recursively, specifies whether to write missing directories in
 # the file path on the way to the target directory. Defaults to true but
 # if specified 
-func create_directory(
+static func create_directory(
 		arg_absolute_path: String,
 		arg_write_recursively: bool = true
 		) -> int:
@@ -165,8 +133,8 @@ func create_directory(
 	
 	# if ok, return, else log and return error
 	if return_code != OK:
-		GlobalLog.error(self,
-				"failed to create directory at {p}".format({
+		GlobalLog.error(null,
+				"DataHandler failed to create directory at {p}".format({
 					"p": arg_absolute_path
 				}))
 	return return_code
@@ -180,7 +148,7 @@ func create_directory(
 # Follows previous ddat-gpf.0.1.7 style, i.e. no arg_prefix <- TODO fix this
 # This method needs to be moved to the next ddat-gpf.core version
 #// should hidden_files be skipped? (also check/verify for get_file_paths)
-func get_directory_names(
+static func get_directory_names(
 		arg_directory_path: String
 		) -> PackedStringArray:
 	# validate path
@@ -215,7 +183,7 @@ func get_directory_names(
 #	GlobalData.DATA_PATHS[GlobalData.DATA_PATH_PREFIXES.LOCAL]
 # developers are encouraged to create their own variants of this method if
 # they add their own prefixes to the DATA_PATH dict/db.
-func get_dirpath_local() -> String:
+static func get_dirpath_local() -> String:
 	return DATA_PATHS[DATA_PATH_PREFIXES.LOCAL]
 
 
@@ -225,7 +193,7 @@ func get_dirpath_local() -> String:
 #	GlobalData.DATA_PATHS[GlobalData.DATA_PATH_PREFIXES.USER]
 # developers are encouraged to create their own variants of this method if
 # they add their own prefixes to the DATA_PATH dict/db.
-func get_dirpath_user() -> String:
+static func get_dirpath_user() -> String:
 	return DATA_PATHS[DATA_PATH_PREFIXES.USER]
 
 
@@ -235,20 +203,20 @@ func get_dirpath_user() -> String:
 # [params]
 # #1, arg_directory_path - path to top-level directory
 # #2, arg_get_recursively - whether to get directories from all subdirectories
-func get_dir_paths(
+static func get_dir_paths(
 		arg_directory_path: String,
 		arg_get_recursively: bool = false) -> Array:
 	var directories_inside = []
-	var invalid_directory_errorstring := "{0} is invalid for {1}".format([
+	var invalid_directory_errorstring := "DataHandler {0} is invalid for {1}".format([
 			str(arg_directory_path), "get_dir_paths"])
 	
 	var dir_access := DirAccess.open(arg_directory_path)
 	# err handling
 	if DirAccess.get_open_error() != OK:
-		GlobalLog.error(self, invalid_directory_errorstring)
+		GlobalLog.error(null, invalid_directory_errorstring)
 		return directories_inside
 	if dir_access.list_dir_begin()  != OK:# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
-		GlobalLog.error(self, invalid_directory_errorstring)
+		GlobalLog.error(null, invalid_directory_errorstring)
 		return directories_inside
 	
 	# otherwise assume OK
@@ -287,7 +255,7 @@ func get_dir_paths(
 ##5, arg_incl_substrings, array of strings which the file name is checked against
 #	and the file name must include
 #	(leave params as default (i.e. empty strings or "") to ignore behaviour)
-func get_file_paths(
+static func get_file_paths(
 		arg_directory_path: String,
 		arg_req_file_prefix: String = "",
 		arg_req_file_suffix: String = "",
@@ -318,8 +286,8 @@ func get_file_paths(
 						add_found_file = false
 						# successful validation to exempt a file
 						#// need a minor logging method added
-						GlobalLog.info(self,
-								"prefix {p} not in file name {f}".format({
+						GlobalLog.info(null,
+								"DataHandler prefix {p} not in file name {f}".format({
 									"p": arg_req_file_prefix,
 									"f": file_name
 								}))
@@ -329,8 +297,8 @@ func get_file_paths(
 						add_found_file = false
 						# successful validation to exempt a file
 						#// need a minor logging method added
-						GlobalLog.info(self,
-								"suffix {s} not in file name {f}".format({
+						GlobalLog.info(null,
+								"DataHandler suffix {s} not in file name {f}".format({
 									"s": arg_req_file_suffix,
 									"f": file_name
 								}))
@@ -342,8 +310,8 @@ func get_file_paths(
 								add_found_file = false
 								# successful validation to exempt a file
 								#// need a minor logging method added
-								GlobalLog.info(self,
-										"bad str {s} in file name {f}".format({
+								GlobalLog.info(null,
+										"DataHandler bad str {s} in file name {f}".format({
 											"s": force_exclude,
 											"f": file_name
 										}))
@@ -355,8 +323,8 @@ func get_file_paths(
 								add_found_file = false
 								# successful validation to exempt a file
 								#// need a minor logging method added
-								GlobalLog.info(self,
-										"no str {s} in file name {f}".format({
+								GlobalLog.info(null,
+										"DataHandler no str {s} in file name {f}".format({
 											"s": force_include,
 											"f": file_name
 										}))
@@ -388,8 +356,8 @@ func get_file_paths(
 # both sharing many of the same parents), as this may return false postiives.
 
 #//TODO remove or rewrite load_resource due to arg_type_cast no longer working
-#	and the behaviour inside being base ResourceLoader functionality
-#func load_resource(
+#	and the behaviour inside being base ResourceLoader static functionality
+#static func load_resource(
 		#arg_file_path: String,
 		#arg_type_cast = null
 		#):
@@ -448,7 +416,7 @@ func get_file_paths(
 ##3, arg_req_file_suffix, see the method 'get_file_paths'
 ##4, arg_excl_substrings, see the method 'get_file_paths'
 ##5, arg_incl_substrings, see the method 'get_file_paths'
-func load_resources_in_directory(
+static func load_resources_in_directory(
 		arg_directory_path: String,
 		arg_req_file_prefix: String = "",
 		arg_req_file_suffix: String = "",
@@ -491,7 +459,7 @@ func load_resources_in_directory(
 # #5, arg_increment_backup, whether to keep previous file or overwrite it
 #	if set stores previous file as a separate file with 'BACKUP_SUFFIX' before
 #	the file extension.
-func save_resource(
+static func save_resource(
 		arg_file_path: String,
 		arg_saveable_res: Resource,
 		arg_force_write_file: bool = true,
@@ -509,7 +477,7 @@ func save_resource(
 	return_code = _is_write_operation_valid(
 			arg_file_path, arg_force_write_directory, arg_force_write_file)
 	if return_code != OK:
-		GlobalLog.error(self, "invalid write operation at"+str(arg_file_path))
+		GlobalLog.error(null, "DataHandler invalid write operation at"+str(arg_file_path))
 		return return_code
 		
 	
@@ -564,7 +532,7 @@ func save_resource(
 			return return_code
 	
 	
-	# if all is well and the function didn't exit prior to this point
+	# if all is well and the static function didn't exit prior to this point
 	# successful exit points will be
 	# 1) path didn't exist and file was written, or
 	# 2) path exists, temp file written, first file trashed, temp file renamed
@@ -580,7 +548,7 @@ func save_resource(
 ##2, arg_assert_path, forces an assert in debug builds and error logging in both
 # debug and release builds. Set this param to true when you require a path
 # to be valid before you continue with an operation.
-func validate_directory(
+static func validate_directory(
 		arg_directory_path: String,
 		arg_assert_path: bool = false
 		) -> bool:
@@ -596,7 +564,7 @@ func validate_directory(
 ##2, arg_assert_path, forces an assert in debug builds and error logging in both
 # debug and release builds. Set this param to true when you require a path
 # to be valid before you continue with an operation.
-func validate_file(
+static func validate_file(
 		arg_file_path: String,
 		arg_assert_path: bool = false
 		) -> bool:
@@ -611,31 +579,31 @@ func validate_file(
 
 
 # validation method for public 'save' methods
-func _is_write_operation_directory_valid(
+static func _is_write_operation_directory_valid(
 		arg_directory_path: String,
 		arg_force_write_directory: bool
 		) -> int:
 	# resources can only be saved to paths within the user data folder.
 	# user data path is "user://"
 	if arg_directory_path.substr(0, 7) != DATA_PATHS[DATA_PATH_PREFIXES.USER]:
-		GlobalLog.error(self,
-				"{p} is not user_data path".format({"p": arg_directory_path}))
+		GlobalLog.error(null,
+				"DataHandler {p} is not user_data path".format({"p": arg_directory_path}))
 		return ERR_FILE_BAD_PATH
 	
 	# check if the directory already exists
 	if not validate_directory(arg_directory_path):
 		# if not force writing, and directory doesn't exist, return invalid
 		if not arg_force_write_directory:
-			GlobalLog.error(self,
-					"directory at {p} does not exist".format({
+			GlobalLog.error(null,
+					"DataHandler directory at {p} does not exist".format({
 						"p": arg_directory_path}))
 			return ERR_FILE_BAD_PATH
 		# if force writing and directory doesn't exist, create it
 		elif arg_force_write_directory:
 			var attempt_write_dir = create_directory(arg_directory_path)
 			if attempt_write_dir != OK:
-				GlobalLog.error(self,
-						"failed attempt to write directory at {p}".format({
+				GlobalLog.error(null,
+						"DataHandler failed attempt to write directory at {p}".format({
 							"p": arg_directory_path
 						}))
 				return attempt_write_dir
@@ -647,7 +615,7 @@ func _is_write_operation_directory_valid(
 # validation method for public 'save' methods
 # this method assumes the directory already exists, call create_directory()
 # beforehand on the directory if you are unsure
-func _is_write_operation_path_valid(
+static func _is_write_operation_path_valid(
 		arg_file_path: String,
 		arg_force_write_file: bool
 		) -> int:
@@ -658,15 +626,15 @@ func _is_write_operation_path_valid(
 	
 	# if file exists and we don't have permission to overwrite
 	if (not arg_force_write_file and _is_path_valid):
-		GlobalLog.error(self,
-				"file at {p} already exists".format({
+		GlobalLog.error(null,
+				"DataHandler file at {p} already exists".format({
 					"p": arg_file_path}))
 		return ERR_FILE_NO_PERMISSION
 	# if all was successful,
 	return OK
 
 
-func _is_write_operation_valid(
+static func _is_write_operation_valid(
 			arg_file_path: String,
 			arg_force_write_directory: bool,
 			arg_force_write_file: bool
@@ -693,7 +661,7 @@ func _is_write_operation_valid(
 
 # used to validate that file paths are for valid resource extensions
 # pass the file path as an argument
-func _is_resource_extension_valid(arg_resource_file_path: String) -> bool:
+static func _is_resource_extension_valid(arg_resource_file_path: String) -> bool:
 	# returns the last x characters from the file path string, where
 	# x is the length of the RESOURCE_FILE_EXTENSION constant
 	# uses length() as a starting point, subtracts to get starting position
@@ -706,8 +674,8 @@ func _is_resource_extension_valid(arg_resource_file_path: String) -> bool:
 	# comparison bool value
 	var is_valid_extension = (extension == RESOURCE_FILE_EXTENSION)
 	if not is_valid_extension:
-		GlobalLog.error(self,
-				"invalid extension, expected {c} but got {e}".format({
+		GlobalLog.error(null,
+				"DataHandler invalid extension, expected {c} but got {e}".format({
 					"c": RESOURCE_FILE_EXTENSION,
 					"e": extension
 				}))
@@ -717,7 +685,7 @@ func _is_resource_extension_valid(arg_resource_file_path: String) -> bool:
 # both the public methods validate_path and validate_directory call this
 # private method to actually do things; the methods are similar in execution
 # but are different checks, so they are essentially args for this method
-func _validate(
+static func _validate(
 		arg_path: String,
 		arg_assert_path: bool,
 		arg_is_file: bool
@@ -735,8 +703,8 @@ func _validate(
 	
 	if arg_assert_path\
 	and not _is_valid:
-		GlobalLog.error(self,
-				"_validate"+" (from validate_{m}) ".format({"m": log_string})+\
+		GlobalLog.error(null,
+				"DataHandler _validate"+" (from validate_{m}) ".format({"m": log_string})+\
 				"path: [{p}] is not a valid {m}.".format({
 					"p": arg_path,
 					"m": log_string
