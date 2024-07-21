@@ -1,0 +1,161 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu.gd" type="Script" id=1]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/font_preset_dev_command_line_input.tres" type="FontFile" id=2]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/style_flat_command_button_hover.tres" type="StyleBox" id=3]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/style_flat_command_button_normal.tres" type="StyleBox" id=4]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/style_flat_command_line_container.tres" type="StyleBox" id=5]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/style_flat_command_button_focus.tres" type="StyleBox" id=6]
+[ext_resource path="res://src/ddat-gpf/core/ui/devtools/dev_action_menu/style_flat_command_button_pressed.tres" type="StyleBox" id=7]
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.129412, 0.129412, 0.129412, 1 )
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 8.0
+bg_color = Color( 0.215686, 0.215686, 0.215686, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.8, 0.8, 0.8, 0.294118 )
+border_blend = true
+
+[node name="DevActionMenu" type="MarginContainer"]
+offset_right = 960.0
+offset_bottom = 540.0
+custom_minimum_size = Vector2( 960, 540 )
+mouse_filter = 2
+script = ExtResource( 1 )
+
+[node name="Margin" type="MarginContainer" parent="."]
+offset_right = 960.0
+offset_bottom = 540.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="PanelBKG" type="PanelContainer" parent="Margin"]
+self_modulate = Color( 1, 1, 1, 0.784314 )
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 935.0
+offset_bottom = 515.0
+mouse_filter = 1
+size_flags_horizontal = 7
+size_flags_vertical = 7
+theme_override_styles/panel = SubResource( 2 )
+
+[node name="PanelMargin" type="MarginContainer" parent="Margin"]
+offset_left = 25.0
+offset_top = 25.0
+offset_right = 935.0
+offset_bottom = 515.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBox" type="VBoxContainer" parent="Margin/PanelMargin"]
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 895.0
+offset_bottom = 475.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Margin/PanelMargin/VBox"]
+offset_right = 880.0
+offset_bottom = 414.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ActionButtonContainer" type="GridContainer" parent="Margin/PanelMargin/VBox/ScrollContainer"]
+offset_right = 880.0
+offset_bottom = 414.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/v_separation = 15
+theme_override_constants/h_separation = 15
+columns = 5
+
+[node name="CommandContainer" type="PanelContainer" parent="Margin/PanelMargin/VBox"]
+offset_top = 418.0
+offset_right = 880.0
+offset_bottom = 460.0
+mouse_filter = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+theme_override_styles/panel = ExtResource( 5 )
+
+[node name="HBox" type="HBoxContainer" parent="Margin/PanelMargin/VBox/CommandContainer"]
+offset_top = 1.0
+offset_right = 880.0
+offset_bottom = 41.0
+mouse_filter = 2
+size_flags_horizontal = 7
+size_flags_vertical = 4
+theme_override_constants/separation = 25
+
+[node name="SendCommandButton" type="Button" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+offset_right = 200.0
+offset_bottom = 40.0
+custom_minimum_size = Vector2( 200, 0 )
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+theme_override_styles/hover = ExtResource( 3 )
+theme_override_styles/pressed = ExtResource( 7 )
+theme_override_styles/focus = ExtResource( 6 )
+theme_override_styles/normal = ExtResource( 4 )
+text = "Send Command"
+
+[node name="CommandLine" type="LineEdit" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+offset_left = 225.0
+offset_right = 655.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_fonts/font = ExtResource( 2 )
+theme_override_styles/normal = SubResource( 1 )
+context_menu_enabled = false
+clear_button_enabled = true
+shortcut_keys_enabled = false
+placeholder_text = " Enter Dev Command Here"
+placeholder_alpha = 0.25
+caret_blink = true
+caret_blink_interval = 0.5
+
+[node name="CloseMenuButton" type="Button" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+offset_left = 680.0
+offset_right = 880.0
+offset_bottom = 40.0
+custom_minimum_size = Vector2( 200, 40 )
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+theme_override_styles/hover = ExtResource( 3 )
+theme_override_styles/pressed = ExtResource( 7 )
+theme_override_styles/focus = ExtResource( 6 )
+theme_override_styles/normal = ExtResource( 4 )
+text = "Close Menu"
+
+[node name="DevActionButton" type="Button" parent="."]
+visible = false
+offset_right = 960.0
+offset_bottom = 540.0
+custom_minimum_size = Vector2( 160, 35 )
+text = "SampleButton"
+
+[connection signal="pressed" from="Margin/PanelMargin/VBox/CommandContainer/HBox/SendCommandButton" to="." method="_on_send_command_button_pressed"]
+[connection signal="focus_entered" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CommandLine" to="." method="_on_command_line_focus_entered"]
+[connection signal="focus_exited" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CommandLine" to="." method="_on_command_line_focus_exited"]
+[connection signal="pressed" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CloseMenuButton" to="." method="_on_close_menu_button_pressed"]
