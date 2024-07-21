@@ -22,7 +22,6 @@ config/icon="res://gpf_icon.png"
 
 GlobalLog="*res://addons/gpf/autoload/global_log.gd"
 GlobalData="*res://addons/gpf/autoload/global_data.gd"
-GlobalFunc="*res://addons/gpf/autoload/global_functions.gd"
 
 [editor_plugins]
 
