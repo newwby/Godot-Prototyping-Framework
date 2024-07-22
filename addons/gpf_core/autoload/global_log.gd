@@ -7,6 +7,9 @@ extends Node
 #//TODO implement asynchronous logging (send to buffer, log over time)
 #	- some concern with output order for critical logs
 #		(what if they are sent after the fatal error and never seen?)
+#		solution - if a critical log is sent, dump the entire buffer to console then critical log
+#			(because buffer should never be absurd, multiple messages a frame should be cleared)
+#			(asynchronous should also be an optional flag)
 
 #//TODO
 # restore log to disk functionality
@@ -31,7 +34,7 @@ extends Node
 enum CODE {UNDEFINED, CRITICAL, ERROR, WARNING, INFO}
 
 # initial log message
-const STARTUP_LOG_FSTRING := "{device} ready @ {time}"
+const STARTUP_LOG_FSTRING := "[{device}] Logger service ready @ {time}"
 # format of a log
 const LOG_FSTRING := "[t{time}] {caller}\t[{type}] | {message}"
 
@@ -371,7 +374,7 @@ func _log(
 	# once registered, this is a valid log
 	total_log_calls += 1
 	#//TODO implement log buffer here - some concern with output order for
-	#	critical logs
+	#	critical logs (see todo at top of file for how to resolve)
 	# send
 	_output_log(log_record)
 
