@@ -32,41 +32,28 @@ class_name DataUtility
 
 ##############################################################################
 
-# for use with const DATA_PATHS and calling the 'build_path' method
-enum DATA_PATH_PREFIXES {USER, LOCAL, GAME_SAVE}
 
-#07. constants
-# for passing to error logging
-const SCRIPT_NAME := "GlobalData"
-#// superceded by 'verbose_logging' property of parent class
-# for developer use, enable if making changes
-#const VERBOSE_LOGGING := true
+# constants to avoid user error typing
+const LOCAL_PATH := "res://"
+const USER_PATH := "user://"
 
 # the suffix (before file extension) for backups
 const BACKUP_SUFFIX := "_backup"
 
-# the path for saved resources
-const RESOURCE_FILE_EXTENSION := ".tres"
-
-# fixed record of data paths
-# developers can extend this to their needs
-const DATA_PATHS := {
-	# default path to start save_resource paths with
-	DATA_PATH_PREFIXES.USER : "user://",
-	# path to use if getting from the local project
-	DATA_PATH_PREFIXES.LOCAL : "res://",
-	# path for the runtime framework
-	DATA_PATH_PREFIXES.GAME_SAVE : "user://saves/",
-}
+# file extension for text resource files
+const EXT_RESOURCE := ".tres"
 
 ##############################################################################
 
 # public methods
 
 
-# returns an invalid file name with all invalid characters (as specified by
-# 'is_valid_filename' method) replaced with a given replacement character
-# replaces all spaces and sets string to lowercase (option to disable each)
+#static func clean_file_name(arg_file_name: String) -> String:
+	#return arg_file_name.replace("/[/\\?%*:|\"<>]/g", '-')
+
+
+# strips invalid characters from a file name and warns if invalid
+# most importantly provdies options for how to handle spaces/case
 static func clean_file_name(
 		arg_file_name: String,
 		arg_replace_char: String = "_",
@@ -74,58 +61,20 @@ static func clean_file_name(
 		arg_to_lowercase: bool = true) -> String:
 	var new_string := arg_file_name
 	var banned_chars := [":", "/", "\\", "?", "*", "\"", "|", "%", "<", ">"]
-	for invalid_char in banned_chars:
-		new_string = new_string.replace(invalid_char, arg_replace_char)
+	if new_string.is_valid_filename() == false:
+		for invalid_char in banned_chars:
+			new_string = new_string.replace(invalid_char, arg_replace_char)
 	if arg_replace_spaces:
 		new_string = new_string.replace(" ", arg_replace_char)
 	if arg_to_lowercase:
 		new_string = new_string.to_lower()
+	if new_string.is_valid_filename() == false:
+		GlobalLog.warning(null, "invalid filename output {0} on DataUtility.clean_file_name".format([new_string]))
 	return new_string
 
 
-# method to create a directory, required to save resources to directories
-# that have yet to be referenced. If the path to the directory consists of
-# multiple directories that have yet to be created, this method will create
-# every directory specified in the path.
-# Does nothing if the path already exists.
-# [params]
-##1, arg_absolute_path, is the full path to the directory
-##2, arg_write_recursively, specifies whether to write missing directories in
-# the file path on the way to the target directory. Defaults to true but
-# if specified 
-static func create_directory(
-		arg_absolute_path: String,
-		arg_write_recursively: bool = true
-		) -> int:
-	# object to get directory class methods
-	var return_code = OK
-	# do nothing if path exists
-	if validate_directory(arg_absolute_path) == false:
-		if not arg_write_recursively:
-			return_code = DirAccess.make_dir_absolute(arg_absolute_path)
-		else:
-			return_code = DirAccess.make_dir_recursive_absolute(arg_absolute_path)
-	else:
-		return_code = ERR_CANT_CREATE
-	
-	# if ok, return, else log and return error
-	if return_code != OK:
-		GlobalLog.error(null,
-				"DataHandler failed to create directory at {p}".format({
-					"p": arg_absolute_path
-				}))
-	return return_code
-
-
-# This method gets the directory names within a directory and returns those
-# names within an array.
-#//TODO add get_recursively and build recursive array (alternate method?)
-# Method is derived from get_file_paths() and follows a similar structure.
-# //TODO
-# Follows previous ddat-gpf.0.1.7 style, i.e. no arg_prefix <- TODO fix this
-# This method needs to be moved to the next ddat-gpf.core version
-#// should hidden_files be skipped? (also check/verify for get_file_paths)
-static func get_directory_names(
+# returns names of all directories within a path (recursively)
+static func get_dir_names_recursive(
 		arg_directory_path: String
 		) -> PackedStringArray:
 	# validate path
@@ -136,50 +85,23 @@ static func get_directory_names(
 	if DirAccess.get_open_error() == OK:
 		# skip if directory couldn't be opened
 		# skip navigational and hidden
-		if dir_access.list_dir_begin()  != OK:# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
+		if dir_access.list_dir_begin()  != OK:
 			return return_directory_names
-		# find first file in directory, prep validation bool, and start
+		
 		directory_name = dir_access.get_next()
 		while directory_name != "":
 			# check isn't a directory (i.e. is a file)
 			if dir_access.current_is_dir():
 				return_directory_names.append(directory_name)
-				# if they didn't, nothing is appended
 			# end of loop
-			# get next file
 			directory_name = dir_access.get_next()
+		
 		dir_access.list_dir_end()
 	return return_directory_names
-	# catchall
-#	return return_directory_names
 
 
-# this method returns the string value of the DATA_PATHS (dict) database,
-# the path to the local directory (res://)
-# this is shorter and less prone to user error than the dev writing;
-#	GlobalData.DATA_PATHS[GlobalData.DATA_PATH_PREFIXES.LOCAL]
-# developers are encouraged to create their own variants of this method if
-# they add their own prefixes to the DATA_PATH dict/db.
-static func get_dirpath_local() -> String:
-	return DATA_PATHS[DATA_PATH_PREFIXES.LOCAL]
-
-
-# this method returns the string value of the DATA_PATHS (dict) database,
-# the path to the user directory (user://)
-# this is shorter and less prone to user error than the dev writing;
-#	GlobalData.DATA_PATHS[GlobalData.DATA_PATH_PREFIXES.USER]
-# developers are encouraged to create their own variants of this method if
-# they add their own prefixes to the DATA_PATH dict/db.
-static func get_dirpath_user() -> String:
-	return DATA_PATHS[DATA_PATH_PREFIXES.USER]
-
-
-# method returns paths for every directory inside a directory
+# method returns paths for every directory inside a directory path
 # can search recursively, returning all nested directories
-# doesn't include the directory path argument in output
-# [params]
-# #1, arg_directory_path - path to top-level directory
-# #2, arg_get_recursively - whether to get directories from all subdirectories
 static func get_dir_paths(
 		arg_directory_path: String,
 		arg_get_recursively: bool = false) -> Array:
@@ -221,23 +143,7 @@ static func get_dir_paths(
 # This method gets the file path for every file in a directory and returns
 # those file paths within an array. Caller can then use those file paths
 # to query file types or load files.
-# Optional arguments can allow the caller to exclude specific files
-# [method params as follows]
-##1, arg_directory_path, is the path to the directory you wish to read files from
-#	(always pass directories with a trailing forward slash /)
-##2, arg_req_file_prefix, file must begin with this string
-##3, arg_req_file_suffix, file must end with this string (including extension)
-##4, arg_excl_substrings, array of strings which the file name is checked against
-#	and the file name must **not** include
-##5, arg_incl_substrings, array of strings which the file name is checked against
-#	and the file name must include
-#	(leave params as default (i.e. empty strings or "") to ignore behaviour)
-static func get_file_paths(
-		arg_directory_path: String,
-		arg_req_file_prefix: String = "",
-		arg_req_file_suffix: String = "",
-		arg_excl_substrings: PackedStringArray = [],
-		arg_incl_substrings: PackedStringArray = []) -> PackedStringArray:
+static func get_file_paths(arg_directory_path: String) -> PackedStringArray:
 	# validate path
 	var file_name := ""
 	var return_arg_file_paths: PackedStringArray = []
@@ -250,64 +156,11 @@ static func get_file_paths(
 			return return_arg_file_paths
 		# find first file in directory, prep validation bool, and start
 		file_name = dir_access.get_next()
-		var add_found_file = true
 		while file_name != "":
 			# check isn't a directory (i.e. is a file)
 			if not dir_access.current_is_dir():
 				# set validation default value
-				add_found_file = true
-				# validate the file name
-				# validation block 1
-				if arg_req_file_prefix != "":
-					if not file_name.begins_with(arg_req_file_prefix):
-						add_found_file = false
-						# successful validation to exempt a file
-						#// need a minor logging method added
-						GlobalLog.info(null,
-								"DataHandler prefix {p} not in file name {f}".format({
-									"p": arg_req_file_prefix,
-									"f": file_name
-								}))
-				# validation block 2
-				if arg_req_file_suffix != "":
-					if not file_name.ends_with(arg_req_file_suffix):
-						add_found_file = false
-						# successful validation to exempt a file
-						#// need a minor logging method added
-						GlobalLog.info(null,
-								"DataHandler suffix {s} not in file name {f}".format({
-									"s": arg_req_file_suffix,
-									"f": file_name
-								}))
-				# validation block 3
-				if not arg_excl_substrings.is_empty():
-					for force_exclude in arg_excl_substrings:
-						if typeof(force_exclude) == TYPE_STRING:
-							if force_exclude in file_name:
-								add_found_file = false
-								# successful validation to exempt a file
-								#// need a minor logging method added
-								GlobalLog.info(null,
-										"DataHandler bad str {s} in file name {f}".format({
-											"s": force_exclude,
-											"f": file_name
-										}))
-				# validation block 4
-				if not arg_incl_substrings.is_empty():
-					for force_include in arg_incl_substrings:
-						if typeof(force_include) == TYPE_STRING:
-							if not force_include in file_name:
-								add_found_file = false
-								# successful validation to exempt a file
-								#// need a minor logging method added
-								GlobalLog.info(null,
-										"DataHandler no str {s} in file name {f}".format({
-											"s": force_include,
-											"f": file_name
-										}))
-				# validation checks passed successfully
-				if add_found_file:
-					return_arg_file_paths.append(arg_directory_path+"/"+file_name)
+				return_arg_file_paths.append(arg_directory_path+"/"+file_name)
 				# if they didn't, nothing is appended
 			# end of loop
 			# get next file
@@ -383,65 +236,16 @@ static func get_file_paths(
 	#return new_resource
 
 
-# this method extends the load resource method to get **every** resource
-# within a given directory. It pulls files using the get_file_paths method.
-# this method can be passed any argument from get_file_paths or load_resource
-# [method params as follows]
-##1, arg_directory_path, is the path to the directory containing resources that
-# you wish the method to return
-##2, arg_req_file_prefix, see the method 'get_file_paths'
-##3, arg_req_file_suffix, see the method 'get_file_paths'
-##4, arg_excl_substrings, see the method 'get_file_paths'
-##5, arg_incl_substrings, see the method 'get_file_paths'
-static func load_resources_in_directory(
-		arg_directory_path: String,
-		arg_req_file_prefix: String = "",
-		arg_req_file_suffix: String = "",
-		arg_excl_substrings: PackedStringArray = [],
-		arg_incl_substrings: PackedStringArray = []) -> Array:
-	var returned_resources := []
-	var paths_to_resources: PackedStringArray = []
-	# get paths for files in directory
-	paths_to_resources = get_file_paths(
-		arg_directory_path,
-		arg_req_file_prefix,
-		arg_req_file_suffix,
-		arg_excl_substrings,
-		arg_incl_substrings
-	)
-	# if no paths found, return nothing
-	if paths_to_resources.is_empty():
-		return returned_resources
-	# for each path check if resource then add it to the return group if it is
-	for arg_file_path in paths_to_resources:
-		var get_resource
-		get_resource = ResourceLoader.load(arg_file_path)
-		if get_resource != null:
-			if get_resource is Resource:
-				returned_resources.append(get_resource)
-	return returned_resources
-
 
 # method to save any resource or resource-extended custom class to disk.
 # call this method with 'if save_resource(*args) == OK' to validate
-# [method params as follows]
-# #1, arg_file_path, is the full path to the file location
-# #2, arg_saveable_res, is the resource object to save
-# #3, arg_force_write_file, is whether to allow overwriting existing files
-#	if it is set false then the resource will not be saved if it finds a
-#	file (whether the file is a valid resource or not) at the file path argument.
-# #4, arg_force_write_directory, whether to create missing directories
-#	if set false will require save operations to take place in an existing
-#	directory, returning with an error argument if the directory doesn't exist.
-# #5, arg_increment_backup, whether to keep previous file or overwrite it
-#	if set stores previous file as a separate file with 'BACKUP_SUFFIX' before
-#	the file extension.
+# if called on a non-existing file or path it will write the entire path
+## if arg_backup is specified, any previous file found will be moved to a
+##	separate file with the 'BACKUP_SUFFIX' added to its file name
 static func save_resource(
 		arg_file_path: String,
 		arg_saveable_res: Resource,
-		arg_force_write_file: bool = true,
-		arg_force_write_directory: bool = true,
-		arg_increment_backup : bool = false
+		arg_backup : bool = false
 		) -> int:
 	# split directory path and file path
 	var directory_path = arg_file_path.get_base_dir()
@@ -451,8 +255,7 @@ static func save_resource(
 	
 	var return_code: int = OK
 	# check can write
-	return_code = _is_write_operation_valid(
-			arg_file_path, arg_force_write_directory, arg_force_write_file)
+	return_code = _is_write_operation_valid(arg_file_path)
 	if return_code != OK:
 		GlobalLog.error(null, "DataHandler invalid write operation at"+str(arg_file_path))
 		return return_code
@@ -482,7 +285,7 @@ static func save_resource(
 			# but on this branch the arg_file_path should be validated
 			assert(validate_file(arg_file_path, true))
 			# move to trash behaviour should only proceed if not backing up
-			if not arg_increment_backup:
+			if arg_backup == false:
 				# Note: If the user has disabled trash on their system,
 				# the file will be permanently deleted instead.
 				var get_global_path =\
@@ -490,13 +293,13 @@ static func save_resource(
 				return_code = OS.move_to_trash(get_global_path)
 				# if file was moved to trash, the path should now be invalid
 			# if backing up, the previous file should be moved to backup
-			else:
+			elif arg_backup == true:
 				var backup_path = arg_file_path
-				# path to file is already validated to have .tres extensino
-				backup_path = arg_file_path.rstrip(".tres")
+				# path to file is already validated to have .tres extension
+				backup_path = arg_file_path.rstrip(EXT_RESOURCE)
 				# concatenate string as backup
 				backup_path += BACKUP_SUFFIX
-				backup_path += RESOURCE_FILE_EXTENSION
+				backup_path += EXT_RESOURCE
 				return_code = DirAccess.rename_absolute(arg_file_path, backup_path)
 			
 			if return_code == OK:
@@ -556,34 +359,24 @@ static func validate_file(
 
 
 # validation method for public 'save' methods
-static func _is_write_operation_directory_valid(
-		arg_directory_path: String,
-		arg_force_write_directory: bool
-		) -> int:
+static func _is_write_operation_directory_valid(arg_directory_path: String) -> int:
 	# resources can only be saved to paths within the user data folder.
 	# user data path is "user://"
-	if arg_directory_path.substr(0, 7) != DATA_PATHS[DATA_PATH_PREFIXES.USER]:
+	if arg_directory_path.substr(0, 7) != USER_PATH:
 		GlobalLog.error(null,
 				"DataHandler {p} is not user_data path".format({"p": arg_directory_path}))
 		return ERR_FILE_BAD_PATH
 	
 	# check if the directory already exists
 	if not validate_directory(arg_directory_path):
-		# if not force writing, and directory doesn't exist, return invalid
-		if not arg_force_write_directory:
-			GlobalLog.error(null,
-					"DataHandler directory at {p} does not exist".format({
-						"p": arg_directory_path}))
-			return ERR_FILE_BAD_PATH
 		# if force writing and directory doesn't exist, create it
-		elif arg_force_write_directory:
-			var attempt_write_dir = create_directory(arg_directory_path)
-			if attempt_write_dir != OK:
-				GlobalLog.error(null,
-						"DataHandler failed attempt to write directory at {p}".format({
-							"p": arg_directory_path
-						}))
-				return attempt_write_dir
+		var attempt_write_dir = DirAccess.make_dir_recursive_absolute(arg_directory_path)
+		if attempt_write_dir != OK:
+			GlobalLog.error(null,
+					"DataHandler failed attempt to write directory at {p}".format({
+						"p": arg_directory_path
+					}))
+			return attempt_write_dir
 	# if all was successful,
 	# and no directory needed to be created
 	return OK
@@ -592,44 +385,24 @@ static func _is_write_operation_directory_valid(
 # validation method for public 'save' methods
 # this method assumes the directory already exists, call create_directory()
 # beforehand on the directory if you are unsure
-static func _is_write_operation_path_valid(
-		arg_file_path: String,
-		arg_force_write_file: bool
-		) -> int:
+static func _is_write_operation_path_valid(arg_file_path: String) -> int:
 	# check the full path is valid
 	var _is_path_valid := false
 	# don't log error not finding path if called with force_write
 	_is_path_valid = validate_file(arg_file_path)
-	
-	# if file exists and we don't have permission to overwrite
-	if (not arg_force_write_file and _is_path_valid):
-		GlobalLog.error(null,
-				"DataHandler file at {p} already exists".format({
-					"p": arg_file_path}))
-		return ERR_FILE_NO_PERMISSION
 	# if all was successful,
-	return OK
+	return OK if _is_path_valid else ERR_FILE_CANT_WRITE
 
 
-static func _is_write_operation_valid(
-			arg_file_path: String,
-			arg_force_write_directory: bool,
-			arg_force_write_file: bool
-			) -> int:
+static func _is_write_operation_valid(arg_file_path: String) -> int:
 	var return_code = OK
 	var directory_path = arg_file_path.get_base_dir()
 	# validate directory path
-	return_code = _is_write_operation_directory_valid(
-			directory_path,
-			arg_force_write_directory
-			)
+	return_code = _is_write_operation_directory_valid(directory_path)
 	if return_code != OK:
 		return return_code
 	# validate file path
-	return_code = _is_write_operation_path_valid(
-			arg_file_path,
-			arg_force_write_file
-			)
+	return_code = _is_write_operation_path_valid(arg_file_path)
 	if return_code != OK:
 		return return_code
 	# catchall, success exit point
@@ -645,15 +418,15 @@ static func _is_resource_extension_valid(arg_resource_file_path: String) -> bool
 	# of substring then -1 arg returns remaining chars (the constant length)
 	var extension =\
 			arg_resource_file_path.substr(
-			arg_resource_file_path.length()-RESOURCE_FILE_EXTENSION.length(),
+			arg_resource_file_path.length()-EXT_RESOURCE.length(),
 			-1
 			)
 	# comparison bool value
-	var is_valid_extension = (extension == RESOURCE_FILE_EXTENSION)
+	var is_valid_extension = (extension == EXT_RESOURCE)
 	if not is_valid_extension:
 		GlobalLog.error(null,
 				"DataHandler invalid extension, expected {c} but got {e}".format({
-					"c": RESOURCE_FILE_EXTENSION,
+					"c": EXT_RESOURCE,
 					"e": extension
 				}))
 	return is_valid_extension
