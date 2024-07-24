@@ -23,6 +23,15 @@ func after_all():
 	DirAccess.remove_absolute(TEST_DIRECTORY_ROOT)
 
 
+func test_clean_file_name() -> void:
+	var testable_incorrect_file_name = ">.> THIS FILE NAME IS EASILY 50%+ WRONG: *full of invalid characters!*"
+	var cleaned_file_name := DataUtility.clean_file_name(testable_incorrect_file_name)
+	if cleaned_file_name.is_valid_filename():
+		pass_test("test_clean_file_name passed w/valid file name {0}!".format([cleaned_file_name]))
+	else:
+		fail_test("test_clean_file_name failed w/invalid file name {0}!".format([cleaned_file_name]))
+
+
 func test_get_dir_names_recursive() -> void:
 	var expected_test_directory_names = [
 		TEST_DIRECTORY_1,
