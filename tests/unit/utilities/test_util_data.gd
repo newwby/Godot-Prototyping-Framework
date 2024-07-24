@@ -106,6 +106,13 @@ func test_get_dir_paths_recursive() -> void:
 		assert_has(expected_test_directory_paths, dir_path)
 
 
+func test_get_file_names() -> void:
+	var actual_test_file_names := DataUtility.get_file_names(TEST_DIRECTORY_ROOT)
+	assert_eq(actual_test_file_names.is_empty(), false)
+	for file_name in actual_test_file_names:
+		assert_has(all_test_file_names, file_name)
+
+
 func test_get_file_paths() -> void:
 	var actual_test_file_paths := DataUtility.get_file_paths(TEST_DIRECTORY_ROOT)
 	assert_eq(actual_test_file_paths.is_empty(), false)
