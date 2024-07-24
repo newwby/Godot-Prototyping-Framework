@@ -1,7 +1,7 @@
 extends GutTest
 
 # creates a series of test directories and files (removing afterwards)
-# runs DataUtility method tests
+# runs DataUtility method tests relating to directory and file lookup
 
 ##############################################################################
 
@@ -22,7 +22,6 @@ const TEST_FILE_2A := "test_file_2a.tres"
 const TEST_FILE_3A := "test_file_3a.tres"
 const TEST_FILE_3B := "test_file_3b.tres"
 const TEST_FILE_3C := "test_file_3c.tres"
-
 
 var all_test_file_names := [
 		TEST_FILE_1A,
@@ -118,12 +117,6 @@ func test_get_file_paths() -> void:
 	assert_eq(actual_test_file_paths.is_empty(), false)
 	for file_path in actual_test_file_paths:
 		assert_has(all_test_file_paths, file_path)
-
-
-#//TODO
-func test_save_resource() -> void:
-	#DataUtility.save_resource()
-	pass_test("TODO test_save_resource")
 
 
 #//TODO
