@@ -33,3 +33,14 @@ func test_get_dir_names_recursive() -> void:
 	for item in actual_test_directory_names:
 		assert_has(expected_test_directory_names, item)
 
+
+func test_get_dir_paths_recursive() -> void:
+	var expected_test_directory_paths = [
+		TEST_DIRECTORY_ROOT+TEST_DIRECTORY_1,
+		TEST_DIRECTORY_ROOT+TEST_DIRECTORY_2,
+		TEST_DIRECTORY_ROOT+TEST_DIRECTORY_3
+	]
+	var actual_test_directory_paths := DataUtility.get_dir_paths(TEST_DIRECTORY_ROOT)
+	for item in actual_test_directory_paths:
+		assert_has(expected_test_directory_paths, item)
+
