@@ -1,4 +1,3 @@
-#class_name class
 extends GutTest
 
 # This test sends an info log message then checks the log register to confirm
@@ -17,6 +16,8 @@ var test_log_code := "INFO"
 
 ##############################################################################
 
+# test meta methods
+
 
 # send test log and disable log output behaviour to minimise console spam
 func before_all():
@@ -24,11 +25,16 @@ func before_all():
 	log_register_tickstamp = Time.get_ticks_msec()
 	GlobalLog.info(self, test_log_string)
 
+
 # re-enable log output behaviour afterwards
 func after_all():
 	GlobalLog.allow_log_output = true
 
+
 ##############################################################################
+
+
+# tests
 
 
 func test_log_register_entry_key_exists() -> void:

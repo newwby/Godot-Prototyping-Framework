@@ -1,9 +1,20 @@
-#class_name class
 extends GutTest
 
 # checks if the log call and log count increments correctly on various log types
 # specifically excludes GlobalLog.critical calls as those will crash the
 #	debugger - test that functionality manually
+
+##############################################################################
+
+# add any #//TODO here
+
+##############################################################################
+
+# test-scoped variants here
+
+##############################################################################
+
+# tests
 
 # test if log call is incrementing even without output/registration
 func test_log_calls() -> void:
