@@ -52,11 +52,16 @@ const EXT_RESOURCE := ".tres"
 	#return arg_file_name.replace("/[/\\?%*:|\"<>]/g", '-')
 
 
-# strips invalid characters from a file name and warns if invalid
+# strips invalid characters from a file name, optionally replacing with a passed
+#	character; can also replace spaces with the same character if desired
+# converts given file name to lower case
+# on return warns if still invalid
 # most importantly provdies options for how to handle spaces/case
+# cleans file names for Windows OS
+#//TODO add additional handling for Mac/Linux/Android/iOS
 static func clean_file_name(
 		arg_file_name: String,
-		arg_replace_char: String = "_",
+		arg_replace_char: String = "",
 		arg_replace_spaces: bool = true,
 		arg_to_lowercase: bool = true) -> String:
 	var new_string := arg_file_name
