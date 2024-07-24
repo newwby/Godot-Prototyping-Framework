@@ -106,7 +106,9 @@ static func get_dir_names_recursive(
 
 
 # method returns paths for every directory inside a directory path
-# can search recursively, returning all nested directories
+# can search recursively (default behaviour), returning all nested directories
+#//TODO rewrite with DirAccess methods
+#//TODO get_dir_paths/get_dir_names could be a single method
 static func get_dir_paths(
 		arg_directory_path: String,
 		arg_get_recursively: bool = false) -> Array:
@@ -144,9 +146,24 @@ static func get_dir_paths(
 	return directories_inside
 
 
-# This method gets the file path for every file in a directory and returns
-# those file paths within an array. Caller can then use those file paths
-# to query file types or load files.
+
+# clone of get_file_paths that only returns the names of any files found
+# if arg_is_recursive is set false will only search the exact directory given
+static func get_file_names(
+		arg_directory_path: String,
+		arg_is_recursive: bool = true) -> PackedStringArray:
+	var output := PackedStringArray([])
+	var subdirectories = DirAccess.get_directories_at(arg_directory_path)
+	if subdirectories.is_empty() == false and arg_is_recursive:
+		for subdirectory_path in subdirectories:
+			output.append_array(get_file_names(arg_directory_path+"/"+subdirectory_path, arg_is_recursive))
+	var file_names = DirAccess.get_files_at(arg_directory_path)
+	output.append_array(file_names)
+	return output
+
+
+# Fetches the file path for every file in a directory (recursively by default)
+# if arg_is_recursive is set false will only search the exact directory given
 static func get_file_paths(
 		arg_directory_path: String,
 		arg_is_recursive: bool = true) -> PackedStringArray:
