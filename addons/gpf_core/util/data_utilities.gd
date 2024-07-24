@@ -144,102 +144,23 @@ static func get_dir_paths(
 	return directories_inside
 
 
-
 # This method gets the file path for every file in a directory and returns
 # those file paths within an array. Caller can then use those file paths
 # to query file types or load files.
-static func get_file_paths(arg_directory_path: String) -> PackedStringArray:
-	# validate path
-	var file_name := ""
-	var return_arg_file_paths: PackedStringArray = []
-	
-	var dir_access := DirAccess.open(arg_directory_path)
-	# find the directory, loop through the directory
-	if dir_access.get_open_error() == OK:
-		# skip if directory couldn't be opened
-		if dir_access.list_dir_begin()  != OK:# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
-			return return_arg_file_paths
-		# find first file in directory, prep validation bool, and start
-		file_name = dir_access.get_next()
-		while file_name != "":
-			# check isn't a directory (i.e. is a file)
-			if not dir_access.current_is_dir():
-				# set validation default value
-				return_arg_file_paths.append(arg_directory_path+"/"+file_name)
-				# if they didn't, nothing is appended
-			# end of loop
-			# get next file
-			file_name = dir_access.get_next()
-		dir_access.list_dir_end()
-#	print("returning return_arg_file_paths@ ", return_arg_file_paths)
-	return return_arg_file_paths
-
-
-# this method loads and returns (if valid) a resource from disk
-# returns either a loaded resource, or a null value if it is invalid
-# [method params as follows]
-##1, arg_file_path, is the path to the resource to be loaded.
-##2, type_cast, should be comparison type or object of a class to be compared
-# to the resource once it is loaded. If the comparison returns untrue, the
-# loaded resource will not be returned. The default argument for this parameter
-# is null, which will result in this comparison behvaiour being ignored.
-# Developers can use this to ensure the resource they're loading will return
-# a resource of the class they desire.
-# [warning!] Devs, if using a var referencing an object as a comparison class
-# class, be careful not to use an object that shares a common parent but isn't
-# the same end point class (example would be HBoxContainer and VBoxContainer
-# both sharing many of the same parents), as this may return false postiives.
-
-#//TODO remove or rewrite load_resource due to arg_type_cast no longer working
-#	and the behaviour inside being base ResourceLoader static functionality
-#static func load_resource(
-		#arg_file_path: String,
-		#arg_type_cast = null
-		#):
-	## add type hint to load?
-##	var type_hint = ""
-##	if type_cast is Resource\
-##	and "get_class" in type_cast:
-##			type_hint = str(type_cast.get_class())
-		#
-	## check path is valid before loading resource
-	#var is_path_valid = validate_file(arg_file_path)
-	#if not is_path_valid:
-		#GlobalLog.error(self,
-				#"attempted to load non-existent resource at {p}".format({
-					#"p": arg_file_path
-				#}))
-		#return null
-	#
-		## attempt to load resource
-	#var new_resource: Resource = ResourceLoader.load(arg_file_path)
-	#
-	## then validate it was loaded and is corrected type
-	#
-	## if resource wasn't succesfully loaded (check before type validation)
-	#if new_resource == null:
-		#GlobalLog.error(self,
-				#"resource not loaded successfully, is null")
-		#return null
-	#
-	## ignore type_casting behaviour if set to null
-	## otherwise loaded resource must be the same type
-	#if not (arg_type_cast == null):
-		#if not (new_resource is arg_type_cast):
-			## discard value to ensure reference count update
-			#new_resource = null
-			#GlobalLog.error(self,
-					#"resource not loaded succesfully, invalid type")
-			#return null
-	#
-	## if everything is okay, return the loaded resource
-	## elevated log only
-	#GlobalLog.info(self,
-			#"resource {res} validated and returned".format({
-				#"res": new_resource
-			#}), true)
-	#return new_resource
-
+static func get_file_paths(
+		arg_directory_path: String,
+		arg_is_recursive: bool = true) -> PackedStringArray:
+	var output := PackedStringArray([])
+	var subdirectories = DirAccess.get_directories_at(arg_directory_path)
+	if subdirectories.is_empty() == false and arg_is_recursive:
+		for subdirectory_path in subdirectories:
+			output.append_array(get_file_paths(arg_directory_path+"/"+subdirectory_path, arg_is_recursive))
+	var file_names = DirAccess.get_files_at(arg_directory_path)
+	var file_path_output = []
+	for file_name in file_names:
+		file_path_output.append(arg_directory_path+"/"+file_name)
+	output.append_array(file_path_output)
+	return output
 
 
 # method to save any resource or resource-extended custom class to disk.
