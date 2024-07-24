@@ -39,6 +39,7 @@ const USER_PATH := "user://"
 
 # the suffix (before file extension) for backups
 const BACKUP_SUFFIX := "_backup"
+const TEMP_SUFFIX := "_temp"
 
 # file extension for text resource files
 const EXT_RESOURCE := ".tres"
@@ -52,6 +53,7 @@ const EXT_RESOURCE := ".tres"
 	#return arg_file_name.replace("/[/\\?%*:|\"<>]/g", '-')
 
 
+# this method provides additional functionality compared to validate_filename
 # strips invalid characters from a file name, optionally replacing with a passed
 #	character; can also replace spaces with the same character if desired
 # converts given file name to lower case
@@ -186,81 +188,66 @@ static func get_file_paths(
 ## if arg_backup is specified, any previous file found will be moved to a
 ##	separate file with the 'BACKUP_SUFFIX' added to its file name
 static func save_resource(
-		arg_file_path: String,
 		arg_saveable_res: Resource,
+		arg_file_path: String,
 		arg_backup : bool = false
-		) -> int:
-	# split directory path and file path
+		) -> Error:
+	# check valid path
+	if arg_file_path.begins_with("user://") == false:
+		GlobalLog.error(null, "DataUtility.save_resource called with non-user file path: {0}".format([arg_file_path]))
+		return ERR_INVALID_PARAMETER
+	
+	# split given file path into constituent parts
 	var directory_path = arg_file_path.get_base_dir()
-	var file_and_ext = arg_file_path.get_file()
-	if (directory_path+"/"+file_and_ext) != arg_file_path:
-		return ERR_FILE_BAD_PATH
+	var file_name_and_extension = arg_file_path.get_file()
+	var file_extension = file_name_and_extension.get_extension()
+	var file_name = file_name_and_extension.trim_suffix(".{0}".format([file_extension]))
 	
-	var return_code: int = OK
-	# check can write
-	return_code = _is_write_operation_valid(arg_file_path)
-	if return_code != OK:
-		GlobalLog.error(null, "DataHandler invalid write operation at"+str(arg_file_path))
-		return return_code
-		
+	# check given extension is valid, convert if not
+	if file_extension != "tres":
+		GlobalLog.warning(null, "DataUtility.save_resource called with invalid extension {0}, converting to .tres".format([file_extension]))
+		file_extension = "tres"
 	
-	# validate write extension is valid
-	if not _is_resource_extension_valid(arg_file_path):
-		# _is_resource_extension_valid already includes logging, redundant
-#		GlobalLog.error(self,
-#				"resource extension invalid")
-		return ERR_FILE_CANT_WRITE
+	# create target directory if it doesn't already exist
+	if DirAccess.dir_exists_absolute(directory_path) == false:
+		DirAccess.make_dir_recursive_absolute(directory_path)
 	
-	# move on to the write operation
-	# if file is new, just attempt a write
-	if not validate_file(arg_file_path):
-		return_code = ResourceSaver.save(arg_saveable_res, arg_file_path)
-	# if file already existed, need to safely write to prevent corruption
-	# i.e. write to a temporary file, remove the older, make temp the new file
-	else:
-		# attempt the write operation
-		var temp_data_path = directory_path+"temp_"+file_and_ext
-		return_code = ResourceSaver.save(arg_saveable_res, temp_data_path)
-		# if we wrote the file successfully, time to remove the old file
-		# i.e. move previous file to recycle bin/trash
-		if return_code == OK:
-			# re: issue 67137, OS.move_to_trash will cause a project crash
-			# but on this branch the arg_file_path should be validated
-			assert(validate_file(arg_file_path, true))
-			# move to trash behaviour should only proceed if not backing up
-			if arg_backup == false:
-				# Note: If the user has disabled trash on their system,
-				# the file will be permanently deleted instead.
-				var get_global_path =\
-						ProjectSettings.globalize_path(arg_file_path)
-				return_code = OS.move_to_trash(get_global_path)
-				# if file was moved to trash, the path should now be invalid
-			# if backing up, the previous file should be moved to backup
-			elif arg_backup == true:
-				var backup_path = arg_file_path
-				# path to file is already validated to have .tres extension
-				backup_path = arg_file_path.rstrip(EXT_RESOURCE)
-				# concatenate string as backup
-				backup_path += BACKUP_SUFFIX
-				backup_path += EXT_RESOURCE
-				return_code = DirAccess.rename_absolute(arg_file_path, backup_path)
-			
-			if return_code == OK:
-				assert(not validate_file(arg_file_path))
-				# rename the temp file to be the new file
-				return_code = DirAccess.rename_absolute(
-						temp_data_path, arg_file_path)
-		# if the temporary file wasn't written successfully
+	# temporarily write to disk
+	var temp_write_path = "{0}/{1}{2}.{3}".format([directory_path, file_name, TEMP_SUFFIX, file_extension])
+	var temp_write_outcome = ResourceSaver.save(arg_saveable_res, temp_write_path)
+	if temp_write_outcome != OK:
+		GlobalLog.error(null, "DataUtility.save_resource could not write temporary file")
+	
+	# if file exists check for backup behaviour
+	if FileAccess.file_exists(arg_file_path):
+		# move existing file to backup if specified, or remove it
+		if arg_backup:
+			# check for existing backup and then send current backup to trash
+			var backup_path = "{0}/{1}{2}.{3}".format([directory_path, file_name, BACKUP_SUFFIX, file_extension])
+			if FileAccess.file_exists(backup_path):
+				var global_backup_path = ProjectSettings.globalize_path(backup_path)
+				OS.move_to_trash(global_backup_path)
+			# make old file the backup
+			DirAccess.rename_absolute(arg_file_path, backup_path)
+		# if no backup behaviour, remove the previous file
 		else:
-			return return_code
+			var global_file_path = ProjectSettings.globalize_path(arg_file_path)
+			OS.move_to_trash(global_file_path)
+		
+		## due to bug with DirAccess.rename_absolute (see https://github.com/godotengine/godot/issues/73311)
+		##	temporarily just loading and resaving the original file as a backup
+		##//TODO revise this, previous issue has been fixed
+		#var current_file_at_path = ResourceLoader.load(arg_file_path)
+		#if current_file_at_path is Resource:
+			#var backup_file_outcome = ResourceSaver.save(current_file_at_path, backup_path)
+			#if backup_file_outcome != OK:
+				#GlobalLog.warning(null, "DataUtility.save_resource could not save backup")
+		#else:
+			#GlobalLog.warning(null, "DataUtility.save_resource found non-resource at path, overwriting")
 	
-	
-	# if all is well and the static function didn't exit prior to this point
-	# successful exit points will be
-	# 1) path didn't exist and file was written, or
-	# 2) path exists, temp file written, first file trashed, temp file renamed
-	# return code should be 'OK' (int 0)
-	return return_code
+	# write behaviour is just moving the temporary file to the now-free file path address
+	return DirAccess.rename_absolute(temp_write_path, arg_file_path)
+
 
 
 # as the method validate_path, but specifically checking for directories
