@@ -40,6 +40,13 @@ const LOG_FSTRING := "[t{time}] {caller}\t[{type}] | {message}"
 
 @export var record_logs := true
 
+# user control for how logs are handled; caution - at least one of these flags
+#	must be enabled or else calling log methods won't actually do anything!
+# allow_log_output must be enabled for logs to printed to console/log file (_output_log)
+# allow_log_registration must be enabled for logs to be saved (_store_log)
+var allow_log_output := true
+var allow_log_registration := true
+
 # LOG RECORDING
 # total logs registered this runtime
 # (split by whether they were output to console or not)
@@ -361,21 +368,22 @@ func _log(
 				"caller": str(caller_id),
 				"message": str(full_error_message)
 				})
-	
-	# send log to buffer, do not actually log it now
-	
-	## if recording all logs, create an object to remember it
-	## logs are recorded whether they log to debugger/console or not
+		
 	var log_record: LogRecord = null
 	log_record = LogRecord.new(arg_caller, log_timestamp, log_code_id,
 			log_code_name, full_error_message, full_log_string)
 	
+	# once a log record has been created, the log call is considered complete
+	# storage and output are handled afterwards
+	if is_instance_valid(log_record):
+		total_log_calls += 1
+	
+	## log storing is disabled if allow_log_registration is false
 	_store_log(log_record)
-	# once registered, this is a valid log
-	total_log_calls += 1
+	
 	#//TODO implement log buffer here - some concern with output order for
 	#	critical logs (see todo at top of file for how to resolve)
-	# send
+	## log output is disabled if allow_log_output flag is false
 	_output_log(log_record)
 
 
@@ -406,6 +414,8 @@ func _on_logger_startup() -> void:
 
 
 func _output_log(arg_next_log: LogRecord) -> void:
+	if allow_log_output == false:
+		return
 	if is_instance_valid(arg_next_log) == false:
 		warning(self, "invalid log sent to _output_log from buffer")
 		return
@@ -434,6 +444,8 @@ func _output_log(arg_next_log: LogRecord) -> void:
 
 # record LogRecord data to log_register
 func _store_log(arg_log: LogRecord) -> void:
+	if allow_log_registration == false:
+		return
 	if is_instance_valid(arg_log) == false:
 		warning(self, "invalid log sent to _store_log")
 		return
