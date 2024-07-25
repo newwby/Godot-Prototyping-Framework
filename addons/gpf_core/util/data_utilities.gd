@@ -208,9 +208,10 @@ static func save_resource(
 		GlobalLog.warning(null, "DataUtility.save_resource called with invalid extension {0}, converting to .tres".format([file_extension]))
 		file_extension = "tres"
 	
-	# create target directory if it doesn't already exist
-	if DirAccess.dir_exists_absolute(directory_path) == false:
-		DirAccess.make_dir_recursive_absolute(directory_path)
+	# force create target directory if it doesn't already exist; throw error otherwise
+	if validate_directory(directory_path) == false:
+		GlobalLog.error(null, "DataUtility.save_resource invalid directory/cannot create")
+		return ERR_CANT_CREATE
 	
 	# temporarily write to disk
 	var temp_write_path = "{0}/{1}{2}.{3}".format([directory_path, file_name, TEMP_SUFFIX, file_extension])
@@ -249,182 +250,17 @@ static func save_resource(
 	return DirAccess.rename_absolute(temp_write_path, arg_file_path)
 
 
-
-# as the method validate_path, but specifically checking for directories
-# useful for one liner conditionals and built-in error logging
-# (saves creating a file/directory object manually)
-# [method params as follows]
-##1, path, is the directory path to validate
-##2, arg_assert_path, forces an assert in debug builds and error logging in both
-# debug and release builds. Set this param to true when you require a path
-# to be valid before you continue with an operation.
-static func validate_directory(
-		arg_directory_path: String,
-		arg_assert_path: bool = false
-		) -> bool:
-	# call the private validation method as a directory
-	return _validate(arg_directory_path, arg_assert_path, false)
-
-
-# as the method validate_path, but specifically checking for files existing
-# useful for one liner conditionals and built-in error logging
-# (saves creating a file/directory object manually)
-# [method params as follows]
-##1, path, is the file path to validate
-##2, arg_assert_path, forces an assert in debug builds and error logging in both
-# debug and release builds. Set this param to true when you require a path
-# to be valid before you continue with an operation.
-static func validate_file(
-		arg_file_path: String,
-		arg_assert_path: bool = false
-		) -> bool:
-	# call the private validation method as a file
-	return _validate(arg_file_path, arg_assert_path, true)
-
+# creates directory at path if it doesn't exist
+static func validate_directory(arg_directory_path: String) -> bool:
+	#FileAccess.file_exists(arg_path)
+	if DirAccess.dir_exists_absolute(arg_directory_path) == false:
+		if DirAccess.make_dir_recursive_absolute(arg_directory_path) != OK:
+			return false
+	# else
+	return true
 
 
 ##############################################################################
 
 # private methods
-
-
-# validation method for public 'save' methods
-static func _is_write_operation_directory_valid(arg_directory_path: String) -> int:
-	# resources can only be saved to paths within the user data folder.
-	# user data path is "user://"
-	if arg_directory_path.substr(0, 7) != USER_PATH:
-		GlobalLog.error(null,
-				"DataHandler {p} is not user_data path".format({"p": arg_directory_path}))
-		return ERR_FILE_BAD_PATH
-	
-	# check if the directory already exists
-	if not validate_directory(arg_directory_path):
-		# if force writing and directory doesn't exist, create it
-		var attempt_write_dir = DirAccess.make_dir_recursive_absolute(arg_directory_path)
-		if attempt_write_dir != OK:
-			GlobalLog.error(null,
-					"DataHandler failed attempt to write directory at {p}".format({
-						"p": arg_directory_path
-					}))
-			return attempt_write_dir
-	# if all was successful,
-	# and no directory needed to be created
-	return OK
-
-
-# validation method for public 'save' methods
-# this method assumes the directory already exists, call create_directory()
-# beforehand on the directory if you are unsure
-static func _is_write_operation_path_valid(arg_file_path: String) -> int:
-	# check the full path is valid
-	var _is_path_valid := false
-	# don't log error not finding path if called with force_write
-	_is_path_valid = validate_file(arg_file_path)
-	# if all was successful,
-	return OK if _is_path_valid else ERR_FILE_CANT_WRITE
-
-
-static func _is_write_operation_valid(arg_file_path: String) -> int:
-	var return_code = OK
-	var directory_path = arg_file_path.get_base_dir()
-	# validate directory path
-	return_code = _is_write_operation_directory_valid(directory_path)
-	if return_code != OK:
-		return return_code
-	# validate file path
-	return_code = _is_write_operation_path_valid(arg_file_path)
-	if return_code != OK:
-		return return_code
-	# catchall, success exit point
-	return return_code
-
-
-# used to validate that file paths are for valid resource extensions
-# pass the file path as an argument
-static func _is_resource_extension_valid(arg_resource_file_path: String) -> bool:
-	# returns the last x characters from the file path string, where
-	# x is the length of the RESOURCE_FILE_EXTENSION constant
-	# uses length() as a starting point, subtracts to get starting position
-	# of substring then -1 arg returns remaining chars (the constant length)
-	var extension =\
-			arg_resource_file_path.substr(
-			arg_resource_file_path.length()-EXT_RESOURCE.length(),
-			-1
-			)
-	# comparison bool value
-	var is_valid_extension = (extension == EXT_RESOURCE)
-	if not is_valid_extension:
-		GlobalLog.error(null,
-				"DataHandler invalid extension, expected {c} but got {e}".format({
-					"c": EXT_RESOURCE,
-					"e": extension
-				}))
-	return is_valid_extension
-
-
-# both the public methods validate_path and validate_directory call this
-# private method to actually do things; the methods are similar in execution
-# but are different checks, so they are essentially args for this method
-static func _validate(
-		arg_path: String,
-		arg_assert_path: bool,
-		arg_is_file: bool
-		) -> bool:
-	var _is_valid = false
-	
-	# validate_file call
-	if arg_is_file:
-		_is_valid = FileAccess.file_exists(arg_path)
-	# validate_directory call
-	elif not arg_is_file:
-		_is_valid = DirAccess.dir_exists_absolute(arg_path)
-	
-	var log_string = "file" if arg_is_file else "directory"
-	
-	if arg_assert_path\
-	and not _is_valid:
-		GlobalLog.error(null,
-				"DataHandler _validate"+" (from validate_{m}) ".format({"m": log_string})+\
-				"path: [{p}] is not a valid {m}.".format({
-					"p": arg_path,
-					"m": log_string
-				}))
-	# this method (and validate_path/validate_directory) will stop project
-	# execution if the arg_assert_path parameter is passed a true arg
-	if arg_assert_path:
-		assert(_is_valid)
-	
-	# will be true if path existed and was the correct type
-	# will be false otherwise
-	return _is_valid
-
-
-##############################################################################
-
-#// ATTENTION DEV
-# Further documentation and advice on saving to/loading from disk,
-# managing loading etc, can be found at:
-#	
-#	https://docs.godotengine.org/en/latest/classes/class_configfile.html
-#	https://docs.godotengine.org/en/stable/classes/class_resourcesaver.html
-#	https://docs.godotengine.org/en/stable/classes/class_resourceloader.html
-#	https://docs.godotengine.org/en/stable/classes/class_directory.html
-#	https://docs.godotengine.org/en/stable/classes/class_file.html
-#	https://github.com/khairul169/gdsqlite
-#	https://docs.godotengine.org/en/stable/tutorials/io/saving_games.html
-#	http://kidscancode.org/godot_recipes/4.x/basics/file_io/
-#	https://godotengine.org/qa/21370/what-are-various-ways-that-i-can-store-data
-
-# https://docs.godotengine.org/en/stable/tutorials/io/background_loading.html
-
-# https://docs.godotengine.org/en/stable/tutorials/io/data_paths.html
-# [on self-contained mode]
-# Self-contained mode is not supported in exported projects yet. To read and
-# write files relative to the executable path, use OS.get_executable_path().
-# Note that writing files in the executable path only works if the executable
-# is placed in a writable location (i.e. not Program Files or another directory
-# that is read-only for regular users).
-
-
-##############################################################################
 
