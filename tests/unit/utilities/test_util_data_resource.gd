@@ -74,8 +74,25 @@ func test_save_resource() -> void:
 	_verify_value(file_test_path_default, 117)
 	# verify the backup file (expected id 42)
 	_verify_value(file_test_path_backup, 42)
-	
-	# verify value 2
+
+
+##############################################################################
+
+
+# save behaviour is separated into separate methods because the files
+#	will not update on disk whilst within the same method (known bug)
+func _save_behaviour_1() -> void:
+	var test_file_1 = DataUtilityTestResource.new()
+	test_file_1.id = 42
+	DataUtility.save_resource(test_file_1, file_test_path_default, true)
+
+
+# save behaviour is separated into separate methods because the files
+#	will not update on disk whilst within the same method (known bug)
+func _save_behaviour_2() -> void:
+	var test_file_2 = DataUtilityTestResource.new()
+	test_file_2.id = 117
+	DataUtility.save_resource(test_file_2, file_test_path_default, true)
 
 
 func _verify_value(arg_path: String, arg_id_value: int) -> void:
@@ -86,16 +103,3 @@ func _verify_value(arg_path: String, arg_id_value: int) -> void:
 	else:
 		fail_test("id property not found on test_res_loaded")
 
-
-##############################################################################
-
-
-func _save_behaviour_1() -> void:
-	var test_file_1 = DataUtilityTestResource.new()
-	test_file_1.id = 42
-	DataUtility.save_resource(test_file_1, file_test_path_default, true)
-
-func _save_behaviour_2() -> void:
-	var test_file_2 = DataUtilityTestResource.new()
-	test_file_2.id = 117
-	DataUtility.save_resource(test_file_2, file_test_path_default, true)
