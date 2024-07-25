@@ -119,14 +119,10 @@ func test_get_file_paths() -> void:
 		assert_has(all_test_file_paths, file_path)
 
 
-#//TODO
 func test_validate_directory() -> void:
-	#DataUtility.validate_directory()
-	pass_test("TODO test_validate_directory")
-
-
-#//TODO
-func test_validate_file() -> void:
-	#DataUtility.validate_file()
-	pass_test("TODO test_validate_file")
+	var test_directory_4 := "test_directory_number_four"
+	var test_directory_path := TEST_DIRECTORY_ROOT+"/"+test_directory_4
+	assert_eq(DirAccess.dir_exists_absolute(test_directory_path), false)
+	assert_eq(DataUtility.validate_directory(test_directory_path), true)
+	assert_eq(DirAccess.dir_exists_absolute(test_directory_path), true)
 
