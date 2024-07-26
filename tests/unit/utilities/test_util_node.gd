@@ -87,15 +87,35 @@ func test_confirm_connection():
 	assert_eq(test_scoped_signal_flag_2, true)
 
 
+# verifies every possible outcome of 'is valid/is in tree' check method
+func test_is_valid_in_tree():
+	var test_null_value = null
+	var test_node_outside_tree = Node.new()
+	var test_node_in_tree = Node.new()
+	var test_object = Object.new()
+	
+	self.add_child(test_node_in_tree)
+	assert_eq(NodeUtility.is_valid_in_tree(test_null_value), false)
+	
+	# verify that it is inside tree incase the wait didn't work
+	assert_eq(test_node_outside_tree.is_inside_tree(), false)
+	assert_eq(NodeUtility.is_valid_in_tree(test_node_outside_tree), false)
+	
+	# verify that it is inside tree incase the wait didn't work
+	assert_eq(test_node_in_tree.is_inside_tree(), true)
+	assert_eq(NodeUtility.is_valid_in_tree(test_node_in_tree), true)
+	
+	# try non-node
+	assert_eq(NodeUtility.is_valid_in_tree(test_object), false)
+	
+	# cleanup
+	test_node_in_tree.free()
+	test_node_outside_tree.free()
+ 
+
 ##############################################################################
 
 # private test dependent methods
-
-# separate method due to test logic
-func _add_to_tree(arg_node: Node) -> void:
-	get_tree().root.call_deferred("add_child", arg_node)
-	
-
 
 
 func _output_test_signal_1(arg_bool) -> void:
