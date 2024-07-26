@@ -1,10 +1,10 @@
 extends Node
 
-class_name SignalUtility
+class_name NodeUtility
 
 ##############################################################################
 
-# SignalUtility is collection of static signal management methods
+# NodeUtility is collection of static object management methods
 
 ##############################################################################
 
@@ -24,6 +24,20 @@ static func confirm_connection(
 	else:
 		if (arg_subject_signal.connect(arg_target_method.bindv(arg_binds))) == OK:
 			return true
+		else:
+			return false
+
+
+# check if node exists/hasn't been deleted, and is inside scene tree
+# will return false if not passed an object, if passed a node not inside
+#	the scene tree, or if passed an object that has been freed
+# will only return true if passed a valid node inside the scene tree
+static func is_valid_in_tree(arg_object) -> bool:
+	if is_instance_valid(arg_object) == false:
+		return false
+	else:
+		if arg_object is Node:
+			return arg_object.is_inside_tree()
 		else:
 			return false
 

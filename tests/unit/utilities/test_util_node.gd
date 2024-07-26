@@ -71,21 +71,31 @@ func test_confirm_connection():
 	
 	# test block 1
 	assert_eq(test_signal.is_connected(_output_test_signal_1), false)
-	assert_eq(SignalUtility.confirm_connection(test_signal, _output_test_signal_1), true)
+	assert_eq(NodeUtility.confirm_connection(test_signal, _output_test_signal_1), true)
 	assert_eq(test_signal.is_connected(_output_test_signal_1), true)
-	assert_eq(SignalUtility.confirm_connection(test_signal, _output_test_signal_1), true)
+	assert_eq(NodeUtility.confirm_connection(test_signal, _output_test_signal_1), true)
 	emit_signal("test_signal", true)
 	
 	# test block 2
 	assert_eq(test_signal.is_connected(_output_test_signal_2), false)
-	assert_eq(SignalUtility.confirm_connection(test_signal_2, _output_test_signal_2), true)
+	assert_eq(NodeUtility.confirm_connection(test_signal_2, _output_test_signal_2), true)
 	assert_eq(test_signal_2.is_connected(_output_test_signal_2), true)
 	emit_signal("test_signal_2")
 	
 	# then we check that the test scoped flags were corectly set by the signals
 	assert_eq(test_scoped_signal_flag_1, true)
 	assert_eq(test_scoped_signal_flag_2, true)
+
+
+##############################################################################
+
+# private test dependent methods
+
+# separate method due to test logic
+func _add_to_tree(arg_node: Node) -> void:
+	get_tree().root.call_deferred("add_child", arg_node)
 	
+
 
 
 func _output_test_signal_1(arg_bool) -> void:
