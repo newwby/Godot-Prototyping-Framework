@@ -6,6 +6,11 @@
 
 ---
 
+### Installation
+
+- Download the current release and place the addon directory in your root project folder.
+- The repo contains additional testing functionality not necessary to using the addon
+
 ### Current Release
 
 https://github.com/newwby/godot_prototyping_framework/releases/tag/1.0.0
