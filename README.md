@@ -6,4 +6,15 @@
 
 ---
 
-_Initial release and readme update pending_
+### Current Release
+
+https://github.com/newwby/godot_prototyping_framework/releases/tag/1.0.0
+
+### Current Features
+
+- Godot plugin file for simple installation
+- Logging singleton (GlobalLog) with log classification, permissions, and persistence
+- Utility statics for simple operation
+  - Data utility for file reading operations
+  - Node utility for object management
+  - Sort utility for simple sorting behaviour
