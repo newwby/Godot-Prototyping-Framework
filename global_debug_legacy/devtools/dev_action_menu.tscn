@@ -1,0 +1,138 @@
+[gd_scene load_steps=10 format=3 uid="uid://drn84n77mh6w"]
+
+[ext_resource type="Script" path="res://global_debug_legacy/devtools/dev_action_menu.gd" id="1"]
+[ext_resource type="FontFile" path="res://global_debug_legacy/devtools/dev_action_menu/font_preset_dev_command_line_input.tres" id="2"]
+[ext_resource type="StyleBox" path="res://global_debug_legacy/devtools/dev_action_menu/style_flat_command_button_hover.tres" id="3"]
+[ext_resource type="StyleBox" path="res://global_debug_legacy/devtools/dev_action_menu/style_flat_command_button_normal.tres" id="4"]
+[ext_resource type="StyleBox" path="res://global_debug_legacy/devtools/dev_action_menu/style_flat_command_line_container.tres" id="5"]
+[ext_resource type="StyleBox" path="res://global_debug_legacy/devtools/dev_action_menu/style_flat_command_button_focus.tres" id="6"]
+[ext_resource type="StyleBox" path="res://global_debug_legacy/devtools/dev_action_menu/style_flat_command_button_pressed.tres" id="7"]
+
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(0.129412, 0.129412, 0.129412, 1)
+
+[sub_resource type="StyleBoxFlat" id="1"]
+content_margin_left = 8.0
+bg_color = Color(0.215686, 0.215686, 0.215686, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 0.8, 0.294118)
+border_blend = true
+
+[node name="DevActionMenu" type="MarginContainer"]
+custom_minimum_size = Vector2(960, 540)
+offset_right = 960.0
+offset_bottom = 540.0
+mouse_filter = 2
+script = ExtResource("1")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="PanelBKG" type="PanelContainer" parent="Margin"]
+self_modulate = Color(1, 1, 1, 0.784314)
+layout_mode = 2
+size_flags_horizontal = 7
+size_flags_vertical = 7
+mouse_filter = 1
+theme_override_styles/panel = SubResource("2")
+
+[node name="PanelMargin" type="MarginContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBox" type="VBoxContainer" parent="Margin/PanelMargin"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Margin/PanelMargin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ActionButtonContainer" type="GridContainer" parent="Margin/PanelMargin/VBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 15
+columns = 5
+
+[node name="CommandContainer" type="PanelContainer" parent="Margin/PanelMargin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("5")
+
+[node name="HBox" type="HBoxContainer" parent="Margin/PanelMargin/VBox/CommandContainer"]
+layout_mode = 2
+size_flags_horizontal = 7
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 25
+
+[node name="SendCommandButton" type="Button" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+theme_override_styles/normal = ExtResource("4")
+theme_override_styles/hover = ExtResource("3")
+theme_override_styles/pressed = ExtResource("7")
+theme_override_styles/focus = ExtResource("6")
+text = "Send Command"
+
+[node name="CommandLine" type="LineEdit" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+theme_override_fonts/font = ExtResource("2")
+theme_override_styles/normal = SubResource("1")
+placeholder_text = " Enter Dev Command Here"
+context_menu_enabled = false
+clear_button_enabled = true
+shortcut_keys_enabled = false
+caret_blink = true
+caret_blink_interval = 0.5
+
+[node name="CloseMenuButton" type="Button" parent="Margin/PanelMargin/VBox/CommandContainer/HBox"]
+custom_minimum_size = Vector2(200, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+theme_override_styles/normal = ExtResource("4")
+theme_override_styles/hover = ExtResource("3")
+theme_override_styles/pressed = ExtResource("7")
+theme_override_styles/focus = ExtResource("6")
+text = "Close Menu"
+
+[node name="DevActionButton" type="Button" parent="."]
+visible = false
+custom_minimum_size = Vector2(160, 35)
+layout_mode = 2
+text = "SampleButton"
+
+[connection signal="pressed" from="Margin/PanelMargin/VBox/CommandContainer/HBox/SendCommandButton" to="." method="_on_send_command_button_pressed"]
+[connection signal="focus_entered" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CommandLine" to="." method="_on_command_line_focus_entered"]
+[connection signal="focus_exited" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CommandLine" to="." method="_on_command_line_focus_exited"]
+[connection signal="pressed" from="Margin/PanelMargin/VBox/CommandContainer/HBox/CloseMenuButton" to="." method="_on_close_menu_button_pressed"]
