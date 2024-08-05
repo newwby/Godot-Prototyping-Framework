@@ -11,7 +11,7 @@ Contents
 
 .. toctree::
 
-   GlobalLog
-   DataUtility
-   NodeUtility
-   SortUtility
+   global_log
+   util_data
+   util_node
+   util_sort
