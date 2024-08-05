@@ -30,4 +30,4 @@ script/templates_search_path="res://addons/gpf_core/templates"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/gpf_core/plugin.cfg", "res://addons/gpf_mod/plugin.cfg", "res://addons/gut/plugin.cfg")
+enabled=PackedStringArray("res://addons/gpf_core/plugin.cfg", "res://addons/gut/plugin.cfg")
