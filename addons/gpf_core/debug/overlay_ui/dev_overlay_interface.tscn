@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://f4d8y5rv6erm"]
+
+[ext_resource type="Script" path="res://addons/gpf_core/classes/responsive_container.gd" id="1_jeaug"]
+
+[node name="DevCommandInterface" type="MarginContainer"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+script = ExtResource("1_jeaug")
+
+[node name="Margin" type="Panel" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
