@@ -1,7 +1,13 @@
 API
 ===
 
+Title 1
+--------
+
+Title 2
+********
+
 .. autosummary::
    :toctree: generated
 
-   lumache
+   index

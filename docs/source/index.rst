@@ -1,22 +1,17 @@
 Welcome to Lumache's documentation!
 ===================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+The **Godot Prototyping Framewokr** is a plugin for Godot 4.3.x that provides universal utilities to aid with rapid prototyping and game jams. The aim of the framework is to provide modular tools to cover as many use cases as possible, without getting bogged down by genre-specific features such as platformer controllers. If it can't feasibly be used within any game, it probably shouldn't be a part of this framework.
 
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+Check out the :doc:`testpage` section for further information.
 
 .. note::
 
-   This project is under active development.
+   This project is under active development, and these doc pages are very experimental.
 
 Contents
 --------
 
 .. toctree::
 
-   usage
-   api
+   testpage
