@@ -13,6 +13,4 @@ Contents
    :maxdepth: 2
 
    global_log
-   util_data
-   util_node
-   util_sort
+   utilities
