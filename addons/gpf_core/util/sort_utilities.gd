@@ -1,12 +1,4 @@
 extends Node
-## A brief description of the class's role and functionality.
-##
-## The description of the script, what it can do,
-## and any further detail.
-##
-## @tutorial:            https://the/tutorial1/url.com
-## @tutorial(Tutorial2): https://the/tutorial2/url.com
-## @experimental
 
 class_name SortUtility
 
@@ -38,16 +30,6 @@ static func sort_ascending(arg_a, arg_b):
 	return false
 
 
-## Do something for this plugin. Before using the method
-## you first have to [method initialize] [MyPlugin].[br]
-## [color=yellow]Warning:[/color] Always [method clean] after use.[br]
-## Usage:
-## [codeblock]
-## func _ready():
-##     the_plugin.initialize()
-##     the_plugin.do_something()
-##     the_plugin.clean()
-## [/codeblock]
 static func sort_descending(arg_a, arg_b):
 	"""sort_descending returns a list of :class:`bluepy.blte.Service` objects representing
 	the services offered by the device. This will perform Bluetooth service
