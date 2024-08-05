@@ -1,23 +1,24 @@
 ---
-name: Feature addition
-about: Building on top of an existing feature or functionality
-title: 'New Feature Proposal: [Add Name]'
+name: Feature Addition
+about: Implementing something that doesn't already exist
+title: 'New Feature'
 labels: addition
 assignees: newwby
 
 ---
 
-## Feature Design
+# Issue
 
-**Current Functionality** (if applicable)
-A clear and concise description of what the feature already does, and why that isn't desirable.
+## Feature Proposal
 
-(If the feature doesn't already exist, skip this heading.)
+**Why is this feature desirable?**
+- Is this covered by existing functionality?
+- Is this universal enough to be considered part of the framework?
+- What use cases exist for this new feature?
 
-**Desired Functionality**
-A clear and concise description of what you want to change or add, and why.
+---
 
-## Feature Implementation
+## Feature Implementation (Developer Use Only)
 
 **Task List**
 - [ ] task 1
