@@ -197,8 +197,9 @@ func info(
 	_log(arg_caller, arg_error_message, 4, arg_show_on_elevated_only)
 
 
-# arguments as _log but accepts caller but does not accept error_message
-# does nothing if not in a debug build
+## @deprecated
+## arguments as _log but accepts caller but does not accept error_message
+## does nothing if not in a debug build
 func log_stack_trace(arg_caller: Object) -> void:
 	if OS.is_debug_build():
 		var full_stack_trace = get_stack()
@@ -211,12 +212,13 @@ func log_stack_trace(arg_caller: Object) -> void:
 					"f": error_func_id,
 					"s": error_node_id,
 					"l": error_line_id})
-		GlobalLog.trace(arg_caller, stack_trace_print_string)
+		GlobalLog.info(arg_caller, stack_trace_print_string)
 
 
-# sets the last log permission state stored by the caller key
-# removes the stored log permission state if returned
-# returns err code if caller hasn't previously stored a log permission state
+## @deprecated
+## sets the last log permission state stored by the caller key
+## removes the stored log permission state if returned
+## returns err code if caller hasn't previously stored a log permission state
 func reset_permission(arg_caller: Object) -> int:
 	if arg_caller in _log_permissions_last_state.keys():
 		_change_permission(
