@@ -1,11 +1,7 @@
-API
+GlobalDebug
 ===
 
-Title 1
---------
-
-Title 2
-********
+Placeholder
 
 .. autosummary::
    :toctree: generated
