@@ -10,6 +10,7 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
 
    global_log
    util_data

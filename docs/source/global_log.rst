@@ -1,5 +1,6 @@
+============
 GlobalLog
-----------
+============
 
 Members
 ***********
@@ -10,16 +11,16 @@ LogRecord
 Logging Methods
 ***********
 
-critical
+*critical*
 ~~~~~~~~~~
 
-error
+*error*
 ~~~~~~~~~~
 
-info
+*info*
 ~~~~~~~~~~
 
-warning
+*warning*
 ~~~~~~~~~~
 
 Elevated Logging Methods
