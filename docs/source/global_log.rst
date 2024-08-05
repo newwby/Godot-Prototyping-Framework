@@ -1,10 +1,5 @@
 GlobalLog
-===
-
-.. autosummary::
-   :toctree: generated
-
-   index
+--------
 
 Members
 --------
@@ -62,3 +57,8 @@ set_permission_elevated
 
 store_permission
 ********
+
+.. autosummary::
+   :toctree: generated
+
+   index
