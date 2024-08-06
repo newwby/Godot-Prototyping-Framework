@@ -1,9 +1,6 @@
+============
 GlobalDebug
-===
+============
 
-Placeholder
+Placeholder; this autoload is not yet developed.
 
-.. autosummary::
-   :toctree: generated
-
-   index
