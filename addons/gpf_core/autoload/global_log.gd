@@ -163,9 +163,9 @@ func debug_info(arg_caller: Object, arg_error_message) -> void:
 	info(arg_caller, arg_error_message, true)
 
 
-# debug ('elevated') logs only appear in the debugger/output/console if the object
-#	emitting the log has had their logging permissions elevated
-# use debug/elevated logs to hide logs you only need when debugging
+## debug ('elevated') logs only appear in the debugger/output/console if the object
+##	emitting the log has had their logging permissions elevated
+## use debug/elevated logs to hide logs you only need when debugging
 func debug_warning(arg_caller: Object, arg_error_message) -> void:
 	warning(arg_caller, arg_error_message, true)
 
