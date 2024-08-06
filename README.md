@@ -7,6 +7,10 @@
 
 ---
 
+- **Documentation at https://godotprototypingframework.readthedocs.io/en/latest/**
+
+---
+
 ### Installation
 
 - Download the current release and place the addon directory in your root project folder.
