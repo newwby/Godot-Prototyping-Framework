@@ -36,8 +36,10 @@ enum CODE {UNDEFINED, CRITICAL, ERROR, WARNING, INFO}
 # initial log message
 const STARTUP_LOG_FSTRING := "[{device}] Logger service ready @ {time}"
 # format of a log
+## docu test 2
 const LOG_FSTRING := "[t{time}] {caller}\t[{type}] | {message}"
 
+## documentaiton test
 @export var record_logs := true
 
 # user control for how logs are handled; caution - at least one of these flags
@@ -108,6 +110,7 @@ class LogRecord:
 
 
 # Called when the node enters the scene tree for the first time.
+### documentation test
 func _ready():
 	# logger prevents automatic quit on notification
 	get_tree().set_auto_accept_quit(false)
