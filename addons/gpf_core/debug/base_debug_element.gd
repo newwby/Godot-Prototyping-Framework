@@ -64,6 +64,11 @@ func get_name() -> String:
 # public methods
 
 
+## Call this method to manually remove a DebugElement
+func delete() -> void:
+	_is_invalid()
+
+
 ## Debug elements require a valid reference to a node inside the tree.
 func is_valid() -> bool:
 	return NodeUtility.is_valid_in_tree(owner)

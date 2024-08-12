@@ -57,13 +57,39 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 				debug_actions[arg_key] = new_debug_value
 
 
+## Method to manually remove a DebugElement from tracking (also frees the associated DebugElement).
+## Will return an error code if cannot find the element, or OK otherwise.
+func remove_debug_action(arg_key):
+	if debug_actions.has(arg_key):
+		var get_element = debug_actions[arg_key]
+		if get_element is DebugAction:
+			get_element.delete()
+			debug_actions.erase(arg_key)
+			return OK
+	# else
+	return ERR_CANT_RESOLVE
+
+
+## Method to manually remove a DebugElement from tracking (also frees the associated DebugElement)
+## Will return an error code if cannot find the element, or OK otherwise.
+func remove_debug_value(arg_key):
+	if debug_values.has(arg_key):
+		var get_element = debug_values[arg_key]
+		if get_element is DebugValue:
+			get_element.delete()
+			debug_values.erase(arg_key)
+			return OK
+	# else
+	return ERR_CANT_RESOLVE
+
+
 ##############################################################################
 
 # private methods
 
 
 ## called whenever a DebugElement's owner leaves the tree, removing the DebugElement from being
-## tracked by GlobalDebug
+## tracked by GlobalDebug.
 func _on_debug_element_exit_tree(arg_debug_element):
 	# remove
 	if arg_debug_element is DebugAction:
