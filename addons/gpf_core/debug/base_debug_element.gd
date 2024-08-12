@@ -1,0 +1,80 @@
+class_name BaseDebugElement
+extends RefCounted
+
+##############################################################################
+
+## <class_doc>
+## This is a base class and should not be used.
+## See DebugCommand and DebugValue extended classes for functionality.
+## Each DebugElement is tracked by GlobalDebug after being created and can be
+## called from GlobalDebug by the key name.
+## If the DebugElement's owner node exits the scene tree, it will no longer
+## be tracked and cannot be fetched.
+
+##############################################################################
+
+## Signal emitted when DebugElement owner exits the tree.
+## Tells GlobalDebug to stop tracking this DebugElement
+signal is_exiting(arg_self)
+
+## Owner is the scene-tree node that the DebugElement relates to.
+var owner: Node
+## Key must be exclusive with other DebugElements.
+## If two DebugElements 
+## This is used to 
+var key
+## Name is the display to be shown on an debug menu or overlay screen
+## This can be different from key, but if it is left blank, the key will be used instead.
+var name: String = "": get = get_name
+
+##############################################################################
+
+# constructor
+
+
+func _init(arg_owner: Node, arg_key, arg_name: String = ""):
+	if NodeUtility.is_valid_in_tree(arg_owner):
+		if arg_owner.tree_exiting.connect(_is_invalid) != OK:
+			GlobalLog.error(self, "invalid signal on new DebugElement: args {0} / {1} / {2}".\
+					format([arg_owner, arg_key, arg_name]))
+		else:
+			self.owner = arg_owner
+			self.key = arg_key
+			self.name = arg_name
+	else:
+		GlobalLog.error(self, "invalid owner on new DebugElement: args {0} / {1} / {2}".\
+				format([arg_owner, arg_key, arg_name]))
+		self.free()
+
+
+##############################################################################
+
+# setters/getters
+
+
+func get_name() -> String:
+	if name != "":
+		return name
+	else:
+		return str(key)
+
+
+##############################################################################
+
+# public methods
+
+
+## Debug elements require a valid reference to a node inside the tree.
+func is_valid() -> bool:
+	return NodeUtility.is_valid_in_tree(owner)
+
+
+##############################################################################
+
+# private methods
+
+
+func _is_invalid():
+	emit_signal("is_exiting", self)
+	call_deferred("free")
+
