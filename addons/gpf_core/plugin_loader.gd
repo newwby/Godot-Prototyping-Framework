@@ -13,6 +13,7 @@ extends EditorPlugin
 
 const AUTOLOAD_PATHS := {
 	"GlobalLog": "res://addons/gpf_core/autoload/global_log.gd",
+	"GlobalDebug": "res://addons/gpf_core/autoload/global_debug.gd",
 	#"GlobalData": "res://addons/gpf/autoload/global_data.gd",
 	#"GlobalFunc": "res://addons/gpf/autoload/global_functions.gd",
 }
