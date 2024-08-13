@@ -26,13 +26,17 @@ var key
 ## Name is the display to be shown on an debug menu or overlay screen
 ## This can be different from key, but if it is left blank, the key will be used instead.
 var name: String = "": get = get_name
+## Category allows grouping of DebugElement objects within menus,
+## e.g. positioning related overlay elements together, or nesting debug command
+## buttons underneath a group button (hiding commands until the button is pressed).
+var category: String = ""
 
 ##############################################################################
 
 # constructor
 
 
-func _init(arg_owner: Node, arg_key, arg_name: String = ""):
+func _init(arg_owner: Node, arg_key, arg_name: String = "", arg_category: String = ""):
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_owner.tree_exiting.connect(_is_invalid) != OK:
 			GlobalLog.error(self, "invalid signal on new DebugElement: args {0} / {1} / {2}".\
@@ -41,6 +45,7 @@ func _init(arg_owner: Node, arg_key, arg_name: String = ""):
 			self.owner = arg_owner
 			self.key = arg_key
 			self.name = arg_name
+			self.category = arg_category
 	else:
 		GlobalLog.error(self, "invalid owner on new DebugElement: args {0} / {1} / {2}".\
 				format([arg_owner, arg_key, arg_name]))

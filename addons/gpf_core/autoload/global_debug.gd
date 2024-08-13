@@ -5,7 +5,14 @@ extends Node
 ##############################################################################
 
 ## <class_doc>
-## GlobalDebug is an autoload that can track DebugActions and DebugValues.
+## GlobalDebug is an autoload that can track DebugElement objects, specifically
+## DebugActions and DebugValues. This exists to be extended into a debugging display
+## or control scene, functional examples of which are included with the GPF plugin.
+
+##############################################################################
+
+#//TODO
+# add get-by-key/get-by-category functions for debug actions/values
 
 ##############################################################################
 
@@ -26,10 +33,10 @@ var debug_values = {}
 
 
 ## method adds a new DebugAction to the GlobalDebug tracker, under the debug_actions dict
-func add_debug_action(arg_owner: Node, arg_method: String, arg_key, arg_name: String = ""):
+func add_debug_action(arg_owner: Node, arg_method: String, arg_key, arg_name: String = "", arg_category: String = ""):
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_owner.has_method(arg_method):
-			var new_debug_action = DebugAction.new(arg_owner, arg_method, arg_key, arg_name)
+			var new_debug_action = DebugAction.new(arg_owner, arg_method, arg_key, arg_name, arg_category)
 			# check setup went well
 			var setup_correctly = false
 			if new_debug_action.is_valid():
@@ -42,10 +49,10 @@ func add_debug_action(arg_owner: Node, arg_method: String, arg_key, arg_name: St
 
 
 ## method adds a new DebugValue to the GlobalDebug tracker, under the debug_values dict
-func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: String = ""):
+func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_property in arg_owner:
-			var new_debug_value = DebugValue.new(arg_owner, arg_property, arg_key, arg_name)
+			var new_debug_value = DebugValue.new(arg_owner, arg_property, arg_key, arg_name, arg_category)
 			# check setup went well
 			var setup_correctly = false
 			if new_debug_value.is_valid():

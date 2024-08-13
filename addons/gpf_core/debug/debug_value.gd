@@ -16,8 +16,8 @@ var property: String = ""
 # constructor
 
 
-func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = ""):
-	super(arg_owner, arg_key, arg_name)
+func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
+	super(arg_owner, arg_key, arg_name, arg_category)
 	if is_valid:
 		if property != "" and property in owner:
 			self.property = arg_property
