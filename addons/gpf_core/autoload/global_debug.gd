@@ -40,10 +40,11 @@ func add_debug_action(arg_owner: Node, arg_method: String, arg_key, arg_name: St
 			# check setup went well
 			var setup_correctly = false
 			if new_debug_action.is_valid():
-				if new_debug_action.is_exiting.connect(_on_debug_element_exit_tree) != OK:
+				if new_debug_action.is_exiting.connect(_on_debug_element_exit_tree) == OK:
+					setup_correctly = true
+				else:
 					GlobalLog.error(self, "signal setup error on new DebugAction w/args {0} / {1} / {2} / {3}".\
 						format([arg_owner, arg_key, arg_name, arg_method]))
-					setup_correctly = true
 			if setup_correctly:
 				debug_actions[arg_key] = new_debug_action
 
@@ -56,10 +57,11 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 			# check setup went well
 			var setup_correctly = false
 			if new_debug_value.is_valid():
-				if new_debug_value.is_exiting.connect(_on_debug_element_exit_tree) != OK:
+				if new_debug_value.is_exiting.connect(_on_debug_element_exit_tree) == OK:
+					setup_correctly = true
+				else:
 					GlobalLog.error(self, "signal setup error on new DebugValue w/args {0} / {1} / {2} / {3}".\
 						format([arg_owner, arg_key, arg_name, arg_property]))
-					setup_correctly = true
 			if setup_correctly:
 				debug_actions[arg_key] = new_debug_value
 
