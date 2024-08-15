@@ -8,11 +8,15 @@ extends Node
 ## GlobalDebug is an autoload that can track DebugElement objects, specifically
 ## DebugActions and DebugValues. This exists to be extended into a debugging display
 ## or control scene, functional examples of which are included with the GPF plugin.
+##
+## DebugElements are stored under keys, which must be unique within Action or Value scope,
+## i.e. a DebugAction and a DebugValue may share a key, but two DebugActions or two
+## DebugValues may not share a key. It is best practice to avoid sharing keys altogether however.
 
 ##############################################################################
 
 #//TODO
-# add get-by-key/get-by-category functions for debug actions/values
+# add get-by-category functions for debug actions/values
 
 ##############################################################################
 
@@ -64,6 +68,28 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 						format([arg_owner, arg_key, arg_name, arg_property]))
 			if setup_correctly:
 				debug_actions[arg_key] = new_debug_value
+
+
+## Method to return the DebugAction associated with the given key.
+## Returns null if the key is invalid.
+func get_debug_action(arg_key) -> DebugAction:
+	if debug_actions.has(arg_key):
+		var fetched_action = debug_actions[arg_key]
+		if fetched_action is DebugAction:
+			return fetched_action
+	# else
+	return null
+
+
+## Method to return the DebugAction associated with the given key.
+## Returns null if the key is invalid.
+func get_debug_value(arg_key) -> DebugValue:
+	if debug_actions.has(arg_key):
+		var fetched_value = debug_values[arg_key]
+		if fetched_value is DebugValue:
+			return fetched_value
+	# else
+	return null
 
 
 ## Method to manually remove a DebugElement from tracking (also frees the associated DebugElement).
