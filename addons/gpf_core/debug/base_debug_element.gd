@@ -86,5 +86,4 @@ func is_valid() -> bool:
 
 func _is_invalid():
 	emit_signal("is_exiting", self)
-	call_deferred("free")
 
