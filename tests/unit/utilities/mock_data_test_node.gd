@@ -1,4 +1,4 @@
-class_name DataUtilityTestResource
+class_name MockDataUtilityTestNode
 extends Resource
 
 ##############################################################################

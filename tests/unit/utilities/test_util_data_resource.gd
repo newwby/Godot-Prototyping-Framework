@@ -82,7 +82,7 @@ func test_save_resource() -> void:
 # save behaviour is separated into separate methods because the files
 #	will not update on disk whilst within the same method (known bug)
 func _save_behaviour_1() -> void:
-	var test_file_1 = DataUtilityTestResource.new()
+	var test_file_1 = MockDataUtilityTestNode.new()
 	test_file_1.id = 42
 	DataUtility.save_resource(test_file_1, file_test_path_default, true)
 
@@ -90,14 +90,14 @@ func _save_behaviour_1() -> void:
 # save behaviour is separated into separate methods because the files
 #	will not update on disk whilst within the same method (known bug)
 func _save_behaviour_2() -> void:
-	var test_file_2 = DataUtilityTestResource.new()
+	var test_file_2 = MockDataUtilityTestNode.new()
 	test_file_2.id = 117
 	DataUtility.save_resource(test_file_2, file_test_path_default, true)
 
 
 func _verify_value(arg_path: String, arg_id_value: int) -> void:
 	var test_res_loaded = ResourceLoader.load(arg_path)
-	assert_eq(test_res_loaded is DataUtilityTestResource, true)
+	assert_eq(test_res_loaded is MockDataUtilityTestNode, true)
 	if "id" in test_res_loaded:
 		assert_eq(test_res_loaded.id, arg_id_value)
 	else:
