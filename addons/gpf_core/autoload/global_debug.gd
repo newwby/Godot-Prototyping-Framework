@@ -37,20 +37,19 @@ var debug_values = {}
 
 
 ## method adds a new DebugAction to the GlobalDebug tracker, under the debug_actions dict
-func add_debug_action(arg_owner: Node, arg_method: String, arg_key, arg_name: String = "", arg_category: String = ""):
+func add_debug_action(arg_owner: Node, arg_method: Callable, arg_key, arg_name: String = "", arg_category: String = ""):
 	if NodeUtility.is_valid_in_tree(arg_owner):
-		if arg_owner.has_method(arg_method):
-			var new_debug_action = DebugAction.new(arg_owner, arg_method, arg_key, arg_name, arg_category)
-			# check setup went well
-			var setup_correctly = false
-			if new_debug_action.is_valid():
-				if new_debug_action.is_exiting.connect(_on_debug_element_exit_tree) == OK:
-					setup_correctly = true
-				else:
-					GlobalLog.error(self, "signal setup error on new DebugAction w/args {0} / {1} / {2} / {3}".\
-						format([arg_owner, arg_key, arg_name, arg_method]))
-			if setup_correctly:
-				debug_actions[arg_key] = new_debug_action
+		var new_debug_action = DebugAction.new(arg_owner, arg_method, arg_key, arg_name, arg_category)
+		# check setup went well
+		var setup_correctly = false
+		if new_debug_action.is_valid():
+			if new_debug_action.is_exiting.connect(_on_debug_element_exit_tree) == OK:
+				setup_correctly = true
+			else:
+				GlobalLog.error(self, "signal setup error on new DebugAction w/args {0} / {1} / {2} / {3}".\
+					format([arg_owner, arg_key, arg_name, arg_method]))
+		if setup_correctly:
+			debug_actions[arg_key] = new_debug_action
 
 
 ## method adds a new DebugValue to the GlobalDebug tracker, under the debug_values dict

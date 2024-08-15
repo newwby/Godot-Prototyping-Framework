@@ -6,19 +6,30 @@ extends BaseDebugElement
 
 ##############################################################################
 
+#//TODO
+# add support for calling with method arguments
+
+##############################################################################
+
 ## name of the method to track
-var method: String = ""
+var method := Callable()
 
 ##############################################################################
 
 # constructor
 
 
-func _init(arg_owner: Node, arg_method: String, arg_key, arg_name: String = "", arg_category: String = ""):
+func _init(arg_owner: Node, arg_method: Callable, arg_key, arg_name: String = "", arg_category: String = ""):
 	super(arg_owner, arg_key, arg_name, arg_category)
 	if is_valid:
-		if method != "" and owner.has_method(method):
-			self.method = arg_method
+		if arg_method.is_valid():
+			if arg_method.get_object() == arg_owner:
+				self.method = arg_method
+			# not arg_method.get_object() != arg_owner:
+			else:
+				GlobalLog.error(self, "callable owner != DebugAction owner on new DebugAction: args {0} / {1} / {2} / {3}".\
+					format([arg_owner, arg_key, arg_name, arg_method]))
+		# not arg_method.is_valid():
 		else:
 			GlobalLog.error(self, "invalid method on new DebugAction: args {0} / {1} / {2} / {3}".\
 					format([arg_owner, arg_key, arg_name, arg_method]))
@@ -30,11 +41,11 @@ func _init(arg_owner: Node, arg_method: String, arg_key, arg_name: String = "", 
 ## calls the tracked method of the owner
 func get_action() -> void:
 	if is_valid:
-		if owner.has_method(method):
-			owner.call(method)
+		if method.is_valid():
+			method.call()
 		else:
-			GlobalLog.error(self, "invalid method on fetching DebugAction: args {0} / {1} / {2} / {3}".\
-					format([owner, key, name, method]))
+			GlobalLog.error(self, "callable invalid on get_action: args {0} / {1} / {2} / {3}".\
+				format([owner, key, name, method]))
 	else:
 		_is_invalid()
 
