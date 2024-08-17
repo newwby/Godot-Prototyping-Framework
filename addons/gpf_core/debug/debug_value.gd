@@ -18,7 +18,7 @@ var property: String = ""
 
 func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
 	super(arg_owner, arg_key, arg_name, arg_category)
-	if is_valid:
+	if NodeUtility.is_valid_in_tree(arg_owner):
 		if property != "" and property in owner:
 			self.property = arg_property
 		else:
@@ -42,4 +42,12 @@ func get_value():
 	else:
 		_is_invalid()
 		return null
+
+
+## DebugActions require a valid reference to a node inside the tree,
+## as well as a valid property reference
+func is_valid() -> bool:
+	var is_in_tree = super()
+	var does_property_exist = property in owner
+	return is_in_tree and does_property_exist
 
