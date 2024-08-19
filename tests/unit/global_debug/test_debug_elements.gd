@@ -74,17 +74,19 @@ func test_fetch_debug_action() -> void:
 
 ## method to setup test structure
 func _add_test_debug_actions() -> void:
-	var test_method = test_object.placeholder_debug_method
+	var test_method_1 = test_object.placeholder_debug_method
+	var test_method_2 = test_object_false_1.placeholder_debug_method
+	var test_method_3 = test_object_false_2.placeholder_debug_method
 	assert_eq(GlobalDebug.debug_actions.size(), 0)
 	## adds multiple DebugAction objects to make sure we're returning the right one (test_object under key_test_debug_action)
 	## assert test after each for successful add
-	GlobalDebug.add_debug_action(test_object_false_1, test_method, "key_test_false_debug_action")
+	GlobalDebug.add_debug_action(test_object_false_1, test_method_2, "key_test_false_debug_action")
 	assert_eq(GlobalDebug.debug_actions.size(), 1)
-	GlobalDebug.add_debug_action(test_object, test_method, "key_test_debug_action")
+	GlobalDebug.add_debug_action(test_object, test_method_1, "key_test_debug_action")
 	assert_eq(GlobalDebug.debug_actions.size(), 2)
-	GlobalDebug.add_debug_action(test_object, test_method, "key_test_debug_action_duplicate")
+	GlobalDebug.add_debug_action(test_object, test_method_1, "key_test_debug_action_duplicate")
 	assert_eq(GlobalDebug.debug_actions.size(), 3)
-	GlobalDebug.add_debug_action(test_object_false_2, test_method, "key_test_false_debug_action_no2")
+	GlobalDebug.add_debug_action(test_object_false_2, test_method_3, "key_test_false_debug_action_no2")
 	assert_eq(GlobalDebug.debug_actions.size(), 4)
 
 
