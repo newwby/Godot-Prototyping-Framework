@@ -19,7 +19,7 @@ var property: String = ""
 func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
 	super(arg_owner, arg_key, arg_name, arg_category)
 	if NodeUtility.is_valid_in_tree(arg_owner):
-		if property != "" and property in owner:
+		if arg_property != "" and arg_property in owner:
 			self.property = arg_property
 		else:
 			GlobalLog.error(self, "invalid property on new DebugValue: args {0} / {1} / {2} / {3}".\
@@ -48,6 +48,6 @@ func get_value():
 ## as well as a valid property reference
 func is_valid() -> bool:
 	var is_in_tree = super()
-	var does_property_exist = property in owner
+	var does_property_exist = (property in owner)
 	return is_in_tree and does_property_exist
 
