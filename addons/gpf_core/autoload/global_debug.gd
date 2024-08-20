@@ -74,6 +74,17 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 	print("invalid setup")
 
 
+## use with caution, will clear all DebugActions and DebugValues
+## implemented for refreshing GlobalDebug during unit tests
+func clear_all_debug_elements() -> void:
+	# don't just clear, remove with the directed method so the associated
+	# DebugElements have their 'delete' method called
+	for action_key in debug_actions.keys():
+		remove_debug_action(action_key)
+	for value_key in debug_values.keys():
+		remove_debug_value(value_key)
+
+
 ## Method to return the DebugAction associated with the given key.
 ## Returns null if the key is invalid.
 func get_debug_action(arg_key) -> DebugAction:
