@@ -65,8 +65,13 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 				else:
 					GlobalLog.error(self, "signal setup error on new DebugValue w/args {0} / {1} / {2} / {3}".\
 						format([arg_owner, arg_key, arg_name, arg_property]))
+			else:
+				print("not valid")
 			if setup_correctly:
-				debug_actions[arg_key] = new_debug_value
+				debug_values[arg_key] = new_debug_value
+				return
+	# else
+	print("invalid setup")
 
 
 ## Method to return the DebugAction associated with the given key.
@@ -83,7 +88,7 @@ func get_debug_action(arg_key) -> DebugAction:
 ## Method to return the DebugAction associated with the given key.
 ## Returns null if the key is invalid.
 func get_debug_value(arg_key) -> DebugValue:
-	if debug_actions.has(arg_key):
+	if debug_values.has(arg_key):
 		var fetched_value = debug_values[arg_key]
 		if fetched_value is DebugValue:
 			return fetched_value
