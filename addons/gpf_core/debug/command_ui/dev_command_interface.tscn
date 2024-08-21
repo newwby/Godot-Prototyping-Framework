@@ -1,4 +1,13 @@
-[gd_scene format=3 uid="uid://dceoqa5sdee1w"]
+[gd_scene load_steps=3 format=3 uid="uid://dceoqa5sdee1w"]
+
+[ext_resource type="Script" path="res://addons/gpf_core/debug/command_ui/dev_command_interface.gd" id="1_fh6pu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jb5rs"]
+bg_color = Color(0.207843, 0.207843, 0.207843, 1)
+expand_margin_left = 6.0
+expand_margin_top = 4.0
+expand_margin_right = 6.0
+expand_margin_bottom = 4.0
 
 [node name="DevCommandInterface" type="MarginContainer"]
 offset_right = 50.0
@@ -7,8 +16,19 @@ theme_override_constants/margin_left = 25
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
+script = ExtResource("1_fh6pu")
 
-[node name="Margin" type="PanelContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="TopLeftRoot" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="OverlayRootLabel" type="Label" parent="Margin/TopLeftRoot"]
+visible = false
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "text"
