@@ -30,5 +30,6 @@ theme_override_constants/separation = 10
 [node name="OverlayRootLabel" type="Label" parent="Margin/TopLeftRoot"]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
 text = "text"
