@@ -20,6 +20,16 @@ extends Node
 
 ##############################################################################
 
+# these signals are used to inform interface scenes when to update node structure
+## informs a new DebugAction has been registered by GLobalDebug
+signal action_added(new_action)
+## informs a DebugAction is about to be deregistered and deleted
+signal action_cleanup(debug_action)
+## informs a new DebugValue has been registered by GlobalDebug
+signal value_added(new_value)
+## informs a DebugValue is about to be deregistered and deleted
+signal value_cleanup(debug_action)
+
 # var
 
 ## Structure is {key : DebugAction, ...}.
@@ -37,7 +47,12 @@ var debug_values = {}
 
 
 ## method adds a new DebugAction to the GlobalDebug tracker, under the debug_actions dict
-func add_debug_action(arg_owner: Node, arg_method: Callable, arg_key, arg_name: String = "", arg_category: String = ""):
+func add_debug_action(
+	arg_owner: Node,
+	arg_method: Callable,
+	arg_key,
+	arg_name: String = "",
+	arg_category: String = ""):
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		var new_debug_action = DebugAction.new(arg_owner, arg_method, arg_key, arg_name, arg_category)
 		# check setup went well
@@ -46,14 +61,24 @@ func add_debug_action(arg_owner: Node, arg_method: Callable, arg_key, arg_name: 
 			if new_debug_action.is_exiting.connect(_on_debug_element_exit_tree) == OK:
 				setup_correctly = true
 			else:
-				GlobalLog.error(self, "signal setup error on new DebugAction w/args {0} / {1} / {2} / {3}".\
-					format([arg_owner, arg_key, arg_name, arg_method]))
+				return ERR_CANT_CONNECT
+		else:
+			return ERR_INVALID_DATA
 		if setup_correctly:
 			debug_actions[arg_key] = new_debug_action
+			emit_signal("action_added", new_debug_action)
+			return OK
+	# catch all
+	return ERR_BUG
 
 
 ## method adds a new DebugValue to the GlobalDebug tracker, under the debug_values dict
-func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
+func add_debug_value(
+		arg_owner: Node,
+		arg_property: String,
+		arg_key,
+		arg_name: String = "",
+		arg_category: String = "") -> Error:
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_property in arg_owner:
 			var new_debug_value = DebugValue.new(arg_owner, arg_property, arg_key, arg_name, arg_category)
@@ -63,15 +88,15 @@ func add_debug_value(arg_owner: Node, arg_property: String, arg_key, arg_name: S
 				if new_debug_value.is_exiting.connect(_on_debug_element_exit_tree) == OK:
 					setup_correctly = true
 				else:
-					GlobalLog.error(self, "signal setup error on new DebugValue w/args {0} / {1} / {2} / {3}".\
-						format([arg_owner, arg_key, arg_name, arg_property]))
+					return ERR_CANT_CONNECT
 			else:
-				print("not valid")
+				return ERR_INVALID_DATA
 			if setup_correctly:
 				debug_values[arg_key] = new_debug_value
-				return
-	# else
-	print("invalid setup")
+				emit_signal("value_added", new_debug_value)
+				return OK
+	# catch all
+	return ERR_BUG
 
 
 ## use with caution, will clear all DebugActions and DebugValues
@@ -109,10 +134,11 @@ func get_debug_value(arg_key) -> DebugValue:
 
 ## Method to manually remove a DebugElement from tracking (also frees the associated DebugElement).
 ## Will return an error code if cannot find the element, or OK otherwise.
-func remove_debug_action(arg_key):
+func remove_debug_action(arg_key) -> Error:
 	if debug_actions.has(arg_key):
 		var get_element = debug_actions[arg_key]
 		if get_element is DebugAction:
+			emit_signal("action_cleanup", get_element)
 			get_element.delete()
 			debug_actions.erase(arg_key)
 			return OK
@@ -122,10 +148,11 @@ func remove_debug_action(arg_key):
 
 ## Method to manually remove a DebugElement from tracking (also frees the associated DebugElement)
 ## Will return an error code if cannot find the element, or OK otherwise.
-func remove_debug_value(arg_key):
+func remove_debug_value(arg_key) -> Error:
 	if debug_values.has(arg_key):
 		var get_element = debug_values[arg_key]
 		if get_element is DebugValue:
+			emit_signal("value_cleanup", get_element)
 			get_element.delete()
 			debug_values.erase(arg_key)
 			return OK
