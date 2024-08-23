@@ -8,6 +8,13 @@ extends BaseDebugElement
 
 ##############################################################################
 
+signal position_changed()
+
+enum POSITION {TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT}
+
+## position to orient this DebugValue
+var overlay_position: POSITION = POSITION.TOP_LEFT: set = set_overlay_position
+
 ## name of the property to track
 var property: String = ""
 
@@ -24,6 +31,17 @@ func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = ""
 		else:
 			GlobalLog.error(self, "invalid property on new DebugValue: args {0} / {1} / {2} / {3}".\
 					format([arg_owner, arg_key, arg_name, arg_property]))
+
+##############################################################################
+
+# setters/getters
+
+
+func set_overlay_position(arg_new_position: POSITION):
+	var old_position = overlay_position
+	overlay_position = arg_new_position
+	if old_position != arg_new_position:
+		emit_signal("position_changed")
 
 
 ##############################################################################
