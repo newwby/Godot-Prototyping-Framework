@@ -42,6 +42,34 @@ static func is_valid_in_tree(arg_object) -> bool:
 			return false
 
 
+## TODO ADD TESTING;
+## Method to move a node from one parent to another
+static func reparent_node(arg_target_node: Node, arg_new_parent: Node) -> void:
+	# don't pass invalid parameters
+	if not is_instance_valid(arg_target_node)\
+	or not is_instance_valid(arg_new_parent):
+		GlobalLog.error(null, "reparent_node error 0 w/args {0} & {1}".\
+				format([arg_target_node, arg_new_parent]))
+		return
+		# update for non-void return
+#		return ERR_INVALID_PARAMETER
+	# remove from initial parent, get target node out of SceneTree
+	if arg_target_node.is_inside_tree():
+		var old_parent_node = arg_target_node.get_parent()
+		if old_parent_node != null:
+			old_parent_node.call_deferred("remove_child", arg_target_node)
+			await arg_target_node.tree_exited
+	# add to new parent
+	if not arg_target_node.is_inside_tree():
+		if arg_new_parent.is_inside_tree():
+			arg_new_parent.call_deferred("add_child", arg_target_node)
+			await arg_target_node.tree_entered
+#			# confirm
+			#if arg_target_node.is_inside_tree():
+				#if arg_target_node.get_parent() == arg_new_parent:
+					#reparent_success = true
+
+
 ##############################################################################
 
 # private
