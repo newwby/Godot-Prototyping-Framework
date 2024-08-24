@@ -10,26 +10,91 @@ expand_margin_right = 6.0
 expand_margin_bottom = 4.0
 
 [node name="DevCommandInterface" type="MarginContainer"]
-offset_right = 50.0
-offset_bottom = 50.0
+offset_right = 180.0
+offset_bottom = 108.0
 theme_override_constants/margin_left = 25
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
 script = ExtResource("1_a5v2m")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="Title" type="MarginContainer" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBox/Title"]
+layout_mode = 2
+text = "DEBUG OVERLAY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Margin" type="MarginContainer" parent="VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TopLeftRoot" type="VBoxContainer" parent="Margin"]
+[node name="HBox" type="HBoxContainer" parent="VBox/Margin"]
 layout_mode = 2
+
+[node name="Left" type="VBoxContainer" parent="VBox/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="OverlayRootLabel" type="Label" parent="Margin/TopLeftRoot"]
+[node name="Top" type="VBoxContainer" parent="VBox/Margin/HBox/Left"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OverlayRootLabel" type="Label" parent="VBox/Margin/HBox/Left/Top"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
 text = "text"
+
+[node name="Bottom" type="VBoxContainer" parent="VBox/Margin/HBox/Left"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OverlayRootLabel2" type="Label" parent="VBox/Margin/HBox/Left/Bottom"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "text"
+vertical_alignment = 2
+
+[node name="Right" type="VBoxContainer" parent="VBox/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Top" type="VBoxContainer" parent="VBox/Margin/HBox/Right"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+
+[node name="OverlayRootLabel3" type="Label" parent="VBox/Margin/HBox/Right/Top"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "texttextetxt"
+horizontal_alignment = 2
+
+[node name="Bottom" type="VBoxContainer" parent="VBox/Margin/HBox/Right"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+
+[node name="OverlayRootLabel4" type="Label" parent="VBox/Margin/HBox/Right/Bottom"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "texttext"
+horizontal_alignment = 2

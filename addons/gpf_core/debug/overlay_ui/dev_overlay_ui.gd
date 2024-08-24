@@ -19,8 +19,11 @@ const OVERLAY_LABEL_FSTRING := "{0}: {1}" # property: value
 # DebugValue : Label
 var active_debug_value_nodes = {}
 
-@onready var root_overlay_label = $Margin/TopLeftRoot/OverlayRootLabel
-@onready var label_holder_top_left = $Margin/TopLeftRoot
+@onready var root_overlay_label = $VBox/Margin/HBox/Left/Top/OverlayRootLabel
+@onready var label_holder_top_left = $VBox/Margin/HBox/Left/Top
+@onready var label_holder_top_right = $VBox/Margin/HBox/Right/Top
+@onready var label_holder_bottom_left = $VBox/Margin/HBox/Left/Bottom
+@onready var label_holder_bottom_right = $VBox/Margin/HBox/Right/Bottom
 
 ##############################################################################
 
@@ -72,6 +75,10 @@ func _populate_overlay(arg_new_debug_value) -> void:
 				active_debug_value_nodes[arg_new_debug_value] = new_dv_label
 				# update the new label node
 				_update_label(arg_new_debug_value)
+				## testing logic
+				await new_dv_label.tree_entered
+				arg_new_debug_value.overlay_position = DebugValue.POSITION.BOTTOM_LEFT
+				_update_position(arg_new_debug_value)
 
 
 func _update_label(arg_debug_value: DebugValue):
@@ -85,6 +92,29 @@ func _update_label(arg_debug_value: DebugValue):
 			var debug_property_str = str(arg_debug_value.property)
 			var debug_value_str = str(arg_debug_value.get_value())
 			debug_label.text = OVERLAY_LABEL_FSTRING.format([debug_property_str, debug_value_str])
+
+
+func _update_position(arg_debug_value: DebugValue):
+	if not arg_debug_value in active_debug_value_nodes.keys() or (arg_debug_value == null):
+		GlobalLog.error(self, "DebugOverlay _update_position invalid DebugValue passed")
+		return
+	else:
+		var debug_label = active_debug_value_nodes[arg_debug_value]
+		if debug_label is Label:
+			var debug_label_position = arg_debug_value.overlay_position
+			var new_root = null
+			match debug_label_position:
+				DebugValue.POSITION.TOP_LEFT:
+					new_root = label_holder_top_left
+				DebugValue.POSITION.BOTTOM_LEFT:
+					new_root = label_holder_bottom_left
+				DebugValue.POSITION.TOP_RIGHT:
+					new_root = label_holder_top_right
+				DebugValue.POSITION.BOTTOM_RIGHT:
+					new_root = label_holder_bottom_right
+			if is_instance_valid(new_root) and is_instance_valid(debug_label):
+				#TODO get and verify current parent
+				NodeUtility.reparent_node(debug_label.get_parent(), new_root)
 
 
 ## updates values on overlay when overlay is first shown or every frame whilst
