@@ -51,15 +51,33 @@ func _input(event):
 ## creates label nodes for overlay
 ## each label node is parented underneath a specific container that controls
 ## its position on the overlay, based on the overlay_position property
-func _populate_overlay(arg_new_dv) -> void:
-	if arg_new_dv is DebugValue:
-		if not arg_new_dv in active_debug_value_nodes:
-			if is_instance_valid(root_overlay_label):
+func _populate_overlay(arg_new_debug_value) -> void:
+	if arg_new_debug_value is DebugValue:
+		if not arg_new_debug_value in active_debug_value_nodes:
+			if not is_instance_valid(root_overlay_label):
+				GlobalLog.error(self, "_populate_overlay error; root_overlay_label nullref")
+			else:
+				# duplicate the root (root node defaults to hidden so show the new)
 				var new_dv_label = root_overlay_label.duplicate()
 				label_holder_top_left.call_deferred("add_child", new_dv_label)
 				new_dv_label.visible = true
-				active_debug_value_nodes[arg_new_dv] = new_dv_label
-				new_dv_label.text = OVERLAY_LABEL_FSTRING.format([arg_new_dv.property, arg_new_dv.get_value()])
+				# update register
+				active_debug_value_nodes[arg_new_debug_value] = new_dv_label
+				# update the new label node
+				_update_label(arg_new_debug_value)
+
+
+func _update_label(arg_debug_value: DebugValue):
+	if not arg_debug_value in active_debug_value_nodes.keys() or (arg_debug_value == null):
+		GlobalLog.error(self, "DebugOverlay _update_label invalid DebugValue passed")
+		return
+	else:
+		var debug_label = active_debug_value_nodes[arg_debug_value]
+		if debug_label is Label:
+			# update the overlay
+			var debug_property_str = str(arg_debug_value.property)
+			var debug_value_str = str(arg_debug_value.get_value())
+			debug_label.text = OVERLAY_LABEL_FSTRING.format([debug_property_str, debug_value_str])
 
 
 ## updates values on overlay when overlay is first shown or every frame whilst
