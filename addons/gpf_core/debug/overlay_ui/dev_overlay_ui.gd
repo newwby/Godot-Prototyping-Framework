@@ -1,4 +1,4 @@
-extends MarginContainer
+extends ResponsiveContainer
 
 class_name DevDebugOverlay
 
@@ -10,6 +10,9 @@ class_name DevDebugOverlay
 #//TODO update position based on overlay_position property and position changed signal
 
 ##############################################################################
+
+## hardcoded action key 
+const SHOW_HIDE_OVERLAY_KEY := KEY_F1
 
 const OVERLAY_LABEL_FSTRING := "{0}: {1}" # property: value
 
@@ -35,11 +38,15 @@ var dv_test = 1
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _input(event):
 	if event is InputEventKey:
-		if event.keycode == KEY_F4 and event.pressed:
-			print("yes ", dv_test)
-			GlobalDebug.add_debug_value(self, "dv_test", "dv_test{0}".format([dv_test]))
-			#_populate_overlay()
-			dv_test += 1
+		if event.pressed:
+			if event.keycode == SHOW_HIDE_OVERLAY_KEY:
+				visible = !visible
+				# TESTINGG HANDLING
+			elif event.keycode == KEY_F4:
+				print("yes ", dv_test)
+				GlobalDebug.add_debug_value(self, "dv_test", "dv_test{0}".format([dv_test]))
+				#_populate_overlay()
+				dv_test += 1
 #===========================================
 
 
