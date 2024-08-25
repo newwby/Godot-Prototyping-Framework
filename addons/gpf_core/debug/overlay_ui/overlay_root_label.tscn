@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://de0h700y3s3o1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jb5rs"]
+bg_color = Color(0.207843, 0.207843, 0.207843, 1)
+expand_margin_left = 6.0
+expand_margin_top = 4.0
+expand_margin_right = 6.0
+expand_margin_bottom = 4.0
+
+[node name="OverlayRootLabel" type="Label"]
+visible = false
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "TEST label"

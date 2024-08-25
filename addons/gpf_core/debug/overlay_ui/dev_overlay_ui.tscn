@@ -1,13 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dceoqa5sdee1w"]
+[gd_scene load_steps=2 format=3 uid="uid://dceoqa5sdee1w"]
 
 [ext_resource type="Script" path="res://addons/gpf_core/debug/overlay_ui/dev_overlay_ui.gd" id="1_a5v2m"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jb5rs"]
-bg_color = Color(0.207843, 0.207843, 0.207843, 1)
-expand_margin_left = 6.0
-expand_margin_top = 4.0
-expand_margin_right = 6.0
-expand_margin_bottom = 4.0
 
 [node name="DevCommandInterface" type="MarginContainer"]
 anchors_preset = 15
@@ -21,13 +14,6 @@ theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
 script = ExtResource("1_a5v2m")
-
-[node name="OverlayRootLabel" type="Label" parent="."]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
-text = "TEST label"
 
 [node name="PosDebugBkg" type="Panel" parent="."]
 show_behind_parent = true
@@ -48,6 +34,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Margin" type="MarginContainer" parent="VBox"]
+clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -55,58 +42,87 @@ size_flags_vertical = 3
 [node name="HBox" type="HBoxContainer" parent="VBox/Margin"]
 layout_mode = 2
 
-[node name="VBoxLeft" type="VBoxContainer" parent="VBox/Margin/HBox"]
+[node name="ScrollLeft" type="ScrollContainer" parent="VBox/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
 
-[node name="TL" type="MarginContainer" parent="VBox/Margin/HBox/VBoxLeft"]
-custom_minimum_size = Vector2(25, 25)
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxLeft/TL"]
-self_modulate = Color(1, 1, 1, 0.294118)
-layout_mode = 2
-
-[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxLeft/TL"]
-layout_mode = 2
-
-[node name="BL" type="MarginContainer" parent="VBox/Margin/HBox/VBoxLeft"]
-custom_minimum_size = Vector2(25, 25)
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxLeft/BL"]
-self_modulate = Color(1, 1, 1, 0.294118)
-layout_mode = 2
-
-[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxLeft/BL"]
-layout_mode = 2
-
-[node name="VBoxRight" type="VBoxContainer" parent="VBox/Margin/HBox"]
+[node name="VBox" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollLeft"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="TR" type="MarginContainer" parent="VBox/Margin/HBox/VBoxRight"]
-custom_minimum_size = Vector2(25, 25)
-layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxRight/TR"]
+[node name="TL" type="MarginContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox"]
+clip_contents = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/TL"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 
-[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxRight/TR"]
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox/TL"]
+clip_contents = true
 layout_mode = 2
 
-[node name="BR" type="MarginContainer" parent="VBox/Margin/HBox/VBoxRight"]
+[node name="BL" type="MarginContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox"]
+clip_contents = true
 custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 0
+size_flags_vertical = 10
 
-[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxRight/BR"]
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/BL"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 
-[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxRight/BR"]
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox/BL"]
+clip_contents = true
 layout_mode = 2
+
+[node name="ScrollRight" type="ScrollContainer" parent="VBox/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
+
+[node name="VBox" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollRight"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="TR" type="MarginContainer" parent="VBox/Margin/HBox/ScrollRight/VBox"]
+clip_contents = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/TR"]
+self_modulate = Color(1, 1, 1, 0.294118)
+layout_mode = 2
+
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollRight/VBox/TR"]
+clip_contents = true
+layout_mode = 2
+alignment = 2
+
+[node name="BR" type="MarginContainer" parent="VBox/Margin/HBox/ScrollRight/VBox"]
+clip_contents = true
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 10
+
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/BR"]
+self_modulate = Color(1, 1, 1, 0.294118)
+layout_mode = 2
+
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollRight/VBox/BR"]
+clip_contents = true
+layout_mode = 2
+alignment = 2
