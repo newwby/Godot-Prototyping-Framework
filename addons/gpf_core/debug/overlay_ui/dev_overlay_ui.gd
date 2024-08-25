@@ -1,4 +1,4 @@
-extends ResponsiveContainer
+extends MarginContainer
 
 class_name DevDebugOverlay
 
@@ -19,11 +19,11 @@ const OVERLAY_LABEL_FSTRING := "{0}: {1}" # property: value
 # DebugValue : Label
 var active_debug_value_nodes = {}
 
-@onready var root_overlay_label = $VBox/Margin/HBox/Left/Top/OverlayRootLabel
-@onready var label_holder_top_left = $VBox/Margin/HBox/Left/Top
-@onready var label_holder_top_right = $VBox/Margin/HBox/Right/Top
-@onready var label_holder_bottom_left = $VBox/Margin/HBox/Left/Bottom
-@onready var label_holder_bottom_right = $VBox/Margin/HBox/Right/Bottom
+@onready var root_overlay_label = $OverlayRootLabel
+@onready var label_holder_top_left = $VBox/Margin/HBox/VBoxLeft/TL/LabelRoot
+@onready var label_holder_top_right = $VBox/Margin/HBox/VBoxRight/TR/LabelRoot
+@onready var label_holder_bottom_left = $VBox/Margin/HBox/VBoxLeft/BL/LabelRoot
+@onready var label_holder_bottom_right = $VBox/Margin/HBox/VBoxRight/BR/LabelRoot
 
 ##############################################################################
 
@@ -77,7 +77,7 @@ func _populate_overlay(arg_new_debug_value) -> void:
 				_update_label(arg_new_debug_value)
 				## testing logic
 				await new_dv_label.tree_entered
-				arg_new_debug_value.overlay_position = DebugValue.POSITION.BOTTOM_LEFT
+				arg_new_debug_value.overlay_position = DebugValue.POSITION.BOTTOM_RIGHT
 				_update_position(arg_new_debug_value)
 
 

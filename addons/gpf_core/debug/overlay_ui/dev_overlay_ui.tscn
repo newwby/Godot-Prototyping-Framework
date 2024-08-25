@@ -10,13 +10,28 @@ expand_margin_right = 6.0
 expand_margin_bottom = 4.0
 
 [node name="DevCommandInterface" type="MarginContainer"]
-offset_right = 180.0
-offset_bottom = 108.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 4
 theme_override_constants/margin_left = 25
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
 script = ExtResource("1_a5v2m")
+
+[node name="OverlayRootLabel" type="Label" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
+text = "TEST label"
+
+[node name="PosDebugBkg" type="Panel" parent="."]
+show_behind_parent = true
+layout_mode = 2
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -40,61 +55,58 @@ size_flags_vertical = 3
 [node name="HBox" type="HBoxContainer" parent="VBox/Margin"]
 layout_mode = 2
 
-[node name="Left" type="VBoxContainer" parent="VBox/Margin/HBox"]
+[node name="VBoxLeft" type="VBoxContainer" parent="VBox/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
 
-[node name="Top" type="VBoxContainer" parent="VBox/Margin/HBox/Left"]
+[node name="TL" type="MarginContainer" parent="VBox/Margin/HBox/VBoxLeft"]
+custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="OverlayRootLabel" type="Label" parent="VBox/Margin/HBox/Left/Top"]
-visible = false
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxLeft/TL"]
+self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
-text = "text"
 
-[node name="Bottom" type="VBoxContainer" parent="VBox/Margin/HBox/Left"]
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxLeft/TL"]
+layout_mode = 2
+
+[node name="BL" type="MarginContainer" parent="VBox/Margin/HBox/VBoxLeft"]
+custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="OverlayRootLabel2" type="Label" parent="VBox/Margin/HBox/Left/Bottom"]
-visible = false
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxLeft/BL"]
+self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
-text = "text"
-vertical_alignment = 2
 
-[node name="Right" type="VBoxContainer" parent="VBox/Margin/HBox"]
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxLeft/BL"]
+layout_mode = 2
+
+[node name="VBoxRight" type="VBoxContainer" parent="VBox/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
 
-[node name="Top" type="VBoxContainer" parent="VBox/Margin/HBox/Right"]
+[node name="TR" type="MarginContainer" parent="VBox/Margin/HBox/VBoxRight"]
+custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
-size_flags_horizontal = 8
 size_flags_vertical = 3
 
-[node name="OverlayRootLabel3" type="Label" parent="VBox/Margin/HBox/Right/Top"]
-visible = false
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxRight/TR"]
+self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
-text = "texttextetxt"
-horizontal_alignment = 2
 
-[node name="Bottom" type="VBoxContainer" parent="VBox/Margin/HBox/Right"]
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxRight/TR"]
 layout_mode = 2
-size_flags_horizontal = 8
+
+[node name="BR" type="MarginContainer" parent="VBox/Margin/HBox/VBoxRight"]
+custom_minimum_size = Vector2(25, 25)
+layout_mode = 2
 size_flags_vertical = 3
 
-[node name="OverlayRootLabel4" type="Label" parent="VBox/Margin/HBox/Right/Bottom"]
-visible = false
+[node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/VBoxRight/BR"]
+self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxFlat_jb5rs")
-text = "texttext"
-horizontal_alignment = 2
+
+[node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/VBoxRight/BR"]
+layout_mode = 2
