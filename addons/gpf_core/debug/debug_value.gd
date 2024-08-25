@@ -23,11 +23,18 @@ var property: String = ""
 # constructor
 
 
-func _init(arg_owner: Node, arg_property: String, arg_key, arg_name: String = "", arg_category: String = ""):
+func _init(
+		arg_owner: Node,
+		arg_property: String,
+		arg_key,
+		arg_name: String = "",
+		arg_category: String = "",
+		arg_position := POSITION.TOP_LEFT):
 	super(arg_owner, arg_key, arg_name, arg_category)
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_property != "" and arg_property in owner:
 			self.property = arg_property
+			self.overlay_position = arg_position
 		else:
 			GlobalLog.error(self, "invalid property on new DebugValue: args {0} / {1} / {2} / {3}".\
 					format([arg_owner, arg_key, arg_name, arg_property]))

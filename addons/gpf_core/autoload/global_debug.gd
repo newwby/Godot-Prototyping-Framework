@@ -78,10 +78,11 @@ func add_debug_value(
 		arg_property: String,
 		arg_key,
 		arg_name: String = "",
-		arg_category: String = "") -> Error:
+		arg_category: String = "",
+		arg_position := DebugValue.POSITION.TOP_LEFT) -> Error:
 	if NodeUtility.is_valid_in_tree(arg_owner):
 		if arg_property in arg_owner:
-			var new_debug_value = DebugValue.new(arg_owner, arg_property, arg_key, arg_name, arg_category)
+			var new_debug_value = DebugValue.new(arg_owner, arg_property, arg_key, arg_name, arg_category, arg_position)
 			# check setup went well
 			var setup_correctly = false
 			if new_debug_value.is_valid():
