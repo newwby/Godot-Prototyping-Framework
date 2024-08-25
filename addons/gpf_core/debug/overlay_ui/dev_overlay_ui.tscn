@@ -9,6 +9,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_constants/margin_left = 25
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
@@ -18,14 +19,17 @@ script = ExtResource("1_a5v2m")
 [node name="PosDebugBkg" type="Panel" parent="."]
 show_behind_parent = true
 layout_mode = 2
+mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 25
 
 [node name="Title" type="MarginContainer" parent="VBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Label" type="Label" parent="VBox/Title"]
 layout_mode = 2
@@ -38,13 +42,16 @@ clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="HBox" type="HBoxContainer" parent="VBox/Margin"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="ScrollLeft" type="ScrollContainer" parent="VBox/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 3
 
@@ -52,6 +59,7 @@ vertical_scroll_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="TL" type="MarginContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox"]
 clip_contents = true
@@ -59,14 +67,17 @@ custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
+mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/TL"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox/TL"]
 clip_contents = true
 layout_mode = 2
+mouse_filter = 2
 
 [node name="BL" type="MarginContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox"]
 clip_contents = true
@@ -74,18 +85,22 @@ custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 10
+mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/BL"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollLeft/VBox/BL"]
 clip_contents = true
 layout_mode = 2
+mouse_filter = 2
 
 [node name="ScrollRight" type="ScrollContainer" parent="VBox/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 horizontal_scroll_mode = 3
 vertical_scroll_mode = 3
 
@@ -93,6 +108,7 @@ vertical_scroll_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 2
 alignment = 2
 
 [node name="TR" type="MarginContainer" parent="VBox/Margin/HBox/ScrollRight/VBox"]
@@ -101,14 +117,17 @@ custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
+mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/TR"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollRight/VBox/TR"]
 clip_contents = true
 layout_mode = 2
+mouse_filter = 2
 alignment = 2
 
 [node name="BR" type="MarginContainer" parent="VBox/Margin/HBox/ScrollRight/VBox"]
@@ -117,12 +136,15 @@ custom_minimum_size = Vector2(25, 25)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 10
+mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/BR"]
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="LabelRoot" type="VBoxContainer" parent="VBox/Margin/HBox/ScrollRight/VBox/BR"]
 clip_contents = true
 layout_mode = 2
+mouse_filter = 2
 alignment = 2
