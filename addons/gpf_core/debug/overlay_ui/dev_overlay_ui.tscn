@@ -15,6 +15,7 @@ theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 25
 theme_override_constants/margin_bottom = 25
 script = ExtResource("1_a5v2m")
+test_mode = true
 
 [node name="PosDebugBkg" type="Panel" parent="."]
 show_behind_parent = true

@@ -20,6 +20,10 @@ const OVERLAY_LABEL_FSTRING := "{0}: {1}" # property: value
 ## path of the overlay label root node scene
 const OVERLAY_LABEL_SCENE_PATH := "res://addons/gpf_core/debug/overlay_ui/overlay_root_label.tscn"
 
+## enable this flag to disable the overlay auto-hide behaviour
+## (overlay will show on _ready)
+@export var test_mode: bool = false
+
 ## root label to instance from for overlay labels
 var root_overlay_label := load(OVERLAY_LABEL_SCENE_PATH)
 
@@ -40,6 +44,7 @@ var active_debug_value_nodes = {}
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	GlobalDebug.value_added.connect(_populate_overlay)
+	visible = test_mode
 
 
 #===========================================
