@@ -63,7 +63,7 @@ static func reparent_node(arg_target_node: Node, arg_new_parent: Node) -> void:
 	if not arg_target_node.is_inside_tree():
 		if arg_new_parent.is_inside_tree():
 			arg_new_parent.call_deferred("add_child", arg_target_node)
-			await arg_target_node.tree_entered
+			#await arg_target_node.tree_entered
 #			# confirm
 			#if arg_target_node.is_inside_tree():
 				#if arg_target_node.get_parent() == arg_new_parent:
