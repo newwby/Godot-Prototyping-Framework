@@ -100,6 +100,18 @@ func add_debug_value(
 	return ERR_BUG
 
 
+## Method that changes the position property of a registered DebugValue;
+## if the DebugValue does not exist will return invalid.
+## returns OK or ERROR constant depending on success
+func adjust_value_position(arg_key, arg_position: DebugValue.POSITION) -> Error:
+	var debug_value = get_debug_value(arg_key)
+	if is_instance_valid(debug_value):
+		debug_value.overlay_position = arg_position
+		return OK
+	else:
+		return ERR_INVALID_PARAMETER
+
+
 ## use with caution, will clear all DebugActions and DebugValues
 ## implemented for refreshing GlobalDebug during unit tests
 func clear_all_debug_elements() -> void:
