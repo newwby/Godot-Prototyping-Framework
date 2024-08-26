@@ -1,0 +1,39 @@
+[gd_scene load_steps=8 format=3 uid="uid://b3xoy1f8vmff5"]
+
+[ext_resource type="Script" path="res://tests/manual/test_debug_value_overlay.gd" id="1_1i7i7"]
+[ext_resource type="Script" path="res://tests/manual/dvoverlay_testchar.gd" id="2_5vdj3"]
+[ext_resource type="PackedScene" uid="uid://dceoqa5sdee1w" path="res://addons/gpf_core/debug/overlay_ui/dev_overlay_ui.tscn" id="2_rb3jo"]
+[ext_resource type="Texture2D" uid="uid://d26v4gdoiggxj" path="res://icon.svg" id="3_pinge"]
+
+[sub_resource type="Gradient" id="Gradient_0jcq4"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bq736"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kb66d"]
+width = 3840
+height = 2160
+color_ramp = SubResource("Gradient_0jcq4")
+noise = SubResource("FastNoiseLite_bq736")
+
+[node name="TestDebugValueOverlay" type="Node2D"]
+script = ExtResource("1_1i7i7")
+
+[node name="FogGradientBKG" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.0980392)
+offset_left = -1920.0
+offset_top = -1080.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+texture = SubResource("NoiseTexture2D_kb66d")
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+texture = ExtResource("3_pinge")
+script = ExtResource("2_5vdj3")
+
+[node name="Camera2D" type="Camera2D" parent="PlayerSprite"]
+
+[node name="DevCommandInterface" parent="PlayerSprite" instance=ExtResource("2_rb3jo")]
+offset_left = -480.0
+offset_top = -270.0
+offset_right = 352.0
+offset_bottom = 142.0
