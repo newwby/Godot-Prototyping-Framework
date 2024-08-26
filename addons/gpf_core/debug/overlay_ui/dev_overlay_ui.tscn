@@ -18,6 +18,7 @@ script = ExtResource("1_a5v2m")
 test_mode = true
 
 [node name="PosDebugBkg" type="Panel" parent="."]
+visible = false
 show_behind_parent = true
 layout_mode = 2
 mouse_filter = 2
@@ -28,6 +29,7 @@ mouse_filter = 2
 theme_override_constants/separation = 25
 
 [node name="Title" type="MarginContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
@@ -71,6 +73,7 @@ size_flags_vertical = 0
 mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/TL"]
+visible = false
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 mouse_filter = 2
@@ -89,6 +92,7 @@ size_flags_vertical = 10
 mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollLeft/VBox/BL"]
+visible = false
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 mouse_filter = 2
@@ -121,6 +125,7 @@ size_flags_vertical = 0
 mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/TR"]
+visible = false
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 mouse_filter = 2
@@ -140,6 +145,7 @@ size_flags_vertical = 10
 mouse_filter = 2
 
 [node name="PosDebugBkg" type="Panel" parent="VBox/Margin/HBox/ScrollRight/VBox/BR"]
+visible = false
 self_modulate = Color(1, 1, 1, 0.294118)
 layout_mode = 2
 mouse_filter = 2
