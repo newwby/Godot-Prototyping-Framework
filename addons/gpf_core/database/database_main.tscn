@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid="uid://dig30mrhijeks"]
+
+[ext_resource type="Script" path="res://addons/gpf_core/database/database_main.gd" id="1_wv3jc"]
+
+[node name="DatabaseMain" type="MarginContainer"]
+mouse_filter = 2
+script = ExtResource("1_wv3jc")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Row" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+
+[node name="Field" type="MarginContainer" parent="GridContainer"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LineEdit" type="LineEdit" parent="GridContainer/Field"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="GridContainer/Field"]
+layout_mode = 2
+mouse_filter = 2
