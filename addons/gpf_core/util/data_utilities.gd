@@ -182,6 +182,13 @@ static func get_file_paths(
 	return output
 
 
+static func load_json_dict(arg_file_path: String) -> Dictionary:
+	var file = arg_file_path
+	var json_as_text = FileAccess.get_file_as_string(file)
+	var json_as_dict = JSON.parse_string(json_as_text)
+	return json_as_dict
+
+
 # method to save any resource or resource-extended custom class to disk.
 # call this method with 'if save_resource(*args) == OK' to validate
 # if called on a non-existing file or path it will write the entire path
