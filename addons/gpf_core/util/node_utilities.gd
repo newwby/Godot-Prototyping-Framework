@@ -16,16 +16,31 @@ class_name NodeUtility
 # if connection does not exist, create it and return true if successful
 # if connection does not exist and cannot be created, return false
 static func confirm_connection(
-		arg_subject_signal: Signal,
-		arg_target_method: Callable,
+		arg_signal: Signal,
+		arg_callable: Callable,
 		arg_binds: Array = []) -> bool:
-	if arg_subject_signal.is_connected(arg_target_method):
+	if arg_signal.is_connected(arg_callable):
 		return true
 	else:
-		if (arg_subject_signal.connect(arg_target_method.bindv(arg_binds))) == OK:
+		if (arg_signal.connect(arg_callable.bindv(arg_binds))) == OK:
 			return true
 		else:
 			return false
+
+
+# forces a connection not to exist
+# if connection does not exist, return true
+# if connection exists and is successfully disconnected, return true
+# if connection exists but fails to be disconnected, return false
+static func confirm_disconnection(
+		arg_signal: Signal,
+		arg_callable: Callable) -> bool:
+	# if connection doesn't exist no further action
+	if not arg_signal.is_connected(arg_callable):
+		return true
+	else:
+		arg_signal.disconnect(arg_callable)
+		return not arg_signal.is_connected(arg_callable)
 
 
 # check if node exists/hasn't been deleted, and is inside scene tree
@@ -45,5 +60,3 @@ static func is_valid_in_tree(arg_object) -> bool:
 ##############################################################################
 
 # private
-
-
