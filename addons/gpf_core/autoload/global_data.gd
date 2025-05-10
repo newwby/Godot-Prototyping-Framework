@@ -1,12 +1,11 @@
-# className enabled for testing
-class_name CardEngine
+#class_name Data
 extends Node
 
 ##############################################################################
 
-# Singleton that manages the card runtime
-# Loads card data at runtime and indexes by id/name/tag
-# Propagates signals
+# Loads JSON files from local and user data paths
+# Manages DataLoaders that instantiate objects based on JSON data files
+# Acts as an API for DataLoaders to fetch new objects from valid data
 
 ##############################################################################
 
@@ -14,6 +13,7 @@ extends Node
 
 #//TODO make into project exports
 const LOCAL_DATA_PATH := "res://data"
+#//TODO implement user path loading and test
 #const USER_DATA_PATH := "user//data"
 
 # record of all allowed schemas
@@ -39,9 +39,9 @@ func _ready():
 # private
 
 
-func _load_schema(arg_path: String) -> void:
+func _load_schema(schema_file_path: String) -> void:
 	# schema directory should be inside the path (local or user)
-	var schema_sub_directory = "{0}/schema".format([arg_path])
+	var schema_sub_directory = "{0}/schema".format([schema_file_path])
 	var dir = DirAccess.open(schema_sub_directory)
 	if dir:
 		dir.list_dir_begin()
@@ -116,32 +116,29 @@ func _verify_schema(json_data: Dictionary) -> bool:
 			# else
 			return true
 	
-	Log.warning(self, "cannot find schema!")
+	Log.warning(self, "cannot find schema for {0}!".format([json_data]))
 	return false
 
 
-func _load_json_data(arg_path: String) -> void:
-	var dir = DirAccess.open(arg_path)
+func _load_json_data(json_file_path: String) -> void:
+	var dir = DirAccess.open(json_file_path)
 	if dir:
 		dir.list_dir_begin()
 		var filename := dir.get_next()
 		while filename != "":
 			if not dir.current_is_dir() and filename.ends_with(".json"):
-				var path := "{0}/{1}".format([arg_path, filename])
+				var path := "{0}/{1}".format([json_file_path, filename])
 				var file := FileAccess.open(path, FileAccess.READ)
 				if file:
 					var json := JSON.new()
 					if json.parse(file.get_as_text()) != OK:
-						print("json error -> ", json.get_error_line())
-						push_warning("Invalid JSON in %s" % filename)
+						Log.warning(self, "Invalid JSON in {0}.".format([filename]))
 					else:
 						var json_data = json.data
 						if _verify_schema(json_data) == false:
-							print("invalid schema for -> ".format([json_data]))
+							Log.warning(self, "invalid schema for -> {0}".format([json_data]))
 						if json_data.has("data"):
 							data_register.append(json_data)
-						else:
-							push_warning("Missing 'data' key in %s" % filename)
 			filename = dir.get_next()
 	else:
-		push_error("Failed to open directory")
+		Log.error(self, "Failed to load Data directory at {0}".format([json_file_path]))
