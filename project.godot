@@ -17,12 +17,12 @@ Not all DDAT-GPF 3.5 features are currently available; features are being conver
 config/version="1.0.0"
 config/tags=PackedStringArray("plugin")
 config/custom_user_dir_name="godot_prototyping_framework"
-config/features=PackedStringArray("4.2", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://gpf_icon.png"
 
 [autoload]
 
-GlobalLog="*res://addons/gpf_core/autoload/global_log.gd"
+Log="*res://addons/gpf_core/autoload/global_log.gd"
 
 [editor]
 
