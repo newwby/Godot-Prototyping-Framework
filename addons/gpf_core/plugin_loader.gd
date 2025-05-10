@@ -13,7 +13,7 @@ extends EditorPlugin
 
 const AUTOLOAD_PATHS := {
 	"Log": "res://addons/gpf_core/autoload/global_log.gd",
-	#"GlobalData": "res://addons/gpf/autoload/global_data.gd",
+	"Data": "res://addons/gpf_core/autoload/global_data.gd",
 	#"GlobalFunc": "res://addons/gpf/autoload/global_functions.gd",
 }
 
@@ -43,4 +43,3 @@ func _exit_tree():
 ##############################################################################
 
 # private
-

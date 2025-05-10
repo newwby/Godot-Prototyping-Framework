@@ -23,6 +23,7 @@ config/icon="res://gpf_icon.png"
 [autoload]
 
 Log="*res://addons/gpf_core/autoload/global_log.gd"
+Data="*res://addons/gpf_core/autoload/global_data.gd"
 
 [editor]
 
