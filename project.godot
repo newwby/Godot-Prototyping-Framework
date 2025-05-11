@@ -8,6 +8,10 @@
 
 config_version=5
 
+[addons]
+
+"prototype_framework/data path"="data"
+
 [application]
 
 config/name="Godot Prototyping Framework"
