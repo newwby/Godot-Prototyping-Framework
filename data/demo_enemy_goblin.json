@@ -1,11 +1,11 @@
 {
-	"version_code": "core",
+	"version_code": "demo_enemy",
 	"version_id": "1.0",
 	"type": "undefined",
 	"tags": [],
 	"data": {
-		"card_id": 0,
-		"name": "Test Card #1",
-		"costs": {}
+		"name": "Goblin",
+		"health": 10,
+		"damage": 3
 	}
 }

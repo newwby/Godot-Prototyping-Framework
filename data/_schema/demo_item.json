@@ -1,7 +1,11 @@
 {
-	"1.0": {
-		"card_id": 0,
+	"consumable 1.0": {
 		"name": "",
-		"costs": {}
-	}
+		"cost": 0,
+	},
+	"weapon 1.0": {
+		"name": "",
+		"cost": 0,
+		"damage": 3,
+	},
 }

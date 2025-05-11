@@ -1,11 +1,10 @@
 {
-	"version_code": "core",
-	"version_id": "1.0",
+	"version_code": "demo_item",
+	"version_id": "consumable 1.0",
 	"type": "undefined",
 	"tags": [],
 	"data": {
-		"card_id": 2,
-		"name": "test_card_2",
-		"costs": {}
+		"name": "Red Potion",
+		"cost": 10,
 	}
 }
