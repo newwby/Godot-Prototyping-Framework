@@ -1,11 +1,12 @@
 {
-	"version_code": "core",
-	"version_id": "1.0",
-	"type": "undefined",
-	"tags": [],
+	"version_code": "demo_item",
+	"version_id": "weapon 1.0",
+	"author": "prototype_framework",
+	"type": "bow",
+	"tags": ["weapon", "bow"],
 	"data": {
-		"card_id": 2,
-		"name": "test_card_2",
-		"costs": {}
+		"name": "Longbow",
+		"cost": 45,
+		"damage": 1
 	}
 }

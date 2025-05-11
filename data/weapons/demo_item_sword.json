@@ -1,11 +1,12 @@
 {
-	"version_code": "core",
-	"version_id": "1.0",
-	"type": "undefined",
-	"tags": [],
+	"version_code": "demo_item",
+	"version_id": "weapon 1.0",
+	"author": "prototype_framework",
+	"type": "sword",
+	"tags": ["weapon", "sword"],
 	"data": {
-		"card_id": 2,
-		"name": "test_card_2",
-		"costs": {}
+		"name": "Iron Sword",
+		"cost": 30,
+		"damage": 2
 	}
 }
