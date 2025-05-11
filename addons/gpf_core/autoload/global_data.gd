@@ -7,6 +7,11 @@ extends Node
 # Manages DataLoaders that instantiate objects based on JSON data files
 # Acts as an API for DataLoaders to fetch new objects from valid data
 
+#//TODO
+# implement dataLoaders that convert valid JSONdata to class objects
+# dataLoaders need to contain shadowed methods that can be written to custom instance??
+# or use a property set by data mapping (property to data key)
+
 ##############################################################################
 
 # var
@@ -83,6 +88,7 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	var mandatory_kv_pairs := {
 		"version_code": TYPE_STRING,
 		"version_id": TYPE_STRING,
+		"author": TYPE_STRING,
 		"type": TYPE_STRING,
 		"tags": TYPE_ARRAY,
 		"data": TYPE_DICTIONARY,

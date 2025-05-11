@@ -1,6 +1,7 @@
 {
 	"version_code": "demo_item",
 	"version_id": "consumable 1.0",
+	"author": "prototype_framework",
 	"type": "undefined",
 	"tags": [],
 	"data": {
