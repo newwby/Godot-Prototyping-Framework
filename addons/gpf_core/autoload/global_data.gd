@@ -11,8 +11,8 @@ extends Node
 
 # var
 
-#//TODO make into project exports
-const LOCAL_DATA_PATH := "res://data"
+var local_data_path := "res://{0}".\
+		format([ProjectSettings.get_setting("addons/prototype_framework/data path")])
 #//TODO implement user path loading and test
 #const USER_DATA_PATH := "user//data"
 
@@ -26,8 +26,8 @@ var data_register: Array = []
 # virt
 
 func _ready():
-	_load_schema(LOCAL_DATA_PATH)
-	_load_json_data(LOCAL_DATA_PATH)
+	_load_schema(local_data_path)
+	_load_json_data(local_data_path)
 	#_load_json_data(USER_DATA_PATH)
 
 ##############################################################################
