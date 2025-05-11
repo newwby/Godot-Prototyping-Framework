@@ -41,7 +41,7 @@ func _ready():
 
 func _load_schema(schema_file_path: String) -> void:
 	# schema directory should be inside the path (local or user)
-	var schema_sub_directory = "{0}/schema".format([schema_file_path])
+	var schema_sub_directory = "{0}/_schema".format([schema_file_path])
 	var dir = DirAccess.open(schema_sub_directory)
 	if dir:
 		dir.list_dir_begin()
@@ -104,19 +104,32 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	var version_id = json_data["version_id"]
 	var interior_data = json_data["data"]
 	
+	# check if schema has already been registered in _load_schema
 	var valid_schema
-	if schema_register.has(version_code):
-		if schema_register[version_code].has(version_id):
+	if schema_register.has(version_code) == false:
+		print("cannot find schema {0} in register".format([version_code, version_id]))
+		return false
+	else:
+		if schema_register[version_code].has(version_id) == false:
+			print("schema {0} found in register but not version {1}".format([version_code, version_id]))
+			return false
+		else:
 			valid_schema = schema_register[version_code][version_id]
+			print("valid schema is ", valid_schema, " - type ", typeof(valid_schema))
+			
+			# check data passed
 			if typeof(valid_schema) == TYPE_DICTIONARY:
 				for key in valid_schema:
+					print("key in {0}.{1} int.data is ".format([version_code, version_id]), key)
+					print("found schema {0}.{1} -> interior data is {2}".format([version_code, version_id, interior_data]))
 					if interior_data.has(key) == false:
 						Log.warning(self, "data missing key {0} in {1}".format([key, json_data]))
 						return false
 			# else
+			print("exit point")
 			return true
 	
-	Log.warning(self, "cannot find schema for {0}!".format([json_data]))
+	Log.warning(self, "cannot find schema for {0}.{1}".format([version_code, version_id]))
 	return false
 
 
@@ -136,8 +149,8 @@ func _load_json_data(json_file_path: String) -> void:
 					else:
 						var json_data = json.data
 						if _verify_schema(json_data) == false:
-							Log.warning(self, "invalid schema for -> {0}".format([json_data]))
-						if json_data.has("data"):
+							Log.warning(self, "invalid schema for -> {0}".format([filename]))
+						else:
 							data_register.append(json_data)
 			filename = dir.get_next()
 	else:
