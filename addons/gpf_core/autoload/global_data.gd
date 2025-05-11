@@ -46,8 +46,8 @@ func _load_schema(schema_file_path: String) -> void:
 	if dir:
 		dir.list_dir_begin()
 		var filename := dir.get_next()
-		var filename_no_ext = filename.replace(".json", "")
 		while filename != "":
+			var filename_no_ext = filename.replace(".json", "")
 			if not dir.current_is_dir() and filename.ends_with(".json"):
 				var path := "{0}/{1}".format([schema_sub_directory, filename])
 				var file := FileAccess.open(path, FileAccess.READ)
@@ -63,6 +63,8 @@ func _load_schema(schema_file_path: String) -> void:
 						for key in schema_file:
 							schema_register[filename_no_ext][key] = schema_file[key]
 			filename = dir.get_next()
+	else:
+		Log.error(self, "cannot find _schema path at {0}".format([schema_file_path]))
 
 
 #//TODO validate schema values
