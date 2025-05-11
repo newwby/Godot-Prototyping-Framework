@@ -54,8 +54,7 @@ func _load_schema(schema_file_path: String) -> void:
 				if file:
 					var json := JSON.new()
 					if json.parse(file.get_as_text()) != OK:
-						print("json error -> ", json.get_error_line())
-						push_warning("Invalid JSON in %s" % filename)
+						Log.warning(self, "Invalid JSON in {0}".format([filename_no_ext]))
 					else:
 						var schema_file = json.data
 						if schema_register.has(filename_no_ext) == false:
@@ -109,26 +108,22 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	# check if schema has already been registered in _load_schema
 	var valid_schema
 	if schema_register.has(version_code) == false:
-		print("cannot find schema {0} in register".format([version_code, version_id]))
+		Log.warning(self, "cannot find schema {0} in register".format([version_code, version_id]))
 		return false
 	else:
 		if schema_register[version_code].has(version_id) == false:
-			print("schema {0} found in register but not version {1}".format([version_code, version_id]))
+			Log.warning(self, "schema {0} found in register but not version {1}".format([version_code, version_id]))
 			return false
 		else:
 			valid_schema = schema_register[version_code][version_id]
-			print("valid schema is ", valid_schema, " - type ", typeof(valid_schema))
 			
 			# check data passed
 			if typeof(valid_schema) == TYPE_DICTIONARY:
 				for key in valid_schema:
-					print("key in {0}.{1} int.data is ".format([version_code, version_id]), key)
-					print("found schema {0}.{1} -> interior data is {2}".format([version_code, version_id, interior_data]))
 					if interior_data.has(key) == false:
 						Log.warning(self, "data missing key {0} in {1}".format([key, json_data]))
 						return false
 			# else
-			print("exit point")
 			return true
 	
 	Log.warning(self, "cannot find schema for {0}.{1}".format([version_code, version_id]))
