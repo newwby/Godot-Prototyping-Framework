@@ -11,6 +11,13 @@ extends Node
 # implement dataLoaders that convert valid JSONdata to class objects
 # dataLoaders need to contain shadowed methods that can be written to custom instance??
 # or use a property set by data mapping (property to data key)
+# load from nested directories
+# implement user path loading and test
+# validate schema values - update schema values to be variant types to match against
+#	(or read the schema value? could get false positives against TYPE_INT)
+
+# handling for converting between versions is not implemented
+# version converting is trickier to handle
 
 ##############################################################################
 
@@ -18,7 +25,6 @@ extends Node
 
 var local_data_path := "res://{0}".\
 		format([ProjectSettings.get_setting("addons/prototype_framework/data path")])
-#//TODO implement user path loading and test
 #const USER_DATA_PATH := "user//data"
 
 # record of all allowed schemas
@@ -71,7 +77,6 @@ func _load_schema(schema_file_path: String) -> void:
 		Log.error(self, "cannot find _schema path at {0}".format([schema_file_path]))
 
 
-#//TODO validate schema values
 # schema is loaded into schema_register with the key as the file name of the schema file
 # e.g. core.json as schema_register[core]
 # this is the version_code checked in the data
@@ -79,7 +84,6 @@ func _load_schema(schema_file_path: String) -> void:
 # it is stored nested inside the schema_register entry
 # e.g. "1.0" in core.json will be stored as schema_register[core][1.0]
 # this allows for multiple versions of the same schema stored in one file
-#//TODO handling for converting between versions is not implemented
 func _verify_schema(json_data: Dictionary) -> bool:
 	var valid_json_data = true
 	
@@ -141,10 +145,12 @@ func _load_json_data(json_file_path: String) -> void:
 	if dir:
 		dir.list_dir_begin()
 		var filename := dir.get_next()
+		
 		while filename != "":
 			if not dir.current_is_dir() and filename.ends_with(".json"):
 				var path := "{0}/{1}".format([json_file_path, filename])
 				var file := FileAccess.open(path, FileAccess.READ)
+				
 				if file:
 					var json := JSON.new()
 					if json.parse(file.get_as_text()) != OK:
@@ -155,6 +161,7 @@ func _load_json_data(json_file_path: String) -> void:
 							Log.warning(self, "invalid schema for -> {0}".format([filename]))
 						else:
 							data_register.append(json_data)
+			# start loop over with next file
 			filename = dir.get_next()
 	else:
 		Log.error(self, "Failed to load Data directory at {0}".format([json_file_path]))
