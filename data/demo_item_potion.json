@@ -6,6 +6,6 @@
 	"tags": [],
 	"data": {
 		"name": "Red Potion",
-		"cost": 10,
+		"cost": 10.0,
 	}
 }
