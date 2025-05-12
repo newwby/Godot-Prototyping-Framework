@@ -1,5 +1,5 @@
-@tool
-extends EditorPlugin
+class_name GPFPlugin
+extends Object
 
 ##############################################################################
 
@@ -11,7 +11,18 @@ extends EditorPlugin
 
 ##############################################################################
 
-# var
+const AUTOLOAD_PATHS := {
+	"Log": "res://addons/gpf_core/autoload/global_log.gd",
+	"Data": "res://addons/gpf_core/autoload/global_data.gd",
+	#"GlobalFunc": "res://addons/gpf/autoload/global_functions.gd",
+}
+
+const SETTING_PATH_FORMAT := "addons/prototype_framework/{0}"
+
+# setting name: default value
+const SETTINGS := {
+	"data path": "data"
+}
 
 ##############################################################################
 
@@ -21,29 +32,13 @@ extends EditorPlugin
 
 # virts
 
-
-func _enter_tree():
-	for name_key in GPFPlugin.AUTOLOAD_PATHS:
-		add_autoload_singleton(name_key, GPFPlugin.AUTOLOAD_PATHS[name_key])
-	for setting_key in GPFPlugin.SETTINGS.keys():
-		var default_value = GPFPlugin.SETTINGS[setting_key]
-		ProjectSettings.set_setting(GPFPlugin.SETTING_PATH_FORMAT.format([setting_key]), default_value)
-
-
-func _exit_tree():
-	for name_key in GPFPlugin.AUTOLOAD_PATHS:
-		remove_autoload_singleton(name_key)
-	for setting_key in GPFPlugin.SETTINGS.keys():
-		ProjectSettings.set_setting(GPFPlugin.SETTING_PATH_FORMAT.format([setting_key]), null)
-
-
 ##############################################################################
 
 # public
 
 
 static func get_data_path_setting() -> String:
-	return GPFPlugin.SETTING_PATH_FORMAT.format(GPFPlugin.SETTINGS["data path"])
+	return SETTING_PATH_FORMAT.format(["data path"])
 
 
 ##############################################################################

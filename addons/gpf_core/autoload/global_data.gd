@@ -24,7 +24,7 @@ extends Node
 # var
 
 var local_data_path := "res://{0}".\
-		format([ProjectSettings.get_setting("addons/prototype_framework/data path")])
+		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
 #const USER_DATA_PATH := "user//data"
 
 # record of all allowed schemas
