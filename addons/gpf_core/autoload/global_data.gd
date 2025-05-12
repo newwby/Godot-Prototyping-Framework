@@ -36,14 +36,30 @@ var data_register: Array = []
 
 # virt
 
+
 func _ready():
-	_load_schema(local_data_path)
-	_load_json_data(local_data_path)
-	#_load_json_data(USER_DATA_PATH)
+	clear_all_data()
+	load_all_data()
+
 
 ##############################################################################
 
 # public
+
+# empties the GlobalData register and reloads everything from a blank slate
+# call with caution - loading from disk at runtime could be intensive
+#	depending on user data
+func clear_all_data() -> void:
+	schema_register.clear()
+	data_register.clear()
+	#//TODO add indexing registers once implemented
+
+
+func load_all_data() -> void:
+	_load_schema(local_data_path)
+	_load_json_data(local_data_path)
+	#_load_json_data(USER_DATA_PATH)
+
 
 ##############################################################################
 
