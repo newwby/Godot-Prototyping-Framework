@@ -23,8 +23,6 @@ extends Node
 
 # var
 
-var local_data_path := "res://{0}".\
-		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
 #const USER_DATA_PATH := "user//data"
 
 # record of all allowed schemas
@@ -55,9 +53,16 @@ func clear_all_data() -> void:
 	#//TODO add indexing registers once implemented
 
 
+# ProjectSetting can be changed by developer to determine the data directory
+#	searched inside res:// and user:// (name consistent across both)
+func get_local_data_path() -> String:
+	return "res://{0}".\
+		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
+
+
 func load_all_data() -> void:
-	_load_schema(local_data_path)
-	_load_json_data(local_data_path)
+	_load_schema(get_local_data_path())
+	_load_json_data(get_local_data_path())
 	#_load_json_data(USER_DATA_PATH)
 
 
