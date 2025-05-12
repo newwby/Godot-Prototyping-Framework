@@ -7,7 +7,14 @@ extends Node
 # Manages DataLoaders that instantiate objects based on JSON data files
 # Acts as an API for DataLoaders to fetch new objects from valid data
 
+# CONSIDERATIONS FOR ADDING JSON DATA
+# Godot always interprets floats from Json
+# Author.Name should be unique for data fetching and storing
+# VersionID should match the format "<int>", "<int>.<int>", or "<int>.<int>.<int>"
+#	i.e. semantic versioning
+
 #//TODO
+# further tests for data loading
 # implement dataLoaders that convert valid JSONdata to class objects
 # dataLoaders need to contain shadowed methods that can be written to custom instance??
 # or use a property set by data mapping (property to data key)
