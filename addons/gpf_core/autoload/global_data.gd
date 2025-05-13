@@ -170,45 +170,67 @@ func _verify_schema(json_data: Dictionary) -> bool:
 
 # loads every JSON data file in given directory
 func _load_all_json_data(target_directory: String) -> void:
+	for path in _get_all_paths(target_directory):
+		_load_json_data(path)
+
+
+# returns empty array on failure
+func _get_all_paths(target_directory: String) -> PackedStringArray:
+	# validation
+	if target_directory.is_absolute_path() == false:
+		Log.warning(self, "invalid file path given to get_all_paths")
+		return PackedStringArray([])
+	# otherwise
+	var result: PackedStringArray
 	var dir = DirAccess.open(target_directory)
 	if dir:
 		dir.list_dir_begin()
 		var filename := dir.get_next()
 		
 		while filename != "":
-			if not dir.current_is_dir() and filename.ends_with(".json"):
-				_load_json_data(target_directory, filename)
+			# iterate through all directories
+			# skip current directory, parent directory, and schema directory
+			if dir.current_is_dir() and filename != "." and filename != ".." and filename != "_schema":
+				result += _get_all_paths("{0}/{1}".format([target_directory, filename]))
+			# file handling
+			elif not dir.current_is_dir():
+				# if is a valid json file, this can be loaded later
+				if filename.ends_with(".json"):
+					result.append("{0}/{1}".format([target_directory, filename]))
+				#_load_json_data(target_directory, filename)
 			# start loop over with next file
 			filename = dir.get_next()
+		return result
 	else:
-		Log.error(self, "Failed to load Data directory at {0}".format([target_directory]))
+		Log.error(self, "Failed to start recursive load at target directory: {0}".format([target_directory]))
+		return PackedStringArray([])
 
 
-func _load_json_data(json_file_path: String, filename: String) -> int:
+func _load_json_data(json_file_path: String) -> int:
 	# verify args
 	if json_file_path.is_absolute_path() == false:
 		Log.warning(self, "invalid path in _load_json_data : {0}".format([json_file_path]))
 		return ERR_FILE_CANT_OPEN
-	if filename.is_valid_filename() == false:
-		Log.warning(self, "invalid filemame in _load_json_data : {0}".format([json_file_path]))
-		return ERR_FILE_CANT_OPEN
+	#if filename.is_valid_filename() == false:
+		#Log.warning(self, "invalid filemame in _load_json_data : {0}".format([json_file_path]))
+		#return ERR_FILE_CANT_OPEN
 	# valid
-	var path := "{0}/{1}".format([json_file_path, filename])
-	var file := FileAccess.open(path, FileAccess.READ)
+	#var path := "{0}/{1}".format([json_file_path, filename])
+	var file := FileAccess.open(json_file_path, FileAccess.READ)
 	
 	if file:
 		var json := JSON.new()
 		if json.parse(file.get_as_text()) != OK:
-			Log.warning(self, "Invalid JSON in {0}.".format([filename]))
+			Log.warning(self, "Invalid JSON in {0}.".format([json_file_path]))
 			return ERR_FILE_CANT_READ
 		else:
 			var json_data = json.data
 			if _verify_schema(json_data) == false:
-				Log.warning(self, "invalid schema for -> {0}".format([filename]))
+				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
 				return ERR_FILE_CANT_READ
 			else:
 				data_register.append(json_data)
 				return OK
 	else:
-		Log.warning(self, "Could not open file at {0}.".format([path]))
+		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
 		return ERR_FILE_CANT_OPEN
