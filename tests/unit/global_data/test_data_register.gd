@@ -102,6 +102,9 @@ func test_local_schema_exists() -> void:
 	}
 	var file = FileAccess.open(test_local_schema_path, FileAccess.READ)
 	var json_file = JSON.new()
+	if file == null:
+		fail_test("cannot open file")
+		return
 	if json_file.parse(file.get_as_text()) == OK:
 		var content = json_file.data
 		assert_eq(content, expected_test_schema)
