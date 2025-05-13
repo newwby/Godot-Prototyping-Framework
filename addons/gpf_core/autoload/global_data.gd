@@ -67,10 +67,34 @@ func get_local_data_path() -> String:
 		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
 
 
+# ProjectSetting can be changed by developer to determine the data directory
+#	searched inside res:// and user:// (name consistent across both)
+func get_user_data_path() -> String:
+	return "user://{0}".\
+		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
+
+
+# all schema should be loaded before any data
 func load_all_data() -> void:
-	_load_schema(get_local_data_path())
-	_load_all_json_data(get_local_data_path())
-	#_load_all_json_data(USER_DATA_PATH)
+	verify_user_data_directory()
+	var local_path := get_local_data_path()
+	var user_path := get_user_data_path()
+	_load_schema(local_path)
+	_load_schema(user_path)
+	_load_all_json_data(local_path)
+	_load_all_json_data(user_path)
+
+
+# if user data doesn't contain the valid directories, create them
+func verify_user_data_directory() -> void:
+	var user_path = get_user_data_path()
+	var user_dir = DirAccess.open(user_path)
+	if not user_dir:
+		DirAccess.make_dir_recursive_absolute(user_path)
+	var schema_path := "{0}/{1}".format([user_path, "_schema"])
+	var schema_dir = DirAccess.open(schema_path)
+	if not schema_dir:
+		DirAccess.make_dir_recursive_absolute(schema_path)
 
 
 ##############################################################################
