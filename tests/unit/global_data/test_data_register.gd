@@ -128,3 +128,25 @@ func test_local_data_fetched() -> void:
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
 			format([id_author, id_package, name]))
 	assert_eq(fetched_data, expected_local_test_data)
+
+
+func test_apply_json_data():
+	var expected_prop_value_1 := 7.0
+	var expected_prop_value_2 := "Hello World!"
+	var stub_json_data = {
+	"schema_id": "fake_schema",
+	"schema_version": "1.0",
+	"id_author": "null",
+	"id_package": "null",
+	"id_name": "mock_json_replacer",
+	"type": "undefined",
+	"tags": [],
+	"data": {
+		"test_property_1": expected_prop_value_1,
+		"test_property_2": expected_prop_value_2,
+	}
+	}
+	var test_object := MockJsonReceiver.new()
+	Data.apply_json(test_object, stub_json_data)
+	assert_eq(test_object.test_property_1, expected_prop_value_1)
+	assert_eq(test_object.test_property_2, expected_prop_value_2)
