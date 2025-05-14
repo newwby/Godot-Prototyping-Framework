@@ -35,7 +35,7 @@ const TEST_USER_DATA = {
 	"schema_id": "demo_item",
 	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
-	"package": "demo_data",
+	"id_package": "demo_data",
 	"name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
@@ -50,7 +50,7 @@ var expected_local_test_data = {
 	"schema_id": "demo_item",
 	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
-	"package": "demo_data",
+	"id_package": "demo_data",
 	"name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
@@ -121,8 +121,8 @@ func test_local_schema_exists() -> void:
 #	can be read
 func test_local_data_fetched() -> void:
 	var author = expected_local_test_data["author"]
-	var package = expected_local_test_data["package"]
+	var id_package = expected_local_test_data["id_package"]
 	var name = expected_local_test_data["name"]
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
-			format([author, package, name]))
+			format([author, id_package, name]))
 	assert_eq(fetched_data, expected_local_test_data)

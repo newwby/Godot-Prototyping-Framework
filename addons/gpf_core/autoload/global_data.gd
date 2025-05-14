@@ -35,7 +35,7 @@ extends Node
 # record of all allowed schemas
 var schema_register := {}
 
-# data indexed by author.package.name
+# data indexed by author.id_package.name
 var data_id_register := {}
 
 # un-indexed data, recorded in order loaded
@@ -68,7 +68,7 @@ func clear_all_data() -> void:
 func fetch_by_id(data_id: String) -> Dictionary:
 	var data_id_components := data_id.split(".")
 	if data_id_components.size() != 3:
-		Log.warning(self, "cannot parse data_id - {0} - expected \"author\".\"package\".\"name\" ".format([data_id]))
+		Log.warning(self, "cannot parse data_id - {0} - expected \"author\".\"id_package\".\"name\" ".format([data_id]))
 		return {}
 	#var data_author = data_id_components[0]
 	#var data_package = data_id_components[1]
@@ -166,7 +166,7 @@ func _verify_schema(json_data: Dictionary) -> bool:
 		"schema_id": TYPE_STRING,
 		"schema_version": TYPE_STRING,
 		"author": TYPE_STRING,
-		"package": TYPE_STRING,
+		"id_package": TYPE_STRING,
 		"type": TYPE_STRING,
 		"tags": TYPE_ARRAY,
 		"data": TYPE_DICTIONARY,
@@ -238,10 +238,10 @@ func _load_all_json_data(target_directory: String) -> void:
 
 
 func _index_data(json_data: Dictionary) -> void:
-	# index by author.package.name
+	# index by author.id_package.name
 	var id = "{0}.{1}.{2}".format([
 		json_data["author"],
-		json_data["package"],
+		json_data["id_package"],
 		json_data["name"]
 	])
 	data_id_register[id] = json_data

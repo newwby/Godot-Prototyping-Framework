@@ -2,7 +2,7 @@
 	"schema_id": "demo_item",
 	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
-	"package": "demo_data",
+	"id_package": "demo_data",
 	"name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
