@@ -56,6 +56,15 @@ func _ready():
 
 # public
 
+
+# applies data from json structures (using fetch methods) to objects
+# for use by develoeprs to create content
+func apply_json(given_object: Object, json_data: Dictionary) -> void:
+	for data_property in json_data["data"].keys():
+		if data_property in given_object:
+			given_object.set(data_property, json_data["data"][data_property])
+
+
 # empties the GlobalData register and reloads everything from a blank slate
 # call with caution - loading from disk at runtime could be intensive
 #	depending on user data
