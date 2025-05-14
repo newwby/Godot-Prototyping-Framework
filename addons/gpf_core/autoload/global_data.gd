@@ -34,8 +34,13 @@ extends Node
 
 # record of all allowed schemas
 var schema_register := {}
+
+# data indexed by author.package.name
+var data_id_register := {}
+
 # un-indexed data, recorded in order loaded
-var data_register: Array = []
+# retrieval from this collection will be slower, fetching from registers is preferred
+var data_collection: Array = []
 
 ##############################################################################
 
@@ -56,9 +61,25 @@ func _ready():
 #	depending on user data
 func clear_all_data() -> void:
 	schema_register.clear()
-	data_register.clear()
+	data_collection.clear()
 	#//TODO add indexing registers once implemented
 
+
+func fetch_by_id(data_id: String) -> Dictionary:
+	var data_id_components := data_id.split(".")
+	if data_id_components.size() != 3:
+		Log.warning(self, "cannot parse data_id - {0} - expected \"author\".\"package\".\"name\" ".format([data_id]))
+		return {}
+	#var data_author = data_id_components[0]
+	#var data_package = data_id_components[1]
+	#var data_name = data_id_components[2]
+	if data_id_register.has(data_id):
+		var outp_data = data_id_register[data_id]
+		if (typeof(outp_data) == TYPE_DICTIONARY):
+			return outp_data
+	# else
+	Log.warning(self, "cannot find data_id {0}".format([data_id]))
+	return {}
 
 # ProjectSetting can be changed by developer to determine the data directory
 #	searched inside res:// and user:// (name consistent across both)
@@ -169,7 +190,10 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	
 	# check if schema has already been registered in _load_schema
 	var valid_schema
-	if schema_register.has(version_code) == false:
+	# if version code is blank, schema validation is skipped
+	if version_code == "":
+		return true 
+	elif schema_register.has(version_code) == false:
 		Log.warning(self, "cannot find schema {0} in register".format([version_code, version_id]))
 		return false
 	else:
@@ -179,7 +203,9 @@ func _verify_schema(json_data: Dictionary) -> bool:
 		else:
 			valid_schema = schema_register[version_code][version_id]
 			
-			# check data passed
+			# check data matches schema keys and typing
+			# data can contain keys/value pairs not specified in the schema,
+			#	but these keys/values willl not be type verified
 			if typeof(valid_schema) == TYPE_DICTIONARY:
 				for schema_key in valid_schema:
 					if interior_data.has(schema_key) == false:
@@ -203,8 +229,22 @@ func _verify_schema(json_data: Dictionary) -> bool:
 # loads every JSON data file in given directory
 func _load_all_json_data(target_directory: String) -> void:
 	for path in _get_all_paths(target_directory):
-		_load_json_data(path)
+		# verify and index the data
+		var verified_data = _verify_json_data(path)
+		if (verified_data.is_empty() == false):
+			data_collection.append(verified_data)
+			_index_data(verified_data)
 
+
+func _index_data(json_data: Dictionary) -> void:
+	pass
+	# index by author.package.name
+	var id = "{0}.{1}.{2}".format([
+		"",
+		"",
+		""
+	])
+	data_id_register[id] = json_data
 
 # returns empty array on failure
 func _get_all_paths(target_directory: String) -> PackedStringArray:
@@ -229,7 +269,6 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 				# if is a valid json file, this can be loaded later
 				if filename.ends_with(".json"):
 					result.append("{0}/{1}".format([target_directory, filename]))
-				#_load_json_data(target_directory, filename)
 			# start loop over with next file
 			filename = dir.get_next()
 		return result
@@ -238,14 +277,16 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 		return PackedStringArray([])
 
 
-func _load_json_data(json_file_path: String) -> int:
+func _verify_json_data(json_file_path: String) -> Dictionary:
 	# verify args
 	if json_file_path.is_absolute_path() == false:
-		Log.warning(self, "invalid path in _load_json_data : {0}".format([json_file_path]))
-		return ERR_FILE_CANT_OPEN
+		Log.warning(self, "invalid path in _verify_json_data : {0}".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		return {}
 	#if filename.is_valid_filename() == false:
-		#Log.warning(self, "invalid filemame in _load_json_data : {0}".format([json_file_path]))
-		#return ERR_FILE_CANT_OPEN
+		#Log.warning(self, "invalid filemame in _verify_json_data : {0}".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		#return {}
 	# valid
 	#var path := "{0}/{1}".format([json_file_path, filename])
 	var file := FileAccess.open(json_file_path, FileAccess.READ)
@@ -254,15 +295,24 @@ func _load_json_data(json_file_path: String) -> int:
 		var json := JSON.new()
 		if json.parse(file.get_as_text()) != OK:
 			Log.warning(self, "Invalid JSON in {0}.".format([json_file_path]))
-			return ERR_FILE_CANT_READ
+			# ERR_FILE_CANT_READ
+			return {}
 		else:
 			var json_data = json.data
+			# validate variant typing
+			if (typeof(json_data) != TYPE_DICTIONARY):
+				Log.warning(self, "unexpected typing verified json data at {0}".format([json_file_path]))
+				# ERR_FILE_CANT_READ
+				return {}
+			# validate data matches schema specified
 			if _verify_schema(json_data) == false:
 				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
-				return ERR_FILE_CANT_READ
+				# ERR_FILE_CANT_READ
+				return {}
 			else:
-				data_register.append(json_data)
-				return OK
+				# OK
+				return json_data
 	else:
 		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
-		return ERR_FILE_CANT_OPEN
+		# ERR_FILE_CANT_OPEN
+		return {}
