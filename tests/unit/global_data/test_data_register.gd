@@ -32,7 +32,7 @@ const TEST_USER_SCHEMA = {
 	}
 const TEST_USER_DATA = {
 	"schema_id": "demo_item",
-	"version_id": "consumable 1.0",
+	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
 	"type": "undefined",
 	"tags": [],
@@ -65,7 +65,7 @@ func test_local_data_exists() -> void:
 	# (see REQUIREMENTS)
 	var expected_test_data = {
 		"schema_id": "demo_item",
-		"version_id": "consumable 1.0",
+		"schema_version": "consumable 1.0",
 		"author": "prototype_framework",
 		"type": "undefined",
 		"tags": [],

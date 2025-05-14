@@ -1,6 +1,6 @@
 {
 	"schema_id": "demo_enemy",
-	"version_id": "1.0",
+	"schema_version": "1.0",
 	"author": "prototype_framework",
 	"type": "undefined",
 	"tags": [],

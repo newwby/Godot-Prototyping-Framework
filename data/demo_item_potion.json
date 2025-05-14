@@ -1,6 +1,6 @@
 {
 	"schema_id": "demo_item",
-	"version_id": "consumable 1.0",
+	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
 	"type": "undefined",
 	"tags": [],
