@@ -241,9 +241,9 @@ func _index_data(json_data: Dictionary) -> void:
 	pass
 	# index by author.package.name
 	var id = "{0}.{1}.{2}".format([
-		"",
-		"",
-		""
+		json_data["author"],
+		json_data["package"],
+		json_data["name"]
 	])
 	data_id_register[id] = json_data
 
