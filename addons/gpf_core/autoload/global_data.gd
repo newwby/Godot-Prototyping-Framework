@@ -238,7 +238,6 @@ func _load_all_json_data(target_directory: String) -> void:
 
 
 func _index_data(json_data: Dictionary) -> void:
-	pass
 	# index by author.package.name
 	var id = "{0}.{1}.{2}".format([
 		json_data["author"],
@@ -246,6 +245,7 @@ func _index_data(json_data: Dictionary) -> void:
 		json_data["name"]
 	])
 	data_id_register[id] = json_data
+
 
 # returns empty array on failure
 func _get_all_paths(target_directory: String) -> PackedStringArray:
