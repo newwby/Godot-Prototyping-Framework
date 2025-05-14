@@ -34,6 +34,7 @@ const TEST_USER_DATA = {
 	"schema_id": "demo_item",
 	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
+	"package": "demo_data",
 	"type": "undefined",
 	"tags": [],
 	"data": {
@@ -67,6 +68,7 @@ func test_local_data_exists() -> void:
 		"schema_id": "demo_item",
 		"schema_version": "consumable 1.0",
 		"author": "prototype_framework",
+		"package": "demo_data",
 		"type": "undefined",
 		"tags": [],
 		"data": {

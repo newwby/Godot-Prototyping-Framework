@@ -160,12 +160,13 @@ func _load_schema(schema_file_path: String) -> void:
 func _verify_schema(json_data: Dictionary) -> bool:
 	var valid_json_data = true
 	
-	# these five keys must match the following types in all data entries
+	# these keys must match the following types in all data entries
 	# everything inside the data value is customisable
 	var mandatory_kv_pairs := {
 		"schema_id": TYPE_STRING,
 		"schema_version": TYPE_STRING,
 		"author": TYPE_STRING,
+		"package": TYPE_STRING,
 		"type": TYPE_STRING,
 		"tags": TYPE_ARRAY,
 		"data": TYPE_DICTIONARY,

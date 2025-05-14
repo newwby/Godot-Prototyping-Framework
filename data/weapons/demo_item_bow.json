@@ -2,6 +2,7 @@
 	"schema_id": "demo_item",
 	"schema_version": "weapon 1.0",
 	"author": "prototype_framework",
+	"package": "demo_data",
 	"type": "bow",
 	"tags": ["weapon", "bow"],
 	"data": {
