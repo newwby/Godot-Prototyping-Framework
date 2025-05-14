@@ -181,10 +181,18 @@ func _verify_schema(json_data: Dictionary) -> bool:
 			
 			# check data passed
 			if typeof(valid_schema) == TYPE_DICTIONARY:
-				for key in valid_schema:
-					if interior_data.has(key) == false:
-						Log.warning(self, "data missing key {0} in {1}".format([key, json_data]))
+				for schema_key in valid_schema:
+					if interior_data.has(schema_key) == false:
+						Log.warning(self, "data missing key {0} in {1}".format([schema_key, json_data]))
 						return false
+					# check value typing
+					var data_value = interior_data[schema_key]
+					var data_type = typeof(data_value)
+					var schema_value = valid_schema[schema_key]
+					var schema_type = typeof(schema_value)
+					if data_type != schema_type:
+						Log.warning(self, "data typing mismatch, {0}: {1} (type {2}) is invalid. Expected type {3}".\
+								format([schema_key, data_value, data_type, schema_type]))
 			# else
 			return true
 	
