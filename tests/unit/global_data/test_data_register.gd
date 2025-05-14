@@ -15,6 +15,7 @@ extends GutTest
 
 #//TODO
 # add mock for user data writing, so can decouple testing of writing to user://
+# make sure to reload globalData on writing user data
 
 ##############################################################################
 
@@ -43,6 +44,21 @@ const TEST_USER_DATA = {
 		"cost": 10,
 	}
 }
+# must match structure of 'demo_item_potion.json' in res://<data_path>
+# (see REQUIREMENTS)
+var expected_local_test_data = {
+	"schema_id": "demo_item",
+	"schema_version": "consumable 1.0",
+	"author": "prototype_framework",
+	"package": "demo_data",
+	"name": "demo_potion",
+	"type": "undefined",
+	"tags": [],
+	"data": {
+		"name": "Red Potion",
+		"cost": 10.0,
+	}
+}
 
 ##############################################################################
 
@@ -63,26 +79,11 @@ func after_all():
 #	can be read
 func test_local_data_exists() -> void:
 	var test_local_data_path := "{0}/demo_item_potion.json".format([Data.get_local_data_path()])
-	# must match structure of 'demo_item_potion.json' in res://<data_path>
-	# (see REQUIREMENTS)
-	var expected_test_data = {
-		"schema_id": "demo_item",
-		"schema_version": "consumable 1.0",
-		"author": "prototype_framework",
-		"package": "demo_data",
-		"name": "demo_potion",
-		"type": "undefined",
-		"tags": [],
-		"data": {
-			"name": "Red Potion",
-			"cost": 10.0,
-		}
-	}
 	var file = FileAccess.open(test_local_data_path, FileAccess.READ)
 	var json_file = JSON.new()
 	if json_file.parse(file.get_as_text()) == OK:
 		var content = json_file.data
-		assert_eq(content, expected_test_data)
+		assert_eq(content, expected_local_test_data)
 	else:
 		fail_test("cannot read file")
 
@@ -116,31 +117,12 @@ func test_local_schema_exists() -> void:
 		fail_test("cannot read file")
 
 
-## test if log call is incrementing even without output/registration
-#func test_log_calls() -> void:
-	## no need to record or log spam when testing calls
-	#Log.allow_log_output = false
-	#Log.allow_log_registration = false
-	#var test_log_string := "testing log counting"
-	#
-	#var pre_test_log_count := Log.total_log_calls
-	#var expected_post_test_log_count = pre_test_log_count + 1
-	#Log.info(self, test_log_string)
-	#var updated_log_count := Log.total_log_calls
-	#assert_eq(updated_log_count, expected_post_test_log_count)
-	#
-	#pre_test_log_count = Log.total_log_calls
-	#expected_post_test_log_count = pre_test_log_count + 1
-	#Log.warning(self, test_log_string)
-	#updated_log_count = Log.total_log_calls
-	#assert_eq(updated_log_count, expected_post_test_log_count)
-	#
-	#pre_test_log_count = Log.total_log_calls
-	#expected_post_test_log_count = pre_test_log_count + 1
-	#Log.error(self, test_log_string)
-	#updated_log_count = Log.total_log_calls
-	#assert_eq(updated_log_count, expected_post_test_log_count)
-	#
-	## re-enable flags
-	#Log.allow_log_output = true
-	#Log.allow_log_registration = true
+# verifies specific files (included with the framework dev build) exist and
+#	can be read
+func test_local_data_fetched() -> void:
+	var author = expected_local_test_data["author"]
+	var package = expected_local_test_data["package"]
+	var name = expected_local_test_data["name"]
+	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
+			format([author, package, name]))
+	assert_eq(fetched_data, expected_local_test_data)
