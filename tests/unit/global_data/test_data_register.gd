@@ -31,7 +31,7 @@ const TEST_USER_SCHEMA = {
 		}
 	}
 const TEST_USER_DATA = {
-	"version_code": "demo_item",
+	"schema_id": "demo_item",
 	"version_id": "consumable 1.0",
 	"author": "prototype_framework",
 	"type": "undefined",
@@ -64,7 +64,7 @@ func test_local_data_exists() -> void:
 	# must match structure of 'demo_item_potion.json' in res://<data_path>
 	# (see REQUIREMENTS)
 	var expected_test_data = {
-		"version_code": "demo_item",
+		"schema_id": "demo_item",
 		"version_id": "consumable 1.0",
 		"author": "prototype_framework",
 		"type": "undefined",

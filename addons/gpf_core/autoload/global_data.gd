@@ -152,7 +152,7 @@ func _load_schema(schema_file_path: String) -> void:
 
 # schema is loaded into schema_register with the key as the file name of the schema file
 # e.g. core.json as schema_register[core]
-# this is the version_code checked in the data
+# this is the schema_id checked in the data
 # the top-level key inside the schema file is the version_id checked in data
 # it is stored nested inside the schema_register entry
 # e.g. "1.0" in core.json will be stored as schema_register[core][1.0]
@@ -163,7 +163,7 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	# these five keys must match the following types in all data entries
 	# everything inside the data value is customisable
 	var mandatory_kv_pairs := {
-		"version_code": TYPE_STRING,
+		"schema_id": TYPE_STRING,
 		"version_id": TYPE_STRING,
 		"author": TYPE_STRING,
 		"type": TYPE_STRING,
@@ -184,24 +184,24 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	if valid_json_data == false:
 		return false
 	
-	var version_code = json_data["version_code"]
+	var schema_id = json_data["schema_id"]
 	var version_id = json_data["version_id"]
 	var interior_data = json_data["data"]
 	
 	# check if schema has already been registered in _load_schema
 	var valid_schema
 	# if version code is blank, schema validation is skipped
-	if version_code == "":
+	if schema_id == "":
 		return true 
-	elif schema_register.has(version_code) == false:
-		Log.warning(self, "cannot find schema {0} in register".format([version_code, version_id]))
+	elif schema_register.has(schema_id) == false:
+		Log.warning(self, "cannot find schema {0} in register".format([schema_id, version_id]))
 		return false
 	else:
-		if schema_register[version_code].has(version_id) == false:
-			Log.warning(self, "schema {0} found in register but not version {1}".format([version_code, version_id]))
+		if schema_register[schema_id].has(version_id) == false:
+			Log.warning(self, "schema {0} found in register but not version {1}".format([schema_id, version_id]))
 			return false
 		else:
-			valid_schema = schema_register[version_code][version_id]
+			valid_schema = schema_register[schema_id][version_id]
 			
 			# check data matches schema keys and typing
 			# data can contain keys/value pairs not specified in the schema,
@@ -222,7 +222,7 @@ func _verify_schema(json_data: Dictionary) -> bool:
 			# else
 			return true
 	
-	Log.warning(self, "cannot find schema for {0}.{1}".format([version_code, version_id]))
+	Log.warning(self, "cannot find schema for {0}.{1}".format([schema_id, version_id]))
 	return false
 
 

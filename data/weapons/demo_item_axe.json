@@ -1,5 +1,5 @@
 {
-	"version_code": "demo_item",
+	"schema_id": "demo_item",
 	"version_id": "weapon 1.0",
 	"author": "prototype_framework",
 	"type": "axe",
