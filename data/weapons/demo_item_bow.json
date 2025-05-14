@@ -1,6 +1,6 @@
 {
-	"schema_id": "demo_item",
-	"schema_version": "weapon 1.0",
+	"schema_id": "demo_weapon",
+	"schema_version": "1.1",
 	"id_author": "prototype_framework",
 	"id_package": "demo_data",
 	"id_name": "demo_bow",
@@ -8,7 +8,8 @@
 	"tags": ["weapon", "bow"],
 	"data": {
 		"name": "Longbow",
-		"cost": 45,
-		"damage": 1
+		"cost": 45.0,
+		"damage": 1.0,
+		"range": 1.0
 	}
 }

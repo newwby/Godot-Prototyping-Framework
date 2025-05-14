@@ -33,7 +33,7 @@ const TEST_USER_SCHEMA = {
 	}
 const TEST_USER_DATA = {
 	"schema_id": "demo_item",
-	"schema_version": "consumable 1.0",
+	"schema_version": "1.0",
 	"id_author": "prototype_framework",
 	"id_package": "demo_data",
 	"id_name": "demo_potion",
@@ -48,7 +48,7 @@ const TEST_USER_DATA = {
 # (see REQUIREMENTS)
 var expected_local_test_data = {
 	"schema_id": "demo_item",
-	"schema_version": "consumable 1.0",
+	"schema_version": "1.0",
 	"id_author": "prototype_framework",
 	"id_package": "demo_data",
 	"id_name": "demo_potion",
@@ -91,19 +91,21 @@ func test_local_data_exists() -> void:
 # verifies specific files (included with the framework dev build) exist and
 #	can be read
 func test_local_schema_exists() -> void:
-	var test_local_schema_path := "{0}/_schema/demo_item.json".format([Data.get_local_data_path()])
+	var test_local_schema_path := "{0}/_schema/demo_weapon.json".format([Data.get_local_data_path()])
 	# must match structure of 'demo_item.json' in res://<data_path>/_schema
 	# (see REQUIREMENTS)
 	var expected_test_schema = {
-		"consumable 1.0": {
-			"name": "",
-			"cost": 0.0,
+	"1.0": {
+		"name": "",
+		"cost": 0.0,
+		"damage": 3.0,
 		},
-		"weapon 1.0": {
-			"name": "",
-			"cost": 0.0,
-			"damage": 3.0,
-		},
+	"1.1": {
+		"name": "",
+		"cost": 0.0,
+		"damage": 3.0,
+		"range": 2.0,
+		}
 	}
 	var file = FileAccess.open(test_local_schema_path, FileAccess.READ)
 	var json_file = JSON.new()

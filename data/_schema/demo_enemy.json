@@ -1,7 +1,7 @@
 {
 	"1.0": {
 		"name": "",
-		"health": 10,
-		"damage": 3
+		"health": 10.0,
+		"damage": 3.0
 	}
 }
