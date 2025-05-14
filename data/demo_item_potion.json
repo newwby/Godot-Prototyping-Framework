@@ -3,7 +3,7 @@
 	"schema_version": "consumable 1.0",
 	"id_author": "prototype_framework",
 	"id_package": "demo_data",
-	"name": "demo_potion",
+	"id_name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
 	"data": {

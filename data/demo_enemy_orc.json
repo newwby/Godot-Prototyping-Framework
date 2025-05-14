@@ -3,7 +3,7 @@
 	"schema_version": "1.0",
 	"id_author": "prototype_framework",
 	"id_package": "demo_data",
-	"name": "demo_orc",
+	"id_name": "demo_orc",
 	"type": "undefined",
 	"tags": [],
 	"data": {

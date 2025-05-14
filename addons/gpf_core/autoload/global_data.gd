@@ -35,7 +35,7 @@ extends Node
 # record of all allowed schemas
 var schema_register := {}
 
-# data indexed by id_author.id_package.name
+# data indexed by id_author.id_package.id_name
 var data_id_register := {}
 
 # un-indexed data, recorded in order loaded
@@ -68,7 +68,7 @@ func clear_all_data() -> void:
 func fetch_by_id(data_id: String) -> Dictionary:
 	var data_id_components := data_id.split(".")
 	if data_id_components.size() != 3:
-		Log.warning(self, "cannot parse data_id - {0} - expected \"id_author\".\"id_package\".\"name\" ".format([data_id]))
+		Log.warning(self, "cannot parse data_id - {0} - expected \"id_author\".\"id_package\".\"id_name\" ".format([data_id]))
 		return {}
 	#var data_author = data_id_components[0]
 	#var data_package = data_id_components[1]
@@ -238,11 +238,11 @@ func _load_all_json_data(target_directory: String) -> void:
 
 
 func _index_data(json_data: Dictionary) -> void:
-	# index by id_author.id_package.name
+	# index by id_author.id_package.id_name
 	var id = "{0}.{1}.{2}".format([
 		json_data["id_author"],
 		json_data["id_package"],
-		json_data["name"]
+		json_data["id_name"]
 	])
 	data_id_register[id] = json_data
 
