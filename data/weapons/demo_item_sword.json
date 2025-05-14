@@ -3,6 +3,7 @@
 	"schema_version": "weapon 1.0",
 	"author": "prototype_framework",
 	"package": "demo_data",
+	"name": "demo_sword",
 	"type": "sword",
 	"tags": ["weapon", "sword"],
 	"data": {

@@ -35,6 +35,7 @@ const TEST_USER_DATA = {
 	"schema_version": "consumable 1.0",
 	"author": "prototype_framework",
 	"package": "demo_data",
+	"name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
 	"data": {
@@ -69,6 +70,7 @@ func test_local_data_exists() -> void:
 		"schema_version": "consumable 1.0",
 		"author": "prototype_framework",
 		"package": "demo_data",
+		"name": "demo_potion",
 		"type": "undefined",
 		"tags": [],
 		"data": {
