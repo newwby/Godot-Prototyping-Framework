@@ -96,7 +96,7 @@ func fetch_by_author(data_author: String) -> Array:
 func fetch_by_id(data_id: String) -> Dictionary:
 	var data_id_components := data_id.split(".")
 	if data_id_components.size() != 3:
-		Log.warning(self, "cannot parse data_id - {0} - expected \"id_author\".\"id_package\".\"id_name\" ".format([data_id]))
+		Log.warning(self, "cannot parse data_id - {0} - expected [id_author].[id_package].[id_name]".format([data_id]))
 		return {}
 	
 	var fetched_output = _fetch_data(data_id, data_id_register)
