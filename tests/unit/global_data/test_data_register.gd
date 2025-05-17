@@ -202,6 +202,33 @@ func test_fetch_existing_schema():
 	assert_eq(Data.fetch_by_schema(test_schema), [])
 
 
+# checks if fetch_by_tag returns the correct value on missing data
+func test_fetch_missing_tag():
+	var test_tag := "fake_missing_tag_for_test_fetch_missing_tag"
+	assert_eq(Data.data_tag_register.has(test_tag), false)
+	Log.info(self, "expect imminent Data warning for missing tag test")
+	assert_eq(Data.fetch_by_tag(test_tag), [])
+
+
+# check if data exists in tag register and fetch_by_tag returns expected result
+# test tears down the test value at conclusion
+func test_fetch_existing_tag():
+	var test_tag := "faked_present_tag_for_test_fetch_existing_tag"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data
+	]
+	Data.data_tag_register[test_tag] = test_data
+	assert_has(Data.fetch_by_tag(test_tag), expected_local_test_data)
+	assert_eq(Data.fetch_by_tag(test_tag), test_data)
+	assert_eq(Data.fetch_by_tag(test_tag).size(), 2)
+	# remove testing data, check it is gone
+	Data.data_tag_register.erase(test_tag)
+	Log.info(self, "expect imminent Data warning for existing tag test teardown")
+	assert_does_not_have(Data.fetch_by_tag(test_tag), test_data)
+	assert_eq(Data.fetch_by_tag(test_tag), [])
+
+
 # checks if fetch_by_type returns the correct value on missing data
 func test_fetch_missing_type():
 	var test_type := "fake_missing_type_for_test_fetch_missing_type"
@@ -228,33 +255,6 @@ func test_fetch_existing_type():
 	Log.info(self, "expect imminent Data warning for existing type test teardown")
 	assert_does_not_have(Data.fetch_by_type(test_type), test_data)
 	assert_eq(Data.fetch_by_type(test_type), [])
-
-
-# checks if fetch_by_tag returns the correct value on missing data
-func test_fetch_missing_tag():
-	var test_tag := "fake_missing_tag_for_test_fetch_missing_tag"
-	assert_eq(Data.data_tag_register.has(test_tag), false)
-	Log.info(self, "expect imminent Data warning for missing tag test")
-	assert_eq(Data.fetch_by_tag(test_tag), [])
-
-
-# check if data exists in tag register and fetch_by_tag returns expected result
-# test tears down the test value at conclusion
-func test_fetch_existing_tag():
-	var test_tag := "faked_present_tag_for_test_fetch_existing_tag"
-	var test_data = [
-		expected_local_test_data,
-		expected_local_test_data
-	]
-	Data.data_tag_register[test_tag] = test_data
-	assert_has(Data.fetch_by_tag(test_tag), expected_local_test_data)
-	assert_eq(Data.fetch_by_tag(test_tag), test_data)
-	assert_eq(Data.fetch_by_tag(test_tag).size(), 2)
-	# remove testing data, check it is gone
-	Data.data_tag_register.erase(test_tag)
-	Log.info(self, "expect imminent Data warning for existing tag test teardown")
-	assert_does_not_have(Data.fetch_by_tag(test_tag), test_data)
-	assert_eq(Data.fetch_by_tag(test_tag), [])
 
 
 # verifies specific files (included with the framework dev build) exist and
