@@ -66,77 +66,6 @@ var expected_local_test_data = {
 # tests
 
 
-# alias for prerun_setup
-func before_all():
-	pass
-
-
-# alias for postrun_teardown
-func after_all():
-	pass
-
-
-# verifies specific files (included with the framework dev build) exist and
-#	can be read
-func test_local_data_exists() -> void:
-	var test_local_data_path := "{0}/demo_item_potion.json".format([Data.get_local_data_path()])
-	var file = FileAccess.open(test_local_data_path, FileAccess.READ)
-	var json_file = JSON.new()
-	if json_file.parse(file.get_as_text()) == OK:
-		var content = json_file.data
-		assert_eq(content, expected_local_test_data)
-	else:
-		fail_test("cannot read file")
-
-
-# verifies specific files (included with the framework dev build) exist and
-#	can be read
-func test_local_schema_exists() -> void:
-	var test_local_schema_path := "{0}/_schema/demo_weapon.json".format([Data.get_local_data_path()])
-	# must match structure of 'demo_item.json' in res://<data_path>/_schema
-	# (see REQUIREMENTS)
-	var expected_test_schema = {
-	"1.0": {
-		"name": "",
-		"cost": 0.0,
-		"damage": 3.0,
-		},
-	"1.1": {
-		"name": "",
-		"cost": 0.0,
-		"damage": 3.0,
-		"range": 2.0,
-		}
-	}
-	var file = FileAccess.open(test_local_schema_path, FileAccess.READ)
-	var json_file = JSON.new()
-	if file == null:
-		fail_test("cannot open file")
-		return
-	if json_file.parse(file.get_as_text()) == OK:
-		var content = json_file.data
-		assert_eq(content, expected_test_schema)
-	else:
-		fail_test("cannot read file")
-
-
-# verifies specific files (included with the framework dev build) exist and
-#	can be read
-func test_local_data_fetched() -> void:
-	var id_author = expected_local_test_data["id_author"]
-	var id_package = expected_local_test_data["id_package"]
-	var id_name = expected_local_test_data["id_name"]
-	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
-			format([id_author, id_package, id_name]))
-	# prune path which wasn't included in testing data but is added in data verification step
-	if fetched_data.has("path"):
-		fetched_data.erase("path")
-	assert_eq(fetched_data, expected_local_test_data)
-	if fetched_data != expected_local_test_data:
-		Log.warning(self, "test_local_data_fetched - fetched data does not match expected test data.\n{0}\nvs\n{1}".\
-				format([fetched_data, expected_local_test_data]))
-
-
 func test_apply_json_data():
 	var expected_prop_value_1 := 7.0
 	var expected_prop_value_2 := "Hello World!"
@@ -170,7 +99,7 @@ func test_fetch_malformed_id():
 
 
 # checks if fetch_by_id returns the correct value on missing data
-func test_missing_id():
+func test_fetch_missing_id():
 	var test_id := "test_missing_id.test_data_register.test_id"
 	assert_eq(Data.data_id_register.has(test_id), false)
 	Log.info(self, "expect imminent Data warning for missing id test")
@@ -179,7 +108,7 @@ func test_missing_id():
 
 # check if fetch_by_id functions as expected, returning correct value
 # test tears down the test value at conclusion
-func test_existing_id():
+func test_fetch_existing_id():
 	var test_id := "test_existing_id.test_data_register.test_id"
 	Data.data_id_register[test_id] = expected_local_test_data
 	assert_eq(Data.fetch_by_id(test_id), expected_local_test_data)
@@ -244,3 +173,64 @@ func test_fetch_existing_package():
 	Log.info(self, "expect imminent Data warning for existing package test teardown")
 	assert_does_not_have(Data.fetch_by_package(test_package), test_data)
 	assert_eq(Data.fetch_by_package(test_package), [])
+
+
+# verifies specific files (included with the framework dev build) exist and
+#	can be read
+func test_local_data_exists() -> void:
+	var test_local_data_path := "{0}/demo_item_potion.json".format([Data.get_local_data_path()])
+	var file = FileAccess.open(test_local_data_path, FileAccess.READ)
+	var json_file = JSON.new()
+	if json_file.parse(file.get_as_text()) == OK:
+		var content = json_file.data
+		assert_eq(content, expected_local_test_data)
+	else:
+		fail_test("cannot read file")
+
+
+# verifies specific files (included with the framework dev build) exist and
+#	can be read
+func test_local_data_fetched() -> void:
+	var id_author = expected_local_test_data["id_author"]
+	var id_package = expected_local_test_data["id_package"]
+	var id_name = expected_local_test_data["id_name"]
+	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
+			format([id_author, id_package, id_name]))
+	# prune path which wasn't included in testing data but is added in data verification step
+	if fetched_data.has("path"):
+		fetched_data.erase("path")
+	assert_eq(fetched_data, expected_local_test_data)
+	if fetched_data != expected_local_test_data:
+		Log.warning(self, "test_local_data_fetched - fetched data does not match expected test data.\n{0}\nvs\n{1}".\
+				format([fetched_data, expected_local_test_data]))
+
+
+# verifies specific files (included with the framework dev build) exist and
+#	can be read
+func test_local_schema_exists() -> void:
+	var test_local_schema_path := "{0}/_schema/demo_weapon.json".format([Data.get_local_data_path()])
+	# must match structure of 'demo_item.json' in res://<data_path>/_schema
+	# (see REQUIREMENTS)
+	var expected_test_schema = {
+	"1.0": {
+		"name": "",
+		"cost": 0.0,
+		"damage": 3.0,
+		},
+	"1.1": {
+		"name": "",
+		"cost": 0.0,
+		"damage": 3.0,
+		"range": 2.0,
+		}
+	}
+	var file = FileAccess.open(test_local_schema_path, FileAccess.READ)
+	var json_file = JSON.new()
+	if file == null:
+		fail_test("cannot open file")
+		return
+	if json_file.parse(file.get_as_text()) == OK:
+		var content = json_file.data
+		assert_eq(content, expected_test_schema)
+	else:
+		fail_test("cannot read file")
