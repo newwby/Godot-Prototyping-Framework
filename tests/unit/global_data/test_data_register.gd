@@ -147,7 +147,6 @@ func test_fetch_existing_author():
 	assert_eq(Data.fetch_by_author(test_author), [])
 
 
-
 # checks if fetch_by_package returns the correct value on missing data
 func test_fetch_missing_package():
 	var test_package := "fake_missing_package_for_test_fetch_missing_package"
@@ -174,6 +173,32 @@ func test_fetch_existing_package():
 	assert_does_not_have(Data.fetch_by_package(test_package), test_data)
 	assert_eq(Data.fetch_by_package(test_package), [])
 
+
+# checks if fetch_by_schema returns the correct value on missing data
+func test_fetch_missing_schema():
+	var test_schema := "fake_missing_schema_for_test_fetch_by_schema"
+	assert_eq(Data.data_package_register.has(test_schema), false)
+	Log.info(self, "expect imminent Data warning for missing schema test")
+	assert_eq(Data.fetch_by_schema(test_schema), [])
+
+
+# check if data exists in package register and fetch_by_schema returns expected result
+# test tears down the test value at conclusion
+func test_fetch_existing_schema():
+	var test_schema := "faked_present_schema_for_test_fetch_existing_schema"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data,
+	]
+	Data.data_package_register[test_schema] = test_data
+	assert_has(Data.fetch_by_schema(test_schema), expected_local_test_data)
+	assert_eq(Data.fetch_by_schema(test_schema), test_data)
+	assert_eq(Data.fetch_by_schema(test_schema).size(), 2)
+	# remove testing data, check it is gone
+	Data.data_package_register.erase(test_schema)
+	Log.info(self, "expect imminent Data warning for existing package test teardown")
+	assert_does_not_have(Data.fetch_by_schema(test_schema), test_data)
+	assert_eq(Data.fetch_by_schema(test_schema), [])
 
 # verifies specific files (included with the framework dev build) exist and
 #	can be read
