@@ -174,3 +174,25 @@ func test_missing_id():
 	assert_eq(Data.data_id_register.has(test_id), false)
 	Log.info(self, "expect imminent Data warning for missing id test")
 	assert_eq(Data.fetch_by_id(test_id), {})
+
+
+# checks if fetch_by_author returns the correct value on missing data
+func test_fetch_missing_author():
+	var test_author := "fake_missing_author_for_test_fetch_missing_author"
+	assert_eq(Data.data_author_register.has(test_author), false)
+	Log.info(self, "expect imminent Data warning for missing author test")
+	assert_eq(Data.fetch_by_author(test_author), [])
+
+
+# check if data exists in author register and fetch_by_author returns expected result
+func test_fetch_existing_author():
+	var test_author := "faked_present_author_for_test_fetch_existing_author"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data,
+		expected_local_test_data
+	]
+	Data.data_author_register[test_author] = test_data
+	assert_has(Data.fetch_by_author(test_author), expected_local_test_data)
+	assert_eq(Data.fetch_by_author(test_author), test_data)
+	assert_eq(Data.fetch_by_author(test_author).size(), 3)
