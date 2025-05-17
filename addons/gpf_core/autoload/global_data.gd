@@ -178,7 +178,7 @@ func _index_data(json_data: Dictionary) -> void:
 func _load_all_json_data(target_directory: String) -> void:
 	for path in _get_all_paths(target_directory):
 		# verify and index the data
-		var verified_data = _verify_json_data(path)
+		var verified_data = _process_json_data(path)
 		if (verified_data.is_empty() == false):
 			data_collection.append(verified_data)
 			_index_data(verified_data)
@@ -211,14 +211,22 @@ func _load_schema(schema_file_path: String) -> void:
 		Log.error(self, "cannot find _schema path at {0}".format([schema_file_path]))
 
 
-func _verify_json_data(json_file_path: String) -> Dictionary:
+# loads json data file from path
+# verifies the structure of the data follows expected structure
+# verifies the structure of the data matches the specified schema
+# appends path to the json data structure
+func _process_json_data(json_file_path: String) -> Dictionary:
 	# verify args
 	if json_file_path.is_absolute_path() == false:
-		Log.warning(self, "invalid path in _verify_json_data : {0}".format([json_file_path]))
+		Log.warning(self, "invalid path in _process_json_data : {0}".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		return {}
+	if json_file_path.ends_with(".json") == false:
+		Log.warning(self, "path is not json path : {0}".format([json_file_path]))
 		# ERR_FILE_CANT_OPEN
 		return {}
 	#if filename.is_valid_filename() == false:
-		#Log.warning(self, "invalid filemame in _verify_json_data : {0}".format([json_file_path]))
+		#Log.warning(self, "invalid filemame in _process_json_data : {0}".format([json_file_path]))
 		# ERR_FILE_CANT_OPEN
 		#return {}
 	# valid
@@ -239,12 +247,13 @@ func _verify_json_data(json_file_path: String) -> Dictionary:
 				# ERR_FILE_CANT_READ
 				return {}
 			# validate data matches schema specified
-			if _verify_schema(json_data) == false:
+			if _verify_schema_match(json_data) == false:
 				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
 				# ERR_FILE_CANT_READ
 				return {}
 			else:
 				# OK
+				json_data["path"] = json_file_path
 				return json_data
 	else:
 		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
@@ -259,7 +268,7 @@ func _verify_json_data(json_file_path: String) -> Dictionary:
 # it is stored nested inside the schema_register entry
 # e.g. "1.0" in core.json will be stored as schema_register[core][1.0]
 # this allows for multiple versions of the same schema stored in one file
-func _verify_schema(json_data: Dictionary) -> bool:
+func _verify_schema_match(json_data: Dictionary) -> bool:
 	var valid_json_data = true
 	
 	# these keys must match the following types in all data entries
