@@ -88,6 +88,19 @@ func test_apply_json_data():
 	assert_eq(test_object.test_property_2, expected_prop_value_2)
 
 
+func test_clear_data():
+	Data.clear_all_data()
+	assert_eq(Data.data_collection.is_empty(), true)
+	assert_eq(Data.data_id_register.is_empty(), true)
+	assert_eq(Data.data_author_register.is_empty(), true)
+	assert_eq(Data.data_package_register.is_empty(), true)
+	assert_eq(Data.data_schema_register.is_empty(), true)
+	assert_eq(Data.data_tag_register.is_empty(), true)
+	assert_eq(Data.data_type_register.is_empty(), true)
+	# must reload for later tests
+	Data.load_all_data()
+
+
 # applies an incorrectly formatted id to the register
 # expect warning on test
 func test_fetch_malformed_id():
