@@ -80,6 +80,7 @@ func clear_all_data() -> void:
 	data_collection.clear()
 	data_id_register.clear()
 	data_author_register.clear()
+	data_package_register.clear()
 	data_schema_register.clear()
 	data_type_register.clear()
 	data_tag_register.clear()
