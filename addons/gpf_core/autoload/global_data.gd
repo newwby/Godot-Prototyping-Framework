@@ -37,6 +37,13 @@ var schema_register := {}
 
 # data indexed by id_author.id_package.id_name
 var data_id_register := {}
+# data indexed by schema_id
+var data_schema_register := {}
+# data indexed by author, package, type, or tag
+var data_author_register := {}
+var data_package_register := {}
+var data_type_register := {}
+#var data_tag_register := {}
 
 # un-indexed data, recorded in order loaded
 # retrieval from this collection will be slower, fetching from registers is preferred
@@ -89,6 +96,7 @@ func fetch_by_id(data_id: String) -> Dictionary:
 	# else
 	Log.warning(self, "cannot find data_id {0}".format([data_id]))
 	return {}
+
 
 # ProjectSetting can be changed by developer to determine the data directory
 #	searched inside res:// and user:// (name consistent across both)
@@ -164,14 +172,51 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 
 
 
+# json_data should be verified, the return arg of _process_json_data
 func _index_data(json_data: Dictionary) -> void:
+	# validate
+	if json_data.is_empty():
+		Log.error(self, "data not verified -> {0}".format([json_data]))
+		return
+	
+	var author = json_data["id_author"]
+	var package = json_data["id_package"]
+	
 	# index by id_author.id_package.id_name
-	var id = "{0}.{1}.{2}".format([
-		json_data["id_author"],
-		json_data["id_package"],
-		json_data["id_name"]
-	])
+	var id = "{0}.{1}.{2}".format([author, package, json_data["id_name"]])
 	data_id_register[id] = json_data
+	
+	# index by schema_id
+	var schema_id = json_data["schema_id"]
+	if (data_schema_register.has(schema_id)) == false:
+		data_schema_register[schema_id] = []
+	data_schema_register[schema_id].append(json_data)
+	
+	# index by author
+	if (data_author_register.has(author)) == false:
+		data_author_register[author] = []
+	data_author_register[author].append(json_data)
+	
+	# index by package
+	if (data_package_register.has(package)) == false:
+		data_package_register[package] = []
+	data_package_register[package].append(json_data)
+	
+	# index by type
+	var type = json_data["type"]
+	if (data_type_register.has(type)) == false:
+		data_type_register[type] = []
+	data_type_register[type].append(json_data)
+	
+	# index by tag
+	#var tag = ""
+	
+#var data_schema_register := {}
+## data indexed by author, package, type, or tag
+#var data_author_register := {}
+#var data_package_register := {}
+#var data_type_register := {}
+#var data_tag_register := {}
 
 
 # loads every JSON data file in given directory
