@@ -1,8 +1,8 @@
 {
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
-	"id_author": "prototype_framework",
-	"id_package": "demo_data",
+	"id_author": "gpf",
+	"id_package": "testpkg",
 	"id_name": "demo_orc",
 	"type": "undefined",
 	"tags": [],
