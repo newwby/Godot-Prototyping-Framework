@@ -124,9 +124,9 @@ func test_local_schema_exists() -> void:
 func test_local_data_fetched() -> void:
 	var id_author = expected_local_test_data["id_author"]
 	var id_package = expected_local_test_data["id_package"]
-	var name = expected_local_test_data["id_name"]
+	var id_name = expected_local_test_data["id_name"]
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
-			format([id_author, id_package, name]))
+			format([id_author, id_package, id_name]))
 	assert_eq(fetched_data, expected_local_test_data)
 
 
