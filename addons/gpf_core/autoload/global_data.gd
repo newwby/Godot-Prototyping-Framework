@@ -132,6 +132,58 @@ func verify_user_data_directory() -> void:
 # private
 
 
+# returns empty array on failure
+func _get_all_paths(target_directory: String) -> PackedStringArray:
+	# validation
+	if target_directory.is_absolute_path() == false:
+		Log.warning(self, "invalid file path given to get_all_paths")
+		return PackedStringArray([])
+	# otherwise
+	var result: PackedStringArray
+	var dir = DirAccess.open(target_directory)
+	if dir:
+		dir.list_dir_begin()
+		var filename := dir.get_next()
+		
+		while filename != "":
+			# iterate through all directories
+			# skip current directory, parent directory, and schema directory
+			if dir.current_is_dir() and filename != "." and filename != ".." and filename != "_schema":
+				result += _get_all_paths("{0}/{1}".format([target_directory, filename]))
+			# file handling
+			elif not dir.current_is_dir():
+				# if is a valid json file, this can be loaded later
+				if filename.ends_with(".json"):
+					result.append("{0}/{1}".format([target_directory, filename]))
+			# start loop over with next file
+			filename = dir.get_next()
+		return result
+	else:
+		Log.error(self, "Failed to start recursive load at target directory: {0}".format([target_directory]))
+		return PackedStringArray([])
+
+
+
+func _index_data(json_data: Dictionary) -> void:
+	# index by id_author.id_package.id_name
+	var id = "{0}.{1}.{2}".format([
+		json_data["id_author"],
+		json_data["id_package"],
+		json_data["id_name"]
+	])
+	data_id_register[id] = json_data
+
+
+# loads every JSON data file in given directory
+func _load_all_json_data(target_directory: String) -> void:
+	for path in _get_all_paths(target_directory):
+		# verify and index the data
+		var verified_data = _verify_json_data(path)
+		if (verified_data.is_empty() == false):
+			data_collection.append(verified_data)
+			_index_data(verified_data)
+
+
 func _load_schema(schema_file_path: String) -> void:
 	# schema directory should be inside the path (local or user)
 	var schema_sub_directory = "{0}/_schema".format([schema_file_path])
@@ -157,6 +209,47 @@ func _load_schema(schema_file_path: String) -> void:
 			filename = dir.get_next()
 	else:
 		Log.error(self, "cannot find _schema path at {0}".format([schema_file_path]))
+
+
+func _verify_json_data(json_file_path: String) -> Dictionary:
+	# verify args
+	if json_file_path.is_absolute_path() == false:
+		Log.warning(self, "invalid path in _verify_json_data : {0}".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		return {}
+	#if filename.is_valid_filename() == false:
+		#Log.warning(self, "invalid filemame in _verify_json_data : {0}".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		#return {}
+	# valid
+	#var path := "{0}/{1}".format([json_file_path, filename])
+	var file := FileAccess.open(json_file_path, FileAccess.READ)
+	
+	if file:
+		var json := JSON.new()
+		if json.parse(file.get_as_text()) != OK:
+			Log.warning(self, "Invalid JSON in {0}.".format([json_file_path]))
+			# ERR_FILE_CANT_READ
+			return {}
+		else:
+			var json_data = json.data
+			# validate variant typing
+			if (typeof(json_data) != TYPE_DICTIONARY):
+				Log.warning(self, "unexpected typing verified json data at {0}".format([json_file_path]))
+				# ERR_FILE_CANT_READ
+				return {}
+			# validate data matches schema specified
+			if _verify_schema(json_data) == false:
+				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
+				# ERR_FILE_CANT_READ
+				return {}
+			else:
+				# OK
+				return json_data
+	else:
+		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
+		# ERR_FILE_CANT_OPEN
+		return {}
 
 
 # schema is loaded into schema_register with the key as the file name of the schema file
@@ -234,95 +327,3 @@ func _verify_schema(json_data: Dictionary) -> bool:
 	
 	Log.warning(self, "cannot find schema for {0}.{1}".format([schema_id, schema_version]))
 	return false
-
-
-# loads every JSON data file in given directory
-func _load_all_json_data(target_directory: String) -> void:
-	for path in _get_all_paths(target_directory):
-		# verify and index the data
-		var verified_data = _verify_json_data(path)
-		if (verified_data.is_empty() == false):
-			data_collection.append(verified_data)
-			_index_data(verified_data)
-
-
-func _index_data(json_data: Dictionary) -> void:
-	# index by id_author.id_package.id_name
-	var id = "{0}.{1}.{2}".format([
-		json_data["id_author"],
-		json_data["id_package"],
-		json_data["id_name"]
-	])
-	data_id_register[id] = json_data
-
-
-# returns empty array on failure
-func _get_all_paths(target_directory: String) -> PackedStringArray:
-	# validation
-	if target_directory.is_absolute_path() == false:
-		Log.warning(self, "invalid file path given to get_all_paths")
-		return PackedStringArray([])
-	# otherwise
-	var result: PackedStringArray
-	var dir = DirAccess.open(target_directory)
-	if dir:
-		dir.list_dir_begin()
-		var filename := dir.get_next()
-		
-		while filename != "":
-			# iterate through all directories
-			# skip current directory, parent directory, and schema directory
-			if dir.current_is_dir() and filename != "." and filename != ".." and filename != "_schema":
-				result += _get_all_paths("{0}/{1}".format([target_directory, filename]))
-			# file handling
-			elif not dir.current_is_dir():
-				# if is a valid json file, this can be loaded later
-				if filename.ends_with(".json"):
-					result.append("{0}/{1}".format([target_directory, filename]))
-			# start loop over with next file
-			filename = dir.get_next()
-		return result
-	else:
-		Log.error(self, "Failed to start recursive load at target directory: {0}".format([target_directory]))
-		return PackedStringArray([])
-
-
-func _verify_json_data(json_file_path: String) -> Dictionary:
-	# verify args
-	if json_file_path.is_absolute_path() == false:
-		Log.warning(self, "invalid path in _verify_json_data : {0}".format([json_file_path]))
-		# ERR_FILE_CANT_OPEN
-		return {}
-	#if filename.is_valid_filename() == false:
-		#Log.warning(self, "invalid filemame in _verify_json_data : {0}".format([json_file_path]))
-		# ERR_FILE_CANT_OPEN
-		#return {}
-	# valid
-	#var path := "{0}/{1}".format([json_file_path, filename])
-	var file := FileAccess.open(json_file_path, FileAccess.READ)
-	
-	if file:
-		var json := JSON.new()
-		if json.parse(file.get_as_text()) != OK:
-			Log.warning(self, "Invalid JSON in {0}.".format([json_file_path]))
-			# ERR_FILE_CANT_READ
-			return {}
-		else:
-			var json_data = json.data
-			# validate variant typing
-			if (typeof(json_data) != TYPE_DICTIONARY):
-				Log.warning(self, "unexpected typing verified json data at {0}".format([json_file_path]))
-				# ERR_FILE_CANT_READ
-				return {}
-			# validate data matches schema specified
-			if _verify_schema(json_data) == false:
-				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
-				# ERR_FILE_CANT_READ
-				return {}
-			else:
-				# OK
-				return json_data
-	else:
-		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
-		# ERR_FILE_CANT_OPEN
-		return {}
