@@ -108,8 +108,11 @@ func test_apply_json_data():
 	"data": {
 		"test_property_1": expected_prop_value_1,
 		"test_property_2": expected_prop_value_2,
+		"test_property_unnamed": 10.0
 	}
 	}
+	# test_property_unnamed exists to ensure properties missing on the target
+	#	object can exist within the jsonData without issue
 	var test_object := MockJsonReceiver.new()
 	Data.apply_json(test_object, stub_json_data)
 	assert_eq(test_object.test_property_1, expected_prop_value_1)
