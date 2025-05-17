@@ -177,6 +177,19 @@ func test_missing_id():
 	assert_eq(Data.fetch_by_id(test_id), {})
 
 
+# check if fetch_by_id functions as expected, returning correct value
+# test tears down the test value at conclusion
+func test_existing_id():
+	var test_id := "test_existing_id.test_data_register.test_id"
+	Data.data_id_register[test_id] = expected_local_test_data
+	assert_eq(Data.fetch_by_id(test_id), expected_local_test_data)
+	# remove testing data, check it is gone
+	Data.data_id_register.erase(test_id)
+	Log.info(self, "expect imminent Data warning for existing id test teardown")
+	assert_does_not_have(Data.fetch_by_id(test_id), expected_local_test_data)
+	assert_eq(Data.fetch_by_id(test_id), {})
+
+
 # checks if fetch_by_author returns the correct value on missing data
 func test_fetch_missing_author():
 	var test_author := "fake_missing_author_for_test_fetch_missing_author"
