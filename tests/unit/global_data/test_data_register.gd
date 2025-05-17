@@ -150,3 +150,10 @@ func test_apply_json_data():
 	Data.apply_json(test_object, stub_json_data)
 	assert_eq(test_object.test_property_1, expected_prop_value_1)
 	assert_eq(test_object.test_property_2, expected_prop_value_2)
+
+
+# expect error on test
+func test_fetch_malformed_id():
+	var malformed_id := "author.package.id.fourththing"
+	var result := Data.fetch_by_id(malformed_id)
+	assert_eq(result, {})
