@@ -43,7 +43,7 @@ var data_schema_register := {}
 var data_author_register := {}
 var data_package_register := {}
 var data_type_register := {}
-#var data_tag_register := {}
+var data_tag_register := {}
 
 # un-indexed data, recorded in order loaded
 # retrieval from this collection will be slower, fetching from registers is preferred
@@ -188,35 +188,34 @@ func _index_data(json_data: Dictionary) -> void:
 	
 	# index by schema_id
 	var schema_id = json_data["schema_id"]
-	if (data_schema_register.has(schema_id)) == false:
+	if data_schema_register.has(schema_id) == false:
 		data_schema_register[schema_id] = []
 	data_schema_register[schema_id].append(json_data)
 	
 	# index by author
-	if (data_author_register.has(author)) == false:
+	if data_author_register.has(author) == false:
 		data_author_register[author] = []
 	data_author_register[author].append(json_data)
 	
 	# index by package
-	if (data_package_register.has(package)) == false:
+	if data_package_register.has(package) == false:
 		data_package_register[package] = []
 	data_package_register[package].append(json_data)
 	
 	# index by type
 	var type = json_data["type"]
-	if (data_type_register.has(type)) == false:
+	if data_type_register.has(type) == false:
 		data_type_register[type] = []
 	data_type_register[type].append(json_data)
 	
 	# index by tag
-	#var tag = ""
-	
-#var data_schema_register := {}
-## data indexed by author, package, type, or tag
-#var data_author_register := {}
-#var data_package_register := {}
-#var data_type_register := {}
-#var data_tag_register := {}
+	var tags = json_data["tags"]
+	if typeof(tags) == TYPE_ARRAY:
+		if tags.is_empty() == false:
+			for tag in tags:
+				if data_tag_register.has(tag) == false:
+					data_tag_register[tag] = []
+				data_tag_register[tag].append(json_data)
 
 
 # loads every JSON data file in given directory
