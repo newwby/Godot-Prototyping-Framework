@@ -167,3 +167,10 @@ func test_fetch_malformed_id():
 	Log.info(self, "expect imminent Data warning for malformed id test")
 	var result := Data.fetch_by_id(malformed_id)
 	assert_eq(result, {})
+
+
+func test_missing_id():
+	var test_id := "fakeauthor.fakepackage.definitelyfakename"
+	assert_eq(Data.data_id_register.has(test_id), false)
+	Log.info(self, "expect imminent Data warning for missing id test")
+	assert_eq(Data.fetch_by_id(test_id), {})
