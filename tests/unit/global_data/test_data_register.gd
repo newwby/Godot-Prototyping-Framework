@@ -189,16 +189,73 @@ func test_fetch_existing_schema():
 	var test_data = [
 		expected_local_test_data,
 		expected_local_test_data,
+		expected_local_test_data,
 	]
-	Data.data_package_register[test_schema] = test_data
+	Data.data_schema_register[test_schema] = test_data
 	assert_has(Data.fetch_by_schema(test_schema), expected_local_test_data)
 	assert_eq(Data.fetch_by_schema(test_schema), test_data)
-	assert_eq(Data.fetch_by_schema(test_schema).size(), 2)
+	assert_eq(Data.fetch_by_schema(test_schema).size(), 3)
 	# remove testing data, check it is gone
-	Data.data_package_register.erase(test_schema)
+	Data.data_schema_register.erase(test_schema)
 	Log.info(self, "expect imminent Data warning for existing package test teardown")
 	assert_does_not_have(Data.fetch_by_schema(test_schema), test_data)
 	assert_eq(Data.fetch_by_schema(test_schema), [])
+
+
+# checks if fetch_by_type returns the correct value on missing data
+func test_fetch_missing_type():
+	var test_type := "fake_missing_type_for_test_fetch_missing_type"
+	assert_eq(Data.data_type_register.has(test_type), false)
+	Log.info(self, "expect imminent Data warning for missing type test")
+	assert_eq(Data.fetch_by_type(test_type), [])
+
+
+# check if data exists in type register and fetch_by_type returns expected result
+# test tears down the test value at conclusion
+func test_fetch_existing_type():
+	var test_type := "faked_present_type_for_test_fetch_existing_type"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data,
+		expected_local_test_data
+	]
+	Data.data_type_register[test_type] = test_data
+	assert_has(Data.fetch_by_type(test_type), expected_local_test_data)
+	assert_eq(Data.fetch_by_type(test_type), test_data)
+	assert_eq(Data.fetch_by_type(test_type).size(), 3)
+	# remove testing data, check it is gone
+	Data.data_type_register.erase(test_type)
+	Log.info(self, "expect imminent Data warning for existing type test teardown")
+	assert_does_not_have(Data.fetch_by_type(test_type), test_data)
+	assert_eq(Data.fetch_by_type(test_type), [])
+
+
+# checks if fetch_by_tag returns the correct value on missing data
+func test_fetch_missing_tag():
+	var test_tag := "fake_missing_tag_for_test_fetch_missing_tag"
+	assert_eq(Data.data_tag_register.has(test_tag), false)
+	Log.info(self, "expect imminent Data warning for missing tag test")
+	assert_eq(Data.fetch_by_tag(test_tag), [])
+
+
+# check if data exists in tag register and fetch_by_tag returns expected result
+# test tears down the test value at conclusion
+func test_fetch_existing_tag():
+	var test_tag := "faked_present_tag_for_test_fetch_existing_tag"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data
+	]
+	Data.data_tag_register[test_tag] = test_data
+	assert_has(Data.fetch_by_tag(test_tag), expected_local_test_data)
+	assert_eq(Data.fetch_by_tag(test_tag), test_data)
+	assert_eq(Data.fetch_by_tag(test_tag).size(), 2)
+	# remove testing data, check it is gone
+	Data.data_tag_register.erase(test_tag)
+	Log.info(self, "expect imminent Data warning for existing tag test teardown")
+	assert_does_not_have(Data.fetch_by_tag(test_tag), test_data)
+	assert_eq(Data.fetch_by_tag(test_tag), [])
+
 
 # verifies specific files (included with the framework dev build) exist and
 #	can be read
