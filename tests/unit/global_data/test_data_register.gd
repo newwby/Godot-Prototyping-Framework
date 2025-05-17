@@ -88,6 +88,7 @@ func test_apply_json_data():
 	assert_eq(test_object.test_property_2, expected_prop_value_2)
 
 
+# test checks that the Data singleton can be cleared
 func test_clear_data():
 	Data.clear_all_data()
 	assert_eq(Data.data_collection.is_empty(), true)
@@ -99,6 +100,67 @@ func test_clear_data():
 	assert_eq(Data.data_type_register.is_empty(), true)
 	# must reload for later tests
 	Data.load_all_data()
+
+
+# tests that data can be written to user and loaded afterwards
+func test_load_data_forcibly():
+	var dir_path := "{0}/{1}".format([
+		Data.get_user_data_path(),
+		"_test_load_data_forcibly"
+	])
+	var file_name := "testfile.json"
+	var full_path := "{0}/{1}".format([dir_path, file_name])
+	var data = TEST_USER_DATA.duplicate()
+	data["path"] = full_path
+	data["id_author"] = "test_load_data_forcibly"
+	
+	var absolute_dir_path := ProjectSettings.globalize_path(dir_path)
+	if DataUtility.validate_directory(absolute_dir_path) == false:
+		DirAccess.make_dir_recursive_absolute(absolute_dir_path)
+	var absolute_file_path := ProjectSettings.globalize_path(full_path)
+	
+	var file = FileAccess.open(full_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
+	
+	if FileAccess.file_exists(absolute_file_path) == false:
+		fail_test("test_load_data_forcibly file creation unsucessful!")
+		return
+	
+	var loaded_file = FileAccess.open(full_path, FileAccess.READ)
+	var json_loader = JSON.new()
+	var file_outcome = json_loader.parse(loaded_file.get_as_text())
+	var file_content
+	if file_outcome == OK:
+		file_content = json_loader.data
+	loaded_file.close()
+	
+	Data.clear_all_data()
+	Data.load_all_data()
+	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".format([
+		data["id_author"],
+		data["id_package"],
+		data["id_name"]
+	]))
+	
+	var debug_print_statement := false
+	if debug_print_statement:
+		print("\ntest outp")
+		print("\n{0}\n\n{1}\n\n{2}\n\n{3}\n\n{4}\n\n{5}\n\n".format([
+			"full_path: "+str(full_path),
+			"data: "+str(data),
+			"file_content: "+str(file_content),
+			"match data/file-content? "+str(file_content == data),
+			"fetched_data: "+str(0),
+			"match data/fetched-data? "+str(fetched_data == data)
+		]))
+	
+	# test data
+	assert_eq(data, fetched_data)
+	
+	# clear data from the test
+	DirAccess.remove_absolute(absolute_file_path)
+	DirAccess.remove_absolute(absolute_dir_path)
 
 
 # applies an incorrectly formatted id to the register

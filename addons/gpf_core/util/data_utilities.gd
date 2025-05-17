@@ -263,4 +263,3 @@ static func validate_directory(arg_directory_path: String) -> bool:
 ##############################################################################
 
 # private methods
-
