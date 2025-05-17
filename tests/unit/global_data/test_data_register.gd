@@ -169,8 +169,9 @@ func test_fetch_malformed_id():
 	assert_eq(result, {})
 
 
+# checks if fetch_by_id returns the correct value on missing data
 func test_missing_id():
-	var test_id := "fakeauthor.fakepackage.definitelyfakename"
+	var test_id := "test_missing_id.test_data_register.test_id"
 	assert_eq(Data.data_id_register.has(test_id), false)
 	Log.info(self, "expect imminent Data warning for missing id test")
 	assert_eq(Data.fetch_by_id(test_id), {})
@@ -185,6 +186,7 @@ func test_fetch_missing_author():
 
 
 # check if data exists in author register and fetch_by_author returns expected result
+# test tears down the test value at conclusion
 func test_fetch_existing_author():
 	var test_author := "faked_present_author_for_test_fetch_existing_author"
 	var test_data = [
@@ -196,3 +198,8 @@ func test_fetch_existing_author():
 	assert_has(Data.fetch_by_author(test_author), expected_local_test_data)
 	assert_eq(Data.fetch_by_author(test_author), test_data)
 	assert_eq(Data.fetch_by_author(test_author).size(), 3)
+	# remove testing data, check it is gone
+	Data.data_author_register.erase(test_author)
+	Log.info(self, "expect imminent Data warning for existing author test teardown")
+	assert_does_not_have(Data.fetch_by_author(test_author), test_data)
+	assert_eq(Data.fetch_by_author(test_author), [])
