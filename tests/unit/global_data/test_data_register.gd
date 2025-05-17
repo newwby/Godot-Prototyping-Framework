@@ -34,23 +34,8 @@ const TEST_USER_SCHEMA = {
 const TEST_USER_DATA = {
 	"schema_id": "demo_item",
 	"schema_version": "1.0",
-	"id_author": "prototype_framework",
-	"id_package": "demo_data",
-	"id_name": "demo_potion",
-	"type": "undefined",
-	"tags": [],
-	"data": {
-		"name": "Red Potion",
-		"cost": 10,
-	}
-}
-# must match structure of 'demo_item_potion.json' in res://<data_path>
-# (see REQUIREMENTS)
-var expected_local_test_data = {
-	"schema_id": "demo_item",
-	"schema_version": "1.0",
-	"id_author": "prototype_framework",
-	"id_package": "demo_data",
+	"id_author": "gpf",
+	"id_package": "testpkg",
 	"id_name": "demo_potion",
 	"type": "undefined",
 	"tags": [],
@@ -59,6 +44,22 @@ var expected_local_test_data = {
 		"cost": 10.0,
 	}
 }
+# must match structure of 'demo_item_potion.json' in res://<data_path>
+# (see REQUIREMENTS)
+var expected_local_test_data = {
+	"schema_id": "demo_item",
+	"schema_version": "1.0",
+	"id_author": "gpf",
+	"id_package": "testpkg",
+	"id_name": "demo_potion",
+	"type": "undefined",
+	"tags": [],
+	"data": {
+		"name": "Red Potion",
+		"cost": 10.0,
+	}
+}
+
 
 ##############################################################################
 
@@ -127,7 +128,13 @@ func test_local_data_fetched() -> void:
 	var id_name = expected_local_test_data["id_name"]
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".\
 			format([id_author, id_package, id_name]))
+	# prune path which wasn't included in testing data but is added in data verification step
+	if fetched_data.has("path"):
+		fetched_data.erase("path")
 	assert_eq(fetched_data, expected_local_test_data)
+	if fetched_data != expected_local_test_data:
+		Log.warning(self, "test_local_data_fetched - fetched data does not match expected test data.\n{0}\nvs\n{1}".\
+				format([fetched_data, expected_local_test_data]))
 
 
 func test_apply_json_data():
