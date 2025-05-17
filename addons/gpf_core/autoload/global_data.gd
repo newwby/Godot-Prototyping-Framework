@@ -81,21 +81,49 @@ func clear_all_data() -> void:
 	#//TODO add indexing registers once implemented
 
 
+func fetch_by_author(data_author: String) -> Array:
+	var fetched_output = _fetch_data_list(data_author, data_author_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find data_author {0} in data_author_register".\
+				format([data_author]))
+	return fetched_output
+
+
 func fetch_by_id(data_id: String) -> Dictionary:
 	var data_id_components := data_id.split(".")
 	if data_id_components.size() != 3:
 		Log.warning(self, "cannot parse data_id - {0} - expected \"id_author\".\"id_package\".\"id_name\" ".format([data_id]))
 		return {}
-	#var data_author = data_id_components[0]
-	#var data_package = data_id_components[1]
-	#var data_name = data_id_components[2]
-	if data_id_register.has(data_id):
-		var outp_data = data_id_register[data_id]
-		if (typeof(outp_data) == TYPE_DICTIONARY):
-			return outp_data
-	# else
-	Log.warning(self, "cannot find data_id {0}".format([data_id]))
-	return {}
+	
+	var fetched_output = _fetch_data(data_id, data_id_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find data_id {0} in data_id_register".\
+				format([data_id]))
+	return fetched_output
+
+
+func fetch_by_schema(schema_id: String) -> Array:
+	var fetched_output = _fetch_data_list(schema_id, data_schema_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find schema_id {0} in data_schema_register".\
+				format([schema_id]))
+	return fetched_output
+
+
+func fetch_by_type(data_type: String) -> Array:
+	var fetched_output = _fetch_data_list(data_type, data_type_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find data_type {0} in data_type_register".\
+				format([data_type]))
+	return fetched_output
+
+
+func fetch_by_tag(data_tag: String) -> Array:
+	var fetched_output = _fetch_data_list(data_tag, data_tag_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find data_tag {0} in data_tag_register".\
+				format([data_tag]))
+	return fetched_output
 
 
 # ProjectSetting can be changed by developer to determine the data directory
@@ -138,6 +166,36 @@ func verify_user_data_directory() -> void:
 ##############################################################################
 
 # private
+
+
+# returns an internal array from an indexed register
+# returns empty array if cannnot be found or any argument is invalid
+func _fetch_data(key: String, register: Dictionary) -> Dictionary:
+	if register.is_empty():
+		return {}
+	elif register.has(key):
+		var outp_data = register[key]
+		if (typeof(outp_data) == TYPE_DICTIONARY):
+			return outp_data
+		else:
+			return {}
+	else:
+		return {}
+
+
+# returns a json data value from an indexed register
+# returns empty array if cannnot be found or any argument is invalid
+func _fetch_data_list(key: String, register: Dictionary) -> Array:
+	if register.is_empty():
+		return []
+	elif register.has(key):
+		var outp_data = register[key]
+		if (typeof(outp_data) == TYPE_ARRAY):
+			return outp_data
+		else:
+			return []
+	else:
+		return []
 
 
 # returns empty array on failure
