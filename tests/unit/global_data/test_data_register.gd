@@ -127,14 +127,6 @@ func test_load_data_forcibly():
 		fail_test("test_load_data_forcibly file creation unsucessful!")
 		return
 	
-	var loaded_file = FileAccess.open(full_path, FileAccess.READ)
-	var json_loader = JSON.new()
-	var file_outcome = json_loader.parse(loaded_file.get_as_text())
-	var file_content
-	if file_outcome == OK:
-		file_content = json_loader.data
-	loaded_file.close()
-	
 	Data.clear_all_data()
 	Data.load_all_data()
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".format([
@@ -142,18 +134,6 @@ func test_load_data_forcibly():
 		data["id_package"],
 		data["id_name"]
 	]))
-	
-	var debug_print_statement := false
-	if debug_print_statement:
-		print("\ntest outp")
-		print("\n{0}\n\n{1}\n\n{2}\n\n{3}\n\n{4}\n\n{5}\n\n".format([
-			"full_path: "+str(full_path),
-			"data: "+str(data),
-			"file_content: "+str(file_content),
-			"match data/file-content? "+str(file_content == data),
-			"fetched_data: "+str(0),
-			"match data/fetched-data? "+str(fetched_data == data)
-		]))
 	
 	# test data
 	assert_eq(data, fetched_data)
