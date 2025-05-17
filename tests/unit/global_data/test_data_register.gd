@@ -22,17 +22,17 @@ extends GutTest
 # test-scoped variants here
 
 # custom testing schema and data written to user://<data_path>
-const TEST_DATA_FILENAME := "nested_dir/data_register_stub_test_data.json"
+const TEST_DATA_FILENAME := "data_register_stub_test_data.json"
 const TEST_SCHEMA_FILENAME := "data_register_stub_test_schema.json"
 const TEST_USER_SCHEMA = {
 	"1.0": {
 		"test_data_name": "",
-		"test_data_value_1": 0,
+		"test_data_value_1": 0.0,
 		"test_data_value_2": [],
 		}
 	}
 const TEST_USER_DATA = {
-	"schema_id": "data_register_stub_test_schema",
+	"schema_id": "demo_item",
 	"schema_version": "1.0",
 	"id_author": "gpf",
 	"id_package": "testpkg",
@@ -41,10 +41,17 @@ const TEST_USER_DATA = {
 	"tags": [],
 	"data": {
 		"test_data_name": "",
-		"test_data_value_1": 0,
+		"test_data_value_1": 0.0,
 		"test_data_value_2": [],
+		"name": "Not an item but added for testing",
+		"cost": 0.0,
 	}
 }
+
+var test_data_path := "{0}/{1}".format([Data.get_user_data_path(), "nested_dir"])
+var test_schema_path := "{0}/{1}".format([Data.get_user_data_path(), "_schema"])
+
+# test data utilised by tests that need to add dummy data
 # must match structure of 'demo_item_potion.json' in res://<data_path>
 # (see REQUIREMENTS)
 var expected_local_test_data = {
@@ -64,7 +71,27 @@ var expected_local_test_data = {
 
 ##############################################################################
 
-# tests
+# test setup
+
+
+func before_all():
+	_write_test_user_data()
+	# reload Data singleton
+	Data.clear_all_data()
+	Data.load_all_data()
+
+
+func after_all():
+	_remove_test_user_data()
+	_remove_test_user_schema()
+	# now missing data is still in memory at this point
+	#Data.clear_all_data()
+	#Data.load_all_data()
+
+
+##############################################################################
+
+# tests proper
 
 
 func test_apply_json_data():
@@ -103,7 +130,10 @@ func test_clear_data():
 	Data.load_all_data()
 
 
-# tests that data can be written to user and loaded afterwards
+# checks new data can be added, reloaded, and fetched by Data singleton
+# establishes that data can be loaded from user:// as well
+# this test is potentially a duplicate of before_all/after_all behaviour
+#	but provides an error endpoint for if that behaviour breaks
 func test_load_data_forcibly():
 	var dir_path := "{0}/{1}".format([
 		Data.get_user_data_path(),
@@ -142,6 +172,25 @@ func test_load_data_forcibly():
 	# clear data from the test
 	DirAccess.remove_absolute(absolute_file_path)
 	DirAccess.remove_absolute(absolute_dir_path)
+
+
+# requires before_all behaviour
+# tests that data can be loaded from nested directories
+# establishes that data can be loaded from user:// as well
+func test_load_data_nested():
+	# setup and teardown for this test is done in before_all/after_all
+	var fetched_user_data := Data.fetch_by_id("{0}.{1}.{2}".format([
+		TEST_USER_DATA["id_author"],
+		TEST_USER_DATA["id_package"],
+		TEST_USER_DATA["id_name"],
+	]))
+	# path is applied during data loading, needs to be accommodated in tests
+	var path_adj_data = TEST_USER_DATA.duplicate()
+	path_adj_data["path"] = "{0}/{1}".format([test_data_path, TEST_DATA_FILENAME])
+	assert_eq(fetched_user_data, path_adj_data)
+	# why do these print in diff orders
+	print(path_adj_data)
+	print("\n\n", fetched_user_data)
 
 
 # applies an incorrectly formatted id to the register
@@ -372,3 +421,49 @@ func test_local_schema_exists() -> void:
 		assert_eq(content, expected_test_schema)
 	else:
 		fail_test("cannot read file")
+
+
+##############################################################################
+
+# private test setup methods, not tests
+
+
+func _remove_test_user_schema() -> void:
+	pass
+	# schema teardown
+	#var full_schema_path := "{0}/{1}".format([
+		#test_schema_path,
+		#TEST_SCHEMA_FILENAME
+	#])
+	#var absolute_schema_path := ProjectSettings.globalize_path(full_schema_path)
+	#var absolute_schema_dir_path := ProjectSettings.globalize_path(test_schema_path)
+	#DirAccess.remove_absolute(absolute_schema_path)
+	#DirAccess.remove_absolute(absolute_schema_dir_path)
+
+
+func _remove_test_user_data() -> void:
+	# data file teardown
+	var full_file_path := "{0}/{1}".format([
+		test_data_path,
+		TEST_DATA_FILENAME
+	])
+	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
+	DirAccess.remove_absolute(absolute_file_path)
+	DirAccess.remove_absolute(absolute_data_dir_path)
+
+
+func _write_test_user_data() -> void:
+	# data file structuring
+	var full_file_path := "{0}/{1}".format([
+		test_data_path,
+		TEST_DATA_FILENAME
+	])
+	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
+	if DataUtility.validate_directory(absolute_data_dir_path) == false:
+		DirAccess.make_dir_recursive_absolute(absolute_data_dir_path)
+	
+	var file = FileAccess.open(absolute_file_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(TEST_USER_DATA))
+	file.close()
