@@ -106,6 +106,14 @@ func fetch_by_id(data_id: String) -> Dictionary:
 	return fetched_output
 
 
+func fetch_by_package(package_id: String) -> Array:
+	var fetched_output = _fetch_data_list(package_id, data_package_register)
+	if fetched_output.is_empty():
+		Log.warning(self, "cannot find package_id {0} in data_package_register".\
+				format([package_id]))
+	return fetched_output
+
+
 func fetch_by_schema(schema_id: String) -> Array:
 	var fetched_output = _fetch_data_list(schema_id, data_schema_register)
 	if fetched_output.is_empty():
