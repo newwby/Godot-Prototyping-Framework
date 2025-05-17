@@ -216,3 +216,31 @@ func test_fetch_existing_author():
 	Log.info(self, "expect imminent Data warning for existing author test teardown")
 	assert_does_not_have(Data.fetch_by_author(test_author), test_data)
 	assert_eq(Data.fetch_by_author(test_author), [])
+
+
+
+# checks if fetch_by_package returns the correct value on missing data
+func test_fetch_missing_package():
+	var test_package := "fake_missing_package_for_test_fetch_missing_package"
+	assert_eq(Data.data_package_register.has(test_package), false)
+	Log.info(self, "expect imminent Data warning for missing package test")
+	assert_eq(Data.fetch_by_package(test_package), [])
+
+
+# check if data exists in package register and fetch_by_package returns expected result
+# test tears down the test value at conclusion
+func test_fetch_existing_package():
+	var test_package := "faked_present_package_for_test_fetch_existing_package"
+	var test_data = [
+		expected_local_test_data,
+		expected_local_test_data,
+	]
+	Data.data_package_register[test_package] = test_data
+	assert_has(Data.fetch_by_package(test_package), expected_local_test_data)
+	assert_eq(Data.fetch_by_package(test_package), test_data)
+	assert_eq(Data.fetch_by_package(test_package).size(), 2)
+	# remove testing data, check it is gone
+	Data.data_package_register.erase(test_package)
+	Log.info(self, "expect imminent Data warning for existing package test teardown")
+	assert_does_not_have(Data.fetch_by_package(test_package), test_data)
+	assert_eq(Data.fetch_by_package(test_package), [])
