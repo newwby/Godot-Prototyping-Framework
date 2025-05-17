@@ -164,5 +164,6 @@ func test_apply_json_data():
 func test_fetch_malformed_id():
 	var malformed_id := "author.package.id.fourththing"
 	Data.data_id_register[malformed_id] = expected_local_test_data
+	Log.info(self, "expect imminent Data warning for malformed id test")
 	var result := Data.fetch_by_id(malformed_id)
 	assert_eq(result, {})
