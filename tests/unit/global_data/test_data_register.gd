@@ -22,8 +22,8 @@ extends GutTest
 # test-scoped variants here
 
 # custom testing schema and data written to user://<data_path>
-const TEST_DATA_FILENAME := "data_register_stub_test_data"
-const TEST_SCHEMA_FILENAME := "data_register_stub_test_schema"
+const TEST_DATA_FILENAME := "nested_dir/data_register_stub_test_data.json"
+const TEST_SCHEMA_FILENAME := "data_register_stub_test_schema.json"
 const TEST_USER_SCHEMA = {
 	"1.0": {
 		"test_data_name": "",
@@ -32,16 +32,17 @@ const TEST_USER_SCHEMA = {
 		}
 	}
 const TEST_USER_DATA = {
-	"schema_id": "demo_item",
+	"schema_id": "data_register_stub_test_schema",
 	"schema_version": "1.0",
 	"id_author": "gpf",
 	"id_package": "testpkg",
-	"id_name": "demo_potion",
-	"type": "undefined",
+	"id_name": "demo_file",
+	"type": "testing",
 	"tags": [],
 	"data": {
-		"name": "Red Potion",
-		"cost": 10.0,
+		"test_data_name": "",
+		"test_data_value_1": 0,
+		"test_data_value_2": [],
 	}
 }
 # must match structure of 'demo_item_potion.json' in res://<data_path>
@@ -110,7 +111,7 @@ func test_load_data_forcibly():
 	])
 	var file_name := "testfile.json"
 	var full_path := "{0}/{1}".format([dir_path, file_name])
-	var data = TEST_USER_DATA.duplicate()
+	var data = expected_local_test_data.duplicate()
 	data["path"] = full_path
 	data["id_author"] = "test_load_data_forcibly"
 	
