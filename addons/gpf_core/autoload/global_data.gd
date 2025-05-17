@@ -78,7 +78,11 @@ func apply_json(given_object: Object, json_data: Dictionary) -> void:
 func clear_all_data() -> void:
 	schema_register.clear()
 	data_collection.clear()
-	#//TODO add indexing registers once implemented
+	data_id_register.clear()
+	data_author_register.clear()
+	data_schema_register.clear()
+	data_type_register.clear()
+	data_tag_register.clear()
 
 
 func fetch_by_author(data_author: String) -> Array:
