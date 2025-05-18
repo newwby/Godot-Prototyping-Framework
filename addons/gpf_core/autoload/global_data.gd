@@ -48,6 +48,9 @@ var data_tag_register := {}
 # un-indexed data, recorded in order loaded
 # retrieval from this collection will be slower, fetching from registers is preferred
 var data_collection: Array = []
+# data organised by whether it was loaded from res:// or user://
+var local_data_collection: Array = []
+var user_data_collection: Array = []
 
 ##############################################################################
 
@@ -78,6 +81,8 @@ func apply_json(given_object: Object, json_data: Dictionary) -> void:
 func clear_all_data() -> void:
 	schema_register.clear()
 	data_collection.clear()
+	local_data_collection.clear()
+	user_data_collection.clear()
 	data_id_register.clear()
 	data_author_register.clear()
 	data_package_register.clear()
@@ -313,7 +318,15 @@ func _load_all_json_data(target_directory: String) -> void:
 		# verify and index the data
 		var verified_data = _process_json_data(path)
 		if (verified_data.is_empty() == false):
+			# store under data collections
+			# all
 			data_collection.append(verified_data)
+			# by location
+			if path.begins_with("res://"):
+				local_data_collection.append(verified_data)
+			elif path.begins_with("user://"):
+				user_data_collection.append(verified_data)
+			# store data in registers according to data structure
 			_index_data(verified_data)
 
 
