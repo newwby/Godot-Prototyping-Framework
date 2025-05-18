@@ -191,9 +191,6 @@ func test_load_data_nested():
 	var path_adj_data = TEST_USER_DATA.duplicate()
 	path_adj_data["path"] = "{0}/{1}".format([test_data_path, TEST_DATA_FILENAME])
 	assert_eq(fetched_user_data, path_adj_data)
-	# why do these print in diff orders
-	print(path_adj_data)
-	print("\n\n", fetched_user_data)
 
 
 # applies an incorrectly formatted id to the register
