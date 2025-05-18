@@ -150,6 +150,14 @@ func get_available_schema_versions(schema_id: String) -> void:
 	Log.error(self, "cannot find schema_id '{0}' in schema_register".format([schema_id]))
 
 
+func get_available_tags() -> Array:
+	return data_tag_register.keys()
+
+
+func get_available_types() -> Array:
+	return data_type_register.keys()
+
+
 # ProjectSetting can be changed by developer to determine the data directory
 #	searched inside res:// and user:// (name consistent across both)
 func get_local_data_path() -> String:
