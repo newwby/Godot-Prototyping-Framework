@@ -139,6 +139,17 @@ func fetch_by_tag(data_tag: String) -> Array:
 	return fetched_output
 
 
+func get_available_schema_versions(schema_id: String) -> void:
+	var all_versions := []
+	if schema_id in schema_register.keys():
+		var schema_structure = schema_register[schema_id]
+		if typeof(schema_structure) == TYPE_DICTIONARY:
+			all_versions = schema_structure.keys()
+			return
+	# else
+	Log.error(self, "cannot find schema_id '{0}' in schema_register".format([schema_id]))
+
+
 # ProjectSetting can be changed by developer to determine the data directory
 #	searched inside res:// and user:// (name consistent across both)
 func get_local_data_path() -> String:
