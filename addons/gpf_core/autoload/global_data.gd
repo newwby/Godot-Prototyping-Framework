@@ -242,7 +242,6 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 		return PackedStringArray([])
 
 
-
 # json_data should be verified, the return arg of _process_json_data
 func _index_data(json_data: Dictionary) -> void:
 	# validate
@@ -316,9 +315,19 @@ func _load_schema(schema_file_path: String) -> void:
 					if json.parse(file.get_as_text()) != OK:
 						Log.warning(self, "Invalid JSON in {0}".format([filename_no_ext]))
 					else:
+						# schema_register is organised as
+						# { schema_id:
+						#		version id: {...},
+						#		version id: {...}
+						# }
 						var schema_file = json.data
+						if _verify_schema_structure(schema_file) == false:
+							Log.warning(self, "structure mistmatch for file at {0}".format(schema_file_path))
+							return
+						# setup schema_register entry for the schema
 						if schema_register.has(filename_no_ext) == false:
 							schema_register[filename_no_ext] = {}
+						# sort versions into the schema_register
 						for key in schema_file:
 							schema_register[filename_no_ext][key] = schema_file[key]
 			filename = dir.get_next()
@@ -451,3 +460,30 @@ func _verify_schema_match(json_data: Dictionary) -> bool:
 	
 	Log.warning(self, "cannot find schema for {0}.{1}".format([schema_id, schema_version]))
 	return false
+
+
+# all entry structure should match
+# string : dictionary
+# where the string key is 1-3 integers separated by periods.
+# i.e. 1.0.1, 2.0, or 4
+#func _verify_schema(schema_data: Dictionary) -> bool:
+	#return true
+func _verify_schema_structure(schema_data: Dictionary) -> bool:
+	for key in schema_data.keys():
+		# Check if the key is a valid format, type or string in specific regex format
+		# Regex ensures the key is 1-3 numeric sections separated by periods
+		#	Example matches: "1", "2.0", "3.5.2" (but not "1.2.3.4" or "a.b.c")
+		var valid_format =\
+				key.is_valid_int() or\
+				key.is_valid_float() or\
+				key.match("^\\d+(\\.\\d+){0,2}$")
+		if not valid_format:
+			Log.warning(self, "Invalid key format: {0}".format([key]))
+			return false
+		
+		# Check if the value is a dictionary
+		if typeof(schema_data[key]) != TYPE_DICTIONARY:
+			Log.warning(self, "Invalid value for key: {0}".format([key]))
+			return false
+	
+	return true
