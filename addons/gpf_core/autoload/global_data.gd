@@ -58,7 +58,8 @@ var user_data_collection: Array = []
 
 
 func _ready():
-	clear_all_data()
+	# already empty at init.
+	# clear_all_data()
 	load_all_data()
 
 
@@ -202,6 +203,12 @@ func load_all_data() -> void:
 	_load_schema(user_path)
 	_load_all_json_data(local_path)
 	_load_all_json_data(user_path)
+
+
+# simplifies common call
+func reload_data() -> void:
+	clear_all_data()
+	load_all_data()
 
 
 # if user data doesn't contain the valid directories, create them

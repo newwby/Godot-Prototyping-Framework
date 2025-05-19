@@ -76,17 +76,13 @@ var expected_local_test_data = {
 
 func before_all():
 	_write_test_user_data()
-	# reload Data singleton
-	Data.clear_all_data()
-	Data.load_all_data()
+	Data.reload_data()
 
 
 func after_all():
 	_remove_test_user_data()
 	_remove_test_user_schema()
-	# now missing data is still in memory at this point
-	#Data.clear_all_data()
-	#Data.load_all_data()
+	Data.reload_data()
 
 
 ##############################################################################
@@ -161,8 +157,8 @@ func test_load_data_forcibly():
 		fail_test("test_load_data_forcibly file creation unsucessful!")
 		return
 	
-	Data.clear_all_data()
-	Data.load_all_data()
+	Data.reload_data()
+	
 	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".format([
 		data["id_author"],
 		data["id_package"],
@@ -175,8 +171,7 @@ func test_load_data_forcibly():
 	# clear data from the test
 	DirAccess.remove_absolute(absolute_file_path)
 	DirAccess.remove_absolute(absolute_dir_path)
-	Data.clear_all_data()
-	Data.load_all_data()
+	Data.reload_data()
 
 
 # requires before_all behaviour
