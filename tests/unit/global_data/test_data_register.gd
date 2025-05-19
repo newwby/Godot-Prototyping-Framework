@@ -439,6 +439,20 @@ func test_collected_all_in_user() -> void:
 				format([valid_data_count, Data.user_data_collection.size()]))
 
 
+# tests that _schema directory files aren't being loaded in data
+func test_schema_data_contamination() -> void:
+	var file_count := 0
+	for data in Data.data_collection:
+		if data.has("path"):
+			file_count += 1
+			if "_schema" in data["path"]:
+				fail_test("data collection file error - \"_schema\" in path: {1}".\
+						format(data, data["path"]))
+				return
+	# else
+	pass_test("test_schema_data_contamination - no cross contamination from schema files. Checked {0} files.".format([file_count]))
+
+
 ##############################################################################
 
 # private test setup methods, not tests
