@@ -177,6 +177,22 @@ func get_user_data_path() -> String:
 		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
 
 
+# used in process_json_data
+# exposed for testing purposes
+func is_valid_json_data(json_data: Dictionary) -> int:
+	# validate variant typing
+	if (typeof(json_data) != TYPE_DICTIONARY):
+		return ERR_INVALID_PARAMETER
+		Log.warning(self, "unexpected typing verified")
+		return ERR_FILE_CANT_READ
+	# validate data matches schema specified
+	if _verify_schema_match(json_data) == false:
+		Log.warning(self, "cannot find schema specified")
+		return ERR_FILE_UNRECOGNIZED
+	else:
+		return OK
+
+
 # all schema should be loaded before any data
 func load_all_data() -> void:
 	verify_user_data_directory()
@@ -381,14 +397,8 @@ func _process_json_data(json_file_path: String) -> Dictionary:
 		Log.warning(self, "path is not json path : {0}".format([json_file_path]))
 		# ERR_FILE_CANT_OPEN
 		return {}
-	#if filename.is_valid_filename() == false:
-		#Log.warning(self, "invalid filemame in _process_json_data : {0}".format([json_file_path]))
-		# ERR_FILE_CANT_OPEN
-		#return {}
-	# valid
-	#var path := "{0}/{1}".format([json_file_path, filename])
-	var file := FileAccess.open(json_file_path, FileAccess.READ)
 	
+	var file := FileAccess.open(json_file_path, FileAccess.READ)
 	if file:
 		var json := JSON.new()
 		if json.parse(file.get_as_text()) != OK:
@@ -397,20 +407,14 @@ func _process_json_data(json_file_path: String) -> Dictionary:
 			return {}
 		else:
 			var json_data = json.data
-			# validate variant typing
-			if (typeof(json_data) != TYPE_DICTIONARY):
-				Log.warning(self, "unexpected typing verified json data at {0}".format([json_file_path]))
-				# ERR_FILE_CANT_READ
-				return {}
-			# validate data matches schema specified
-			if _verify_schema_match(json_data) == false:
-				Log.warning(self, "cannot find schema specified for -> {0}".format([json_file_path]))
-				# ERR_FILE_CANT_READ
-				return {}
-			else:
-				# OK
+			var is_valid := is_valid_json_data(json_data)
+			if is_valid == OK:
+				# remember the file path
 				json_data["path"] = json_file_path
 				return json_data
+			else:
+				Log.warning(self, "error {0} on processing {1}".format([is_valid, json_file_path]))
+				return {}
 	else:
 		Log.warning(self, "Could not open file at {0}.".format([json_file_path]))
 		# ERR_FILE_CANT_OPEN
