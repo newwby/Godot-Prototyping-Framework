@@ -129,67 +129,6 @@ func test_clear_data():
 	Data.load_all_data()
 
 
-# checks new data can be added, reloaded, and fetched by Data singleton
-# establishes that data can be loaded from user:// as well
-# this test is potentially a duplicate of before_all/after_all behaviour
-#	but provides an error endpoint for if that behaviour breaks
-func test_load_data_forcibly():
-	var dir_path := "{0}/{1}".format([
-		Data.get_user_data_path(),
-		"_test_load_data_forcibly"
-	])
-	var file_name := "testfile.json"
-	var full_path := "{0}/{1}".format([dir_path, file_name])
-	var data = expected_local_test_data.duplicate()
-	data["path"] = full_path
-	data["id_author"] = "test_load_data_forcibly"
-	
-	var absolute_dir_path := ProjectSettings.globalize_path(dir_path)
-	if DataUtility.validate_directory(absolute_dir_path) == false:
-		DirAccess.make_dir_recursive_absolute(absolute_dir_path)
-	var absolute_file_path := ProjectSettings.globalize_path(full_path)
-	
-	var file = FileAccess.open(full_path, FileAccess.WRITE)
-	file.store_string(JSON.stringify(data))
-	file.close()
-	
-	if FileAccess.file_exists(absolute_file_path) == false:
-		fail_test("test_load_data_forcibly file creation unsucessful!")
-		return
-	
-	Data.reload_data()
-	
-	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".format([
-		data["id_author"],
-		data["id_package"],
-		data["id_name"]
-	]))
-	
-	# test data
-	assert_eq(data, fetched_data)
-	
-	# clear data from the test
-	DirAccess.remove_absolute(absolute_file_path)
-	DirAccess.remove_absolute(absolute_dir_path)
-	Data.reload_data()
-
-
-# requires before_all behaviour
-# tests that data can be loaded from nested directories
-# establishes that data can be loaded from user:// as well
-func test_load_data_nested():
-	# setup and teardown for this test is done in before_all/after_all
-	var fetched_user_data := Data.fetch_by_id("{0}.{1}.{2}".format([
-		TEST_USER_DATA["id_author"],
-		TEST_USER_DATA["id_package"],
-		TEST_USER_DATA["id_name"],
-	]))
-	# path is applied during data loading, needs to be accommodated in tests
-	var path_adj_data = TEST_USER_DATA.duplicate()
-	path_adj_data["path"] = "{0}/{1}".format([test_data_path, TEST_DATA_FILENAME])
-	assert_eq(fetched_user_data, path_adj_data)
-
-
 # applies an incorrectly formatted id to the register
 # expect warning on test
 func test_fetch_malformed_id():
@@ -357,6 +296,68 @@ func test_fetch_existing_type():
 	Log.info(self, "expect imminent Data warning for existing type test teardown")
 	assert_does_not_have(Data.fetch_by_type(test_type), test_data)
 	assert_eq(Data.fetch_by_type(test_type), [])
+
+
+# checks new data can be added, reloaded, and fetched by Data singleton
+# establishes that data can be loaded from user:// as well
+# this test is potentially a duplicate of before_all/after_all behaviour
+#	but provides an error endpoint for if that behaviour breaks
+func test_load_data_forcibly():
+	var dir_path := "{0}/{1}".format([
+		Data.get_user_data_path(),
+		"_test_load_data_forcibly"
+	])
+	var file_name := "testfile.json"
+	var full_path := "{0}/{1}".format([dir_path, file_name])
+	var data = expected_local_test_data.duplicate()
+	data["path"] = full_path
+	data["id_author"] = "test_load_data_forcibly"
+	
+	var absolute_dir_path := ProjectSettings.globalize_path(dir_path)
+	if DataUtility.validate_directory(absolute_dir_path) == false:
+		DirAccess.make_dir_recursive_absolute(absolute_dir_path)
+	var absolute_file_path := ProjectSettings.globalize_path(full_path)
+	
+	var file = FileAccess.open(full_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
+	file.close()
+	
+	if FileAccess.file_exists(absolute_file_path) == false:
+		fail_test("test_load_data_forcibly file creation unsucessful!")
+		return
+	
+	Data.reload_data()
+	
+	var fetched_data = Data.fetch_by_id("{0}.{1}.{2}".format([
+		data["id_author"],
+		data["id_package"],
+		data["id_name"]
+	]))
+	
+	# test data
+	assert_eq(data, fetched_data)
+	
+	# clear data from the test
+	DirAccess.remove_absolute(absolute_file_path)
+	DirAccess.remove_absolute(absolute_dir_path)
+	Data.reload_data()
+
+
+# requires before_all behaviour
+# tests that data can be loaded from nested directories
+# establishes that data can be loaded from user:// as well
+func test_load_data_nested():
+	# setup and teardown for this test is done in before_all/after_all
+	var fetched_user_data := Data.fetch_by_id("{0}.{1}.{2}".format([
+		TEST_USER_DATA["id_author"],
+		TEST_USER_DATA["id_package"],
+		TEST_USER_DATA["id_name"],
+	]))
+	# path is applied during data loading, needs to be accommodated in tests
+	var path_adj_data = TEST_USER_DATA.duplicate()
+	path_adj_data["path"] = "{0}/{1}".format([test_data_path, TEST_DATA_FILENAME])
+	assert_eq(fetched_user_data, path_adj_data)
+
 
 
 # verifies specific files (included with the framework dev build) exist and
