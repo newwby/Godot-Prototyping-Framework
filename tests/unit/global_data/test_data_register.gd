@@ -175,6 +175,8 @@ func test_load_data_forcibly():
 	# clear data from the test
 	DirAccess.remove_absolute(absolute_file_path)
 	DirAccess.remove_absolute(absolute_dir_path)
+	Data.clear_all_data()
+	Data.load_all_data()
 
 
 # requires before_all behaviour
@@ -423,11 +425,30 @@ func test_local_schema_exists() -> void:
 		fail_test("cannot read file")
 
 
+# checks all valid local files are being parsed in data load
+func test_collected_all_in_res() -> void:
+	var valid_data_count = _sum_collected_all_in(Data.get_local_data_path())
+	assert_eq(valid_data_count, Data.local_data_collection.size())
+	if valid_data_count != Data.local_data_collection.size():
+		Log.info(self, "found {0} valid data files in res://, expected {1}".\
+				format([valid_data_count, Data.local_data_collection.size()]))
+
+
+# checks all valid user files are being parsed in data load
+func test_collected_all_in_user() -> void:
+	var valid_data_count = _sum_collected_all_in(Data.get_user_data_path())
+	assert_eq(valid_data_count, Data.user_data_collection.size())
+	if valid_data_count != Data.user_data_collection.size():
+		Log.info(self, "found {0} valid data files in user://, expected {1}".\
+				format([valid_data_count, Data.user_data_collection.size()]))
+
+
 ##############################################################################
 
 # private test setup methods, not tests
 
 
+#//TODO
 func _remove_test_user_schema() -> void:
 	pass
 	# schema teardown
@@ -451,6 +472,28 @@ func _remove_test_user_data() -> void:
 	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
 	DirAccess.remove_absolute(absolute_file_path)
 	DirAccess.remove_absolute(absolute_data_dir_path)
+
+
+# used in test_collected_all_in_res & test_collected_all_in_user
+func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
+	if print_debug:
+		print("\n starting _sum_collected in test: {0}".format([dir_path]))
+	var all_paths := DataUtility.get_file_paths(dir_path)
+	var valid_data_count := 0
+	for path in all_paths:
+		if path.ends_with(".json") and not ("_schema" in path):
+			var data = FileAccess.open(path, FileAccess.READ)
+			var json_loader = JSON.new()
+			if json_loader.parse(data.get_as_text()) == OK:
+				var json_data = json_loader.data
+				if Data.is_valid_json_data(json_data) == OK:
+					valid_data_count += 1
+					if print_debug:
+						print("path {0} -> VALID".format([path]))
+						continue
+		if print_debug:
+			print("path {0} -> NOT VALID".format([path]))
+	return valid_data_count
 
 
 func _write_test_user_data() -> void:
