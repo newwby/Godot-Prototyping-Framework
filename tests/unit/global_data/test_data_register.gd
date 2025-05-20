@@ -9,13 +9,12 @@ extends GutTest
 #//REQUIREMENTS
 # file 'demo_item_potion.json' exists in res://<data_path>, matching expected structure
 # file 'demo_item.json' exists in res://<data_path>/_schema, matching expected structure
-# (where <data_path> equals string returned from 'GPFPlugin.get_data_path_setting()')
+# (where <data_path> equals string returned from 'GPFPlugin.get_local_data_path()')
 
 ##############################################################################
 
 #//TODO
 # add mock for user data writing, so can decouple testing of writing to user://
-# make sure to reload globalData on writing user data
 
 ##############################################################################
 
@@ -366,7 +365,9 @@ func test_local_data_exists() -> void:
 	var test_local_data_path := "{0}/demo_item_potion.json".format([Data.get_local_data_path()])
 	var file = FileAccess.open(test_local_data_path, FileAccess.READ)
 	var json_file = JSON.new()
-	if json_file.parse(file.get_as_text()) == OK:
+	var file_text = file.get_as_text()
+	file.close()
+	if json_file.parse(file_text) == OK:
 		var content = json_file.data
 		assert_eq(content, expected_local_test_data)
 	else:
@@ -413,12 +414,16 @@ func test_local_schema_exists() -> void:
 	var json_file = JSON.new()
 	if file == null:
 		fail_test("cannot open file")
+		file.close()
 		return
-	if json_file.parse(file.get_as_text()) == OK:
-		var content = json_file.data
-		assert_eq(content, expected_test_schema)
 	else:
-		fail_test("cannot read file")
+		var file_text = file.get_as_text()
+		file.close()
+		if json_file.parse(file_text) == OK:
+			var content = json_file.data
+			assert_eq(content, expected_test_schema)
+		else:
+			fail_test("cannot read file")
 
 
 # checks all valid local files are being parsed in data load
@@ -492,9 +497,11 @@ func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
 	var valid_data_count := 0
 	for path in all_paths:
 		if path.ends_with(".json") and not ("_schema" in path):
-			var data = FileAccess.open(path, FileAccess.READ)
+			var file = FileAccess.open(path, FileAccess.READ)
 			var json_loader = JSON.new()
-			if json_loader.parse(data.get_as_text()) == OK:
+			var file_data_text = file.get_as_text()
+			file.close()
+			if json_loader.parse(file_data_text) == OK:
 				var json_data = json_loader.data
 				if Data.is_valid_json_data(json_data) == OK:
 					valid_data_count += 1
@@ -515,7 +522,8 @@ func _write_test_user_data() -> void:
 	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
 	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
 	if DataUtility.validate_directory(absolute_data_dir_path) == false:
-		DirAccess.make_dir_recursive_absolute(absolute_data_dir_path)
+		Log.error(self, "could not find or create user_data directory for testing")
+		return
 	
 	var file = FileAccess.open(absolute_file_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(TEST_USER_DATA))
