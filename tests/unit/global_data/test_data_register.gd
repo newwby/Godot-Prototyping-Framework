@@ -75,6 +75,7 @@ var expected_local_test_data = {
 
 func before_all():
 	_write_test_user_data()
+	_write_test_user_schema()
 	Data.reload_data()
 
 
@@ -463,18 +464,17 @@ func test_schema_data_contamination() -> void:
 # private test setup methods, not tests
 
 
-#//TODO
 func _remove_test_user_schema() -> void:
-	pass
 	# schema teardown
-	#var full_schema_path := "{0}/{1}".format([
-		#test_schema_path,
-		#TEST_SCHEMA_FILENAME
-	#])
-	#var absolute_schema_path := ProjectSettings.globalize_path(full_schema_path)
-	#var absolute_schema_dir_path := ProjectSettings.globalize_path(test_schema_path)
-	#DirAccess.remove_absolute(absolute_schema_path)
-	#DirAccess.remove_absolute(absolute_schema_dir_path)
+	var full_schema_path := "{0}/{1}".format([
+		test_schema_path,
+		TEST_SCHEMA_FILENAME
+	])
+	var absolute_schema_path := ProjectSettings.globalize_path(full_schema_path)
+	var absolute_schema_dir_path := ProjectSettings.globalize_path(test_schema_path)
+	
+	DirAccess.remove_absolute(absolute_schema_path)
+	DirAccess.remove_absolute(absolute_schema_dir_path)
 
 
 func _remove_test_user_data() -> void:
@@ -527,4 +527,21 @@ func _write_test_user_data() -> void:
 	
 	var file = FileAccess.open(absolute_file_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(TEST_USER_DATA))
+	file.close()
+
+
+func _write_test_user_schema() -> void:
+	# data file structuring
+	var full_file_path := "{0}/{1}".format([
+		test_schema_path,
+		TEST_SCHEMA_FILENAME
+	])
+	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
+	if DataUtility.validate_directory(absolute_data_dir_path) == false:
+		Log.error(self, "could not find or create user_schema directory for testing")
+		return
+	
+	var file = FileAccess.open(absolute_file_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(TEST_USER_SCHEMA))
 	file.close()
