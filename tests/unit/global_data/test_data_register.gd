@@ -129,6 +129,24 @@ func test_clear_data():
 	Data.load_all_data()
 
 
+# checks all valid local files are being parsed in data load
+func test_collected_all_in_res() -> void:
+	var valid_data_count = _sum_collected_all_in(Data.get_local_data_path())
+	assert_eq(valid_data_count, Data.local_data_collection.size())
+	if valid_data_count != Data.local_data_collection.size():
+		Log.info(self, "found {0} valid data files in res://, expected {1}".\
+				format([valid_data_count, Data.local_data_collection.size()]))
+
+
+# checks all valid user files are being parsed in data load
+func test_collected_all_in_user() -> void:
+	var valid_data_count = _sum_collected_all_in(Data.get_user_data_path())
+	assert_eq(valid_data_count, Data.user_data_collection.size())
+	if valid_data_count != Data.user_data_collection.size():
+		Log.info(self, "found {0} valid data files in user://, expected {1}".\
+				format([valid_data_count, Data.user_data_collection.size()]))
+
+
 # applies an incorrectly formatted id to the register
 # expect warning on test
 func test_fetch_malformed_id():
@@ -391,15 +409,6 @@ func test_local_data_fetched() -> void:
 				format([fetched_data, expected_local_test_data]))
 
 
-# check if user file schema (added before tests) is written into data register
-func test_user_schema_exists():
-	var expected_schema_key := TEST_SCHEMA_FILENAME.replace(".json", "")
-	var schema_exists: bool = expected_schema_key in Data.schema_register.keys()
-	assert_eq(schema_exists, true)
-	if not schema_exists:
-		fail_test("could not find schema {0} in schema_register".format([expected_schema_key]))
-
-
 # verifies specific files (included with the framework dev build) exist and
 #	can be read
 func test_local_schema_exists() -> void:
@@ -435,22 +444,13 @@ func test_local_schema_exists() -> void:
 			fail_test("cannot read file")
 
 
-# checks all valid local files are being parsed in data load
-func test_collected_all_in_res() -> void:
-	var valid_data_count = _sum_collected_all_in(Data.get_local_data_path())
-	assert_eq(valid_data_count, Data.local_data_collection.size())
-	if valid_data_count != Data.local_data_collection.size():
-		Log.info(self, "found {0} valid data files in res://, expected {1}".\
-				format([valid_data_count, Data.local_data_collection.size()]))
-
-
-# checks all valid user files are being parsed in data load
-func test_collected_all_in_user() -> void:
-	var valid_data_count = _sum_collected_all_in(Data.get_user_data_path())
-	assert_eq(valid_data_count, Data.user_data_collection.size())
-	if valid_data_count != Data.user_data_collection.size():
-		Log.info(self, "found {0} valid data files in user://, expected {1}".\
-				format([valid_data_count, Data.user_data_collection.size()]))
+# check if user file schema (added before tests) is written into data register
+func test_user_schema_exists():
+	var expected_schema_key := TEST_SCHEMA_FILENAME.replace(".json", "")
+	var schema_exists: bool = expected_schema_key in Data.schema_register.keys()
+	assert_eq(schema_exists, true)
+	if not schema_exists:
+		fail_test("could not find schema {0} in schema_register".format([expected_schema_key]))
 
 
 # tests that _schema directory files aren't being loaded in data
