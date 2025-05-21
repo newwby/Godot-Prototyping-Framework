@@ -359,7 +359,6 @@ func test_load_data_nested():
 	assert_eq(fetched_user_data, path_adj_data)
 
 
-
 # verifies specific files (included with the framework dev build) exist and
 #	can be read
 func test_local_data_exists() -> void:
@@ -390,6 +389,15 @@ func test_local_data_fetched() -> void:
 	if fetched_data != expected_local_test_data:
 		Log.warning(self, "test_local_data_fetched - fetched data does not match expected test data.\n{0}\nvs\n{1}".\
 				format([fetched_data, expected_local_test_data]))
+
+
+# check if user file schema (added before tests) is written into data register
+func test_user_schema_exists():
+	var expected_schema_key := TEST_SCHEMA_FILENAME.replace(".json", "")
+	var schema_exists: bool = expected_schema_key in Data.schema_register.keys()
+	assert_eq(schema_exists, true)
+	if not schema_exists:
+		fail_test("could not find schema {0} in schema_register".format([expected_schema_key]))
 
 
 # verifies specific files (included with the framework dev build) exist and
