@@ -14,8 +14,8 @@ config_version=5
 
 [application]
 
-config/name="Godot Prototyping Framework"
-config/description="Godot 4 conversion of the Godot Prototyping Framework.
+config/name="Godot Prototyping Frameworks"
+config/description="Godot 4 conversion of the Godot Prototyping Framework. Includes several plugins for rapidly prototyping games of different genres, as well as a core module which contains resources for logging, debugging, and data management.
 
 Not all DDAT-GPF 3.5 features are currently available; features are being converted over one at a time."
 config/version="1.0.0"
