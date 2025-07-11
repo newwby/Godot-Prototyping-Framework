@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3sv826pomrpo"]
+
+[ext_resource type="Script" uid="uid://b37hbqf5a521e" path="res://_dev/export_test.gd" id="1_1pyux"]
+
+[node name="ExportTest" type="Node2D"]
+script = ExtResource("1_1pyux")

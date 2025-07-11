@@ -20,6 +20,7 @@ config/description="Godot 4 conversion of the Godot Prototyping Framework. Inclu
 Not all DDAT-GPF 3.5 features are currently available; features are being converted over one at a time."
 config/version="1.0.0"
 config/tags=PackedStringArray("plugin")
+run/main_scene="uid://c3sv826pomrpo"
 config/custom_user_dir_name="godot_prototyping_framework"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://gpf_icon.png"
