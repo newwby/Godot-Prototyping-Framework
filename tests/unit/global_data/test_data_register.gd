@@ -521,21 +521,27 @@ func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
 	return valid_data_count
 
 
+# for new test data, write to user://
+# filename should include extension
+func _write_new_json(new_json: Dictionary, filename: String) -> void:
+	var data_path = "{0}/{1}".format([test_data_path, filename])
+	var abs_path := ProjectSettings.globalize_path(data_path)
+	var file = FileAccess.open(abs_path, FileAccess.WRITE)
+	if file == null:
+		Log.error(self, "_write_new_json FileAccess error: {0}".format([FileAccess.get_open_error()]))
+	else:
+		file.store_string(JSON.stringify(new_json))
+		file.close()
+
+
 func _write_test_user_data() -> void:
-	# data file structuring
-	var full_file_path := "{0}/{1}".format([
-		test_data_path,
-		TEST_DATA_FILENAME
-	])
-	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	# pre-test
 	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
 	if DataUtility.validate_directory(absolute_data_dir_path) == false:
 		Log.error(self, "could not find or create user_data directory for testing")
 		return
-	
-	var file = FileAccess.open(absolute_file_path, FileAccess.WRITE)
-	file.store_string(JSON.stringify(TEST_USER_DATA))
-	file.close()
+	# write data
+	_write_new_json(TEST_USER_DATA, TEST_DATA_FILENAME)
 
 
 func _write_test_user_schema() -> void:
