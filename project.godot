@@ -8,14 +8,19 @@
 
 config_version=5
 
+[addons]
+
+"prototype_framework/data path"="data"
+
 [application]
 
-config/name="Godot Prototyping Framework"
-config/description="Godot 4 conversion of the Godot Prototyping Framework.
+config/name="Godot Prototyping Frameworks"
+config/description="Godot 4 conversion of the Godot Prototyping Framework. Includes several plugins for rapidly prototyping games of different genres, as well as a core module which contains resources for logging, debugging, and data management.
 
 Not all DDAT-GPF 3.5 features are currently available; features are being converted over one at a time."
 config/version="1.0.0"
 config/tags=PackedStringArray("plugin")
+run/main_scene="uid://c3sv826pomrpo"
 config/custom_user_dir_name="godot_prototyping_framework"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://gpf_icon.png"
@@ -23,6 +28,7 @@ config/icon="res://gpf_icon.png"
 [autoload]
 
 Log="*res://addons/gpf_core/autoload/global_log.gd"
+Data="*res://addons/gpf_core/autoload/global_data.gd"
 
 [editor]
 

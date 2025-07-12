@@ -68,4 +68,3 @@ func test_log_counts() -> void:
 	Log.error(self, test_log_string)
 	updated_log_count = Log.total_log_output
 	assert_eq(updated_log_count, expected_post_test_log_count)
-
