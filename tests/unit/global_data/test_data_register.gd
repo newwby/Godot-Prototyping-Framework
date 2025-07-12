@@ -472,6 +472,18 @@ func test_schema_data_contamination() -> void:
 # private test setup methods, not tests
 
 
+# for removing test data, removes rrom user://
+# filename should include extension
+func _delete_json_test_file(filename: String) -> void:
+	# data file teardown
+	var full_file_path := "{0}/{1}".format([
+		test_data_path,
+		filename
+	])
+	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	DirAccess.remove_absolute(absolute_file_path)
+
+
 func _remove_test_user_schema() -> void:
 	# schema teardown
 	var full_schema_path := "{0}/{1}".format([
@@ -486,14 +498,8 @@ func _remove_test_user_schema() -> void:
 
 
 func _remove_test_user_data() -> void:
-	# data file teardown
-	var full_file_path := "{0}/{1}".format([
-		test_data_path,
-		TEST_DATA_FILENAME
-	])
-	var absolute_file_path := ProjectSettings.globalize_path(full_file_path)
+	_delete_json_test_file(TEST_DATA_FILENAME)
 	var absolute_data_dir_path := ProjectSettings.globalize_path(test_data_path)
-	DirAccess.remove_absolute(absolute_file_path)
 	DirAccess.remove_absolute(absolute_data_dir_path)
 
 
@@ -523,7 +529,7 @@ func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
 
 # for new test data, write to user://
 # filename should include extension
-func _write_new_json(new_json: Dictionary, filename: String) -> void:
+func _write_json_test_file(new_json: Dictionary, filename: String) -> void:
 	var data_path = "{0}/{1}".format([test_data_path, filename])
 	var abs_path := ProjectSettings.globalize_path(data_path)
 	var file = FileAccess.open(abs_path, FileAccess.WRITE)
@@ -541,7 +547,7 @@ func _write_test_user_data() -> void:
 		Log.error(self, "could not find or create user_data directory for testing")
 		return
 	# write data
-	_write_new_json(TEST_USER_DATA, TEST_DATA_FILENAME)
+	_write_json_test_file(TEST_USER_DATA, TEST_DATA_FILENAME)
 
 
 func _write_test_user_schema() -> void:
