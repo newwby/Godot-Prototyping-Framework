@@ -467,6 +467,77 @@ func test_schema_data_contamination() -> void:
 	pass_test("test_schema_data_contamination - no cross contamination from schema files. Checked {0} files.".format([file_count]))
 
 
+# tests that data without a mandatory key isn't registered
+func test_missing_mandatory_schema_key() -> void:
+	# first test data is missing several mandatory keys
+	var broken_test_data_one = {
+		"schema_id": "demo_item",
+		"schema_version": "1.0",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "broken_data_1",
+		#"type": "testing",
+		#"tags": [],
+		"data": {
+			"test_data_name": "broken_data_1",
+			"test_data_value_1": 0.0,
+			"test_data_value_2": [],
+		}
+	}
+	# second test data is missing several mandatory schema keys
+	var broken_test_data_two = {
+		"schema_id": "demo_item",
+		"schema_version": "1.0",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "broken_data_2",
+		"type": "testing",
+		"tags": [],
+		"data": {
+			"test_data_name": "broken_data_2",
+			#"test_data_value_1": 0.0,
+			#"test_data_value_2": [],
+		}
+	}
+	# third test data is missing schema identification
+	var broken_test_data_three = {
+		#"schema_id": "demo_item",
+		"schema_version": "1.0",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "broken_data_3",
+		"type": "testing",
+		"tags": [],
+		"data": {
+			"test_data_name": "broken_data_3",
+			"test_data_value_1": 0.0,
+			"test_data_value_2": [],
+		}
+	}
+	var all_test_data = [broken_test_data_one, broken_test_data_two, broken_test_data_three]
+	for test_data in all_test_data:
+		var filename = test_data["id_name"]+".json"
+		_write_json_test_file(test_data, filename)
+	
+	# reload
+	Data.reload_data()
+	
+	#//TODO add verify data method to GlobalData
+	#//TODO update _write/_remove before/after methods
+	
+	# check if exists - it should not exist (blank return) it should've been rejected
+	for test_data in all_test_data:
+		var data_id = "{0}.{1}.{2}".format([
+			test_data["id_author"], test_data["id_package"], test_data["id_name"]
+		])
+		assert_eq(Data.fetch_by_id(data_id), {})
+	
+	# cleanup test data
+	for test_data in all_test_data:
+		var filename = test_data["id_name"]+".json"
+		_delete_json_test_file(filename)
+
+ 
 ##############################################################################
 
 # private test setup methods, not tests
