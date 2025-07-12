@@ -188,7 +188,8 @@ func is_valid_json_data(json_data: Dictionary) -> int:
 		return ERR_FILE_CANT_READ
 	# validate data matches schema specified
 	if _verify_schema_match(json_data) == false:
-		Log.warning(self, "cannot find schema specified")
+		var schema_id = json_data.get("schema_version", null)
+		Log.warning(self, "cannot find schema '{0}' specified".format([schema_id]))
 		return ERR_FILE_UNRECOGNIZED
 	else:
 		return OK
