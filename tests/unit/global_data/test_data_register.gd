@@ -31,7 +31,7 @@ const TEST_USER_SCHEMA = {
 		}
 	}
 const TEST_USER_DATA = {
-	"schema_id": "demo_item",
+	"schema_id": "data_register_stub_test_schema",
 	"schema_version": "1.0",
 	"id_author": "gpf",
 	"id_package": "testpkg",
@@ -471,7 +471,7 @@ func test_schema_data_contamination() -> void:
 func test_missing_mandatory_schema_key() -> void:
 	# first test data is missing several mandatory keys
 	var broken_test_data_one = {
-		"schema_id": "demo_item",
+		"schema_id": "data_register_stub_test_schema",
 		"schema_version": "1.0",
 		"id_author": "gpf",
 		"id_package": "testpkg",
@@ -486,7 +486,7 @@ func test_missing_mandatory_schema_key() -> void:
 	}
 	# second test data is missing several mandatory schema keys
 	var broken_test_data_two = {
-		"schema_id": "demo_item",
+		"schema_id": "data_register_stub_test_schema",
 		"schema_version": "1.0",
 		"id_author": "gpf",
 		"id_package": "testpkg",
@@ -501,7 +501,7 @@ func test_missing_mandatory_schema_key() -> void:
 	}
 	# third test data is missing schema identification
 	var broken_test_data_three = {
-		#"schema_id": "demo_item",
+		#"schema_id": "data_register_stub_test_schema",
 		"schema_version": "1.0",
 		"id_author": "gpf",
 		"id_package": "testpkg",
@@ -522,9 +522,6 @@ func test_missing_mandatory_schema_key() -> void:
 	# reload
 	Data.reload_data()
 	
-	#//TODO add verify data method to GlobalData
-	#//TODO update _write/_remove before/after methods
-	
 	# check if exists - it should not exist (blank return) it should've been rejected
 	for test_data in all_test_data:
 		var data_id = "{0}.{1}.{2}".format([
@@ -537,7 +534,7 @@ func test_missing_mandatory_schema_key() -> void:
 		var filename = test_data["id_name"]+".json"
 		_delete_json_test_file(filename)
 
- 
+
 ##############################################################################
 
 # private test setup methods, not tests
