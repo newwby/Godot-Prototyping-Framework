@@ -535,6 +535,38 @@ func test_missing_mandatory_schema_key() -> void:
 		_delete_json_test_file(filename)
 
 
+func test_invalid_data_type () -> void:
+	# test that the data type in schema doesn't match and is rejected
+	var invalid_data = {
+		"schema_id": "data_register_stub_test_schema",
+		"schema_version": "1.0",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "test_invalid_data_type",
+		"type": "testing",
+		"tags": [],
+		"data": {
+			"test_data_name": {},
+			"test_data_value_1": "test_data_wrong_type",
+			"test_data_value_2": 7.0,
+		}
+	}
+	var filename = invalid_data["id_name"]+".json"
+	_write_json_test_file(invalid_data, filename)
+	
+	# reload
+	Data.reload_data()
+	
+	# check if exists - it should not exist (blank return) it should've been rejected
+	var data_id = "{0}.{1}.{2}".format([
+		invalid_data["id_author"], invalid_data["id_package"], invalid_data["id_name"]
+	])
+	assert_eq(Data.fetch_by_id(data_id), {})
+	
+	# cleanup test data
+	_delete_json_test_file(filename)
+
+ 
 ##############################################################################
 
 # private test setup methods, not tests
