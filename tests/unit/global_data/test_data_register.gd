@@ -535,7 +535,7 @@ func test_missing_mandatory_schema_key() -> void:
 		_delete_json_test_file(filename)
 
 
-func test_invalid_data_type () -> void:
+func test_invalid_data_type() -> void:
 	# test that the data type in schema doesn't match and is rejected
 	var invalid_data = {
 		"schema_id": "data_register_stub_test_schema",
@@ -565,6 +565,57 @@ func test_invalid_data_type () -> void:
 	
 	# cleanup test data
 	_delete_json_test_file(filename)
+
+
+func test_invalid_schema_version() -> void:
+	# test that the data type in schema doesn't match and is rejected
+	var invalid_version_format = {
+		"schema_id": "data_register_stub_test_schema",
+		"schema_version": "version 1",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "invalid_version_format",
+		"type": "testing",
+		"tags": [],
+		"data": {
+			"test_data_name": "invalid_version_format",
+			"test_data_value_1": 0.0,
+			"test_data_value_2": [],
+		}
+	}
+	var invalid_version_increment = {
+		"schema_id": "data_register_stub_test_schema",
+		"schema_version": "1.4",
+		"id_author": "gpf",
+		"id_package": "testpkg",
+		"id_name": "invalid_version_increment",
+		"type": "testing",
+		"tags": [],
+		"data": {
+			"test_data_name": "invalid_version_increment",
+			"test_data_value_1": 0.0,
+			"test_data_value_2": [],
+		}
+	}
+	var all_invalid_json := [invalid_version_format, invalid_version_increment]
+	for invalid_json in all_invalid_json:
+		var filename = invalid_json["id_name"]+".json"
+		_write_json_test_file(invalid_json, filename)
+	
+	# reload
+	Data.reload_data()
+	
+	for invalid_json in all_invalid_json:
+		# check if exists - it should not exist (blank return) it should've been rejected
+		var data_id = "{0}.{1}.{2}".format([
+			invalid_json["id_author"], invalid_json["id_package"], invalid_json["id_name"]
+		])
+		assert_eq(Data.fetch_by_id(data_id), {})
+	
+	# cleanup test data
+	for invalid_json in all_invalid_json:
+		var filename = invalid_json["id_name"]+".json"
+		_delete_json_test_file(filename)
 
  
 ##############################################################################
