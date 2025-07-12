@@ -13,6 +13,10 @@ extends EditorPlugin
 
 # var
 
+const MAIN_PANEL = preload("res://addons/gpf_core/scenes/data_panel.tscn")
+
+var main_panel_instance
+
 ##############################################################################
 
 # setters/getters
@@ -32,6 +36,8 @@ func _enter_tree():
 	
 	# create local directories for the plugin
 	_verify_local_data_directory()
+	# setup editor tab
+	_add_plugin_panel()
 
 
 func _exit_tree():
@@ -39,6 +45,39 @@ func _exit_tree():
 		remove_autoload_singleton(name_key)
 	for setting_key in GPFPlugin.SETTINGS.keys():
 		ProjectSettings.set_setting(GPFPlugin.SETTING_PATH_FORMAT.format([setting_key]), null)
+	# setup editor tab
+	_remove_plugin_panel()
+
+
+func _add_plugin_panel():
+	main_panel_instance = MAIN_PANEL.instantiate()
+	# Add the main panel to the editor's main viewport.
+	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
+	# Hide the main panel. Very much required.
+	_make_visible(false)
+
+
+func _remove_plugin_panel():
+	if main_panel_instance:
+		main_panel_instance.queue_free()
+
+
+func _has_main_screen():
+	return true
+
+
+func _make_visible(visible):
+	if main_panel_instance:
+		main_panel_instance.visible = visible
+
+
+func _get_plugin_name():
+	return "Main Screen Plugin"
+
+
+func _get_plugin_icon():
+	# Must return some kind of Texture for the icon.
+	return EditorInterface.get_editor_theme().get_icon("Node", "EditorIcons")
 
 
 ##############################################################################
