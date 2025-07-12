@@ -1,0 +1,14 @@
+{
+	"schema_id": "demo_weapon",
+	"schema_version": "1.0",
+	"id_author": "gpf",
+	"id_package": "testpkg",
+	"id_name": "demo_sword",
+	"type": "sword",
+	"tags": ["weapon", "sword"],
+	"data": {
+		"name": "Iron Sword",
+		"cost": 30.0,
+		"damage": 2.0
+	}
+}

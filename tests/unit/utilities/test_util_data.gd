@@ -126,4 +126,3 @@ func test_validate_directory() -> void:
 	assert_eq(DataUtility.validate_directory(test_directory_path), true)
 	assert_eq(DirAccess.dir_exists_absolute(test_directory_path), true)
 	DirAccess.remove_absolute(test_directory_path)
-

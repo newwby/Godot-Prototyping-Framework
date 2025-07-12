@@ -102,4 +102,3 @@ func _verify_value(arg_path: String, arg_id_value: int) -> void:
 		assert_eq(test_res_loaded.id, arg_id_value)
 	else:
 		fail_test("id property not found on test_res_loaded")
-

@@ -76,7 +76,7 @@ static func clean_file_name(
 	if arg_to_lowercase:
 		new_string = new_string.to_lower()
 	if new_string.is_valid_filename() == false:
-		GlobalLog.warning(null, "invalid filename output {0} on DataUtility.clean_file_name".format([new_string]))
+		Log.warning(null, "invalid filename output {0} on DataUtility.clean_file_name".format([new_string]))
 	return new_string
 
 
@@ -121,10 +121,10 @@ static func get_dir_paths(
 	var dir_access := DirAccess.open(arg_directory_path)
 	# err handling
 	if DirAccess.get_open_error() != OK:
-		GlobalLog.error(null, invalid_directory_errorstring)
+		Log.error(null, invalid_directory_errorstring)
 		return directories_inside
 	if dir_access.list_dir_begin()  != OK:# TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
-		GlobalLog.error(null, invalid_directory_errorstring)
+		Log.error(null, invalid_directory_errorstring)
 		return directories_inside
 	
 	# otherwise assume OK
@@ -194,7 +194,7 @@ static func save_resource(
 		) -> Error:
 	# check valid path
 	if arg_file_path.begins_with("user://") == false:
-		GlobalLog.error(null, "DataUtility.save_resource called with non-user file path: {0}".format([arg_file_path]))
+		Log.error(null, "DataUtility.save_resource called with non-user file path: {0}".format([arg_file_path]))
 		return ERR_INVALID_PARAMETER
 	
 	# split given file path into constituent parts
@@ -205,19 +205,19 @@ static func save_resource(
 	
 	# check given extension is valid, convert if not
 	if file_extension != "tres":
-		GlobalLog.warning(null, "DataUtility.save_resource called with invalid extension {0}, converting to .tres".format([file_extension]))
+		Log.warning(null, "DataUtility.save_resource called with invalid extension {0}, converting to .tres".format([file_extension]))
 		file_extension = "tres"
 	
 	# force create target directory if it doesn't already exist; throw error otherwise
 	if validate_directory(directory_path) == false:
-		GlobalLog.error(null, "DataUtility.save_resource invalid directory/cannot create")
+		Log.error(null, "DataUtility.save_resource invalid directory/cannot create")
 		return ERR_CANT_CREATE
 	
 	# temporarily write to disk
 	var temp_write_path = "{0}/{1}{2}.{3}".format([directory_path, file_name, TEMP_SUFFIX, file_extension])
 	var temp_write_outcome = ResourceSaver.save(arg_saveable_res, temp_write_path)
 	if temp_write_outcome != OK:
-		GlobalLog.error(null, "DataUtility.save_resource could not write temporary file")
+		Log.error(null, "DataUtility.save_resource could not write temporary file")
 	
 	# if file exists check for backup behaviour
 	if FileAccess.file_exists(arg_file_path):
@@ -242,9 +242,9 @@ static func save_resource(
 		#if current_file_at_path is Resource:
 			#var backup_file_outcome = ResourceSaver.save(current_file_at_path, backup_path)
 			#if backup_file_outcome != OK:
-				#GlobalLog.warning(null, "DataUtility.save_resource could not save backup")
+				#Log.warning(null, "DataUtility.save_resource could not save backup")
 		#else:
-			#GlobalLog.warning(null, "DataUtility.save_resource found non-resource at path, overwriting")
+			#Log.warning(null, "DataUtility.save_resource found non-resource at path, overwriting")
 	
 	# write behaviour is just moving the temporary file to the now-free file path address
 	return DirAccess.rename_absolute(temp_write_path, arg_file_path)
@@ -263,4 +263,3 @@ static func validate_directory(arg_directory_path: String) -> bool:
 ##############################################################################
 
 # private methods
-

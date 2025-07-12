@@ -1,0 +1,14 @@
+{
+	"schema_id": "demo_enemy",
+	"schema_version": "1.0",
+	"id_author": "gpf",
+	"id_package": "testpkg",
+	"id_name": "demo_goblin",
+	"type": "undefined",
+	"tags": [],
+	"data": {
+		"name": "Goblin",
+		"health": 10.0,
+		"damage": 3.0
+	}
+}

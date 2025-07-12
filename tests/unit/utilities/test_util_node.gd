@@ -125,4 +125,3 @@ func _output_test_signal_1(arg_bool) -> void:
 
 func _output_test_signal_2() -> void:
 	test_scoped_signal_flag_2 = true
-

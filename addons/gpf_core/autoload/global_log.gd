@@ -1,6 +1,6 @@
 extends Node
 
-#class_name GlobalLog
+#class_name Log
 
 ##############################################################################
 
@@ -220,7 +220,7 @@ func log_stack_trace(arg_caller: Object) -> void:
 					"f": error_func_id,
 					"s": error_node_id,
 					"l": error_line_id})
-		GlobalLog.info(arg_caller, stack_trace_print_string)
+		info(arg_caller, stack_trace_print_string)
 
 
 ## @deprecated
@@ -420,7 +420,7 @@ func _on_logger_startup() -> void:
 			"device": user_name+" "+user_model_name,
 			"time": datetime_string
 			})
-	GlobalLog.info(self, startup_log_string)
+	Log.info(self, startup_log_string)
 
 
 func _output_log(arg_next_log: LogRecord) -> void:
@@ -470,4 +470,3 @@ func _store_log(arg_log: LogRecord) -> void:
 		log_register[arg_log.owner].append(new_log_register_entry)
 	else:
 		log_register[arg_log.owner] = [new_log_register_entry]
-
