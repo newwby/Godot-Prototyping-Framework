@@ -58,6 +58,10 @@ func _add_plugin_panel():
 	_make_visible(false)
 
 
+func _disable_plugin():
+	_remove_plugin_panel()
+
+
 # show display name for plugin tab
 func _get_plugin_name():
 	return "Database"
