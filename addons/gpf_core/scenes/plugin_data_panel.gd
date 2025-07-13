@@ -10,8 +10,6 @@ extends Control
 # signals, enums, constants
 # exported, public, private, onready
 
-@onready var tree: Tree = $Tree
-
 ##############################################################################
 
 # setters/getters
