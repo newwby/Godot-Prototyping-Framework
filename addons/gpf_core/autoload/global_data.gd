@@ -31,7 +31,17 @@ extends Node
 
 # var
 
-#const USER_DATA_PATH := "user//data"
+# these keys must match the following types in all data entries
+# everything inside the data value is customisable
+var EXPECTED_DATA_STRUCTURE := {
+	"schema_id": TYPE_STRING,
+	"schema_version": TYPE_STRING,
+	"id_author": TYPE_STRING,
+	"id_package": TYPE_STRING,
+	"type": TYPE_STRING,
+	"tags": TYPE_ARRAY,
+	"data": TYPE_DICTIONARY,
+}
 
 # record of all allowed schemas
 var schema_register := {}
@@ -440,24 +450,12 @@ func _process_json_data(json_file_path: String) -> Dictionary:
 func _verify_schema_match(json_data: Dictionary) -> bool:
 	var valid_json_data = true
 	
-	# these keys must match the following types in all data entries
-	# everything inside the data value is customisable
-	var mandatory_kv_pairs := {
-		"schema_id": TYPE_STRING,
-		"schema_version": TYPE_STRING,
-		"id_author": TYPE_STRING,
-		"id_package": TYPE_STRING,
-		"type": TYPE_STRING,
-		"tags": TYPE_ARRAY,
-		"data": TYPE_DICTIONARY,
-	}
-	
-	for key in mandatory_kv_pairs:
+	for key in EXPECTED_DATA_STRUCTURE:
 		if json_data.has(key) == false:
 			Log.warning(self, "missing key for {0} on {1}".format([key, json_data]))
 			valid_json_data = false
 			break
-		if typeof(json_data[key]) != mandatory_kv_pairs[key]:
+		if typeof(json_data[key]) != EXPECTED_DATA_STRUCTURE[key]:
 			Log.warning(self, "invalid value type for {0} on {1}".format([key, json_data]))
 			valid_json_data = false
 			break
