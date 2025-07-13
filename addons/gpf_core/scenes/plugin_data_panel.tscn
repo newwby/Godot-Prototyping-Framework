@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://d4d1ix211l0fe"]
 
-[ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/data_panel_button.gd" id="1_se73q"]
+[ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_data_panel.gd" id="1_278tr"]
 
 [node name="DataPanel" type="CenterContainer"]
 anchors_preset = 15
@@ -15,6 +15,6 @@ size_flags_vertical = 3
 custom_minimum_size = Vector2(125, 35)
 layout_mode = 2
 text = "Test Button"
-script = ExtResource("1_se73q")
+script = ExtResource("1_278tr")
 
 [connection signal="pressed" from="Button" to="Button" method="_on_pressed"]

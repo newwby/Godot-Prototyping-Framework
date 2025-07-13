@@ -13,7 +13,7 @@ extends EditorPlugin
 
 # var
 
-const DATABASE_SCENE = preload("res://addons/gpf_core/scenes/data_panel.tscn")
+const DATABASE_SCENE = preload("uid://d4d1ix211l0fe")
 
 var plugin_panel_instance
 
