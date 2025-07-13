@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_data_panel.gd" id="1_278tr"]
 
-[node name="DataPanel" type="CenterContainer"]
+[node name="DataPanel" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -10,11 +10,8 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="Button" type="Button" parent="."]
-custom_minimum_size = Vector2(125, 35)
-layout_mode = 2
-text = "Test Button"
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
 script = ExtResource("1_278tr")
-
-[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
