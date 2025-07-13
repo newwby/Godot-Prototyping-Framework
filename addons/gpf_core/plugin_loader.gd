@@ -3,11 +3,12 @@ extends EditorPlugin
 
 ##############################################################################
 
-#//TODO
-# revert project setting modular version - default enable all and add settings
-#	to remove non-dependent modules?
-# add dependency handling
-# solve autoload-on-the-fly issue with GlobalBase extension
+# Core module for the Godot Prototyping Frameworks
+# Includes
+#	- Logging Manager
+#	- Data Manager
+# Planned
+#	- Debugging Manager
 
 ##############################################################################
 
