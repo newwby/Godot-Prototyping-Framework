@@ -38,6 +38,7 @@ var EXPECTED_DATA_STRUCTURE := {
 	"schema_version": TYPE_STRING,
 	"id_author": TYPE_STRING,
 	"id_package": TYPE_STRING,
+	"id_name": TYPE_STRING,
 	"type": TYPE_STRING,
 	"tags": TYPE_ARRAY,
 	"data": TYPE_DICTIONARY,
