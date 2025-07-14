@@ -15,3 +15,6 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 script = ExtResource("1_278tr")
+
+[node name="Tree" type="Tree" parent="."]
+layout_mode = 2
