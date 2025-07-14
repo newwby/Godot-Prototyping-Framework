@@ -54,9 +54,27 @@ func _populate_record(arg_data: Dictionary) -> void:
 		row.set_editable(i, true)
 		row.set_autowrap_mode(i, TextServer.AUTOWRAP_WORD_SMART)
 
+#//DESIGN NOTES
+# schema id & version does not need to be displayed
+# schema id/version can be changed in schema editor
+# schema editor creates schema, the id/version are treated as same but id determines where it is saved
+# author, package, id should not be changeable in editor or can't find the record to update
+#	-- unless we have a secret id value when loaded to compare against? hashed data of all values
 
-func _on_tree_item_edited(item: TreeItem, column: int, new_text: String) -> void:
-	print("{0} - {1} - {2}".format([item, column, new_text]))
+# type editable
+# tags dropdown with delete/add button for new tags
+# data depends on the data type
+#	most = text, but with data validation
+#	array with values = CELL_MODE_RANGE
+
+#func _on_tree_item_edited(item: TreeItem, column: int, new_text: String) -> void:
+func _on_tree_item_edited() -> void:
+	var edited_item: TreeItem = tree.get_edited()
+	var edited_col = tree.get_edited_column()
+	var new_text = edited_item.get_text(edited_col)
+	print("{0} - {1} - {2}".format([edited_item, edited_col, new_text]))
+	for i in tree.columns:
+		print(edited_item.get_text(i))
 
 
 #func _old_ready() -> void:
