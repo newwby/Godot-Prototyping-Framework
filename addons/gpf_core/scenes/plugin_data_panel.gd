@@ -7,7 +7,7 @@ const DB_FIELD_MIN_WIDTH := 50
 
 var tree_root: TreeItem
 
-@onready var tree = $Tree
+@onready var tree = $Scroll/VBox/Tree
 
 #####################################################################
 

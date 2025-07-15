@@ -16,5 +16,21 @@ theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 script = ExtResource("1_278tr")
 
-[node name="Tree" type="Tree" parent="."]
+[node name="BkgPanel" type="Panel" parent="."]
 layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DBControls" type="HBoxContainer" parent="Scroll/VBox"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="Tree" type="Tree" parent="Scroll/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
