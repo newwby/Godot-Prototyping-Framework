@@ -180,14 +180,14 @@ func get_available_types() -> Array:
 #	searched inside res:// and user:// (name consistent across both)
 func get_local_data_path() -> String:
 	return "res://{0}".\
-		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
+		format(["data"])
 
 
 # ProjectSetting can be changed by developer to determine the data directory
 #	searched inside res:// and user:// (name consistent across both)
 func get_user_data_path() -> String:
 	return "user://{0}".\
-		format([ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())])
+		format(["data"])
 
 
 # used in process_json_data

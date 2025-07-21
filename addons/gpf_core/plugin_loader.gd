@@ -21,6 +21,14 @@ const AUTOLOAD_PATHS := {
 
 const DATABASE_SCENE = preload("uid://d4d1ix211l0fe")
 
+const SETTING_PATH_FORMAT := "addons/prototype_framework/{0}"
+
+# setting name: default value
+# string: variant
+#const SETTINGS := {
+	#"data path": "data"
+#}
+
 var plugin_panel_instance
 
 ##############################################################################
@@ -73,11 +81,6 @@ func _make_visible(visible):
 
 # public
 
-
-static func get_data_path_setting() -> String:
-	return GPFPlugin.SETTING_PATH_FORMAT.format(GPFPlugin.SETTINGS["data path"])
-
-
 ##############################################################################
 
 # private
@@ -96,9 +99,11 @@ func _add_plugin_panel():
 
 
 func _add_settings() -> void:
-	for setting_key in GPFPlugin.SETTINGS.keys():
-		var default_value = GPFPlugin.SETTINGS[setting_key]
-		ProjectSettings.set_setting(GPFPlugin.SETTING_PATH_FORMAT.format([setting_key]), default_value)
+	pass
+	# custom settings temporarily disabled as none present
+	#for setting_key in SETTINGS.keys():
+		#var default_value = SETTINGS[setting_key]
+		#ProjectSettings.set_setting(SETTING_PATH_FORMAT.format([setting_key]), default_value)
 
 
 func _remove_autoloads() -> void:
@@ -113,14 +118,15 @@ func _remove_plugin_panel():
 
 
 func _remove_settings() -> void:
-	for setting_key in GPFPlugin.SETTINGS.keys():
-		ProjectSettings.set_setting(GPFPlugin.SETTING_PATH_FORMAT.format([setting_key]), null)
+	pass
+	# custom settings temporarily disabled as none present
+	#for setting_key in SETTINGS.keys():
+		#ProjectSettings.set_setting(SETTING_PATH_FORMAT.format([setting_key]), null)
 
 
 # if running in editor, and local directories don't exist, create them
 func _verify_local_data_directory() -> void:
-	var data_directory := ProjectSettings.get_setting(GPFPlugin.get_data_path_setting())
-	var local_path = "res://{0}".format([data_directory])
+	var local_path = "res://{0}".format(["data"])
 	var local_dir = DirAccess.open(local_path)
 	if not local_dir:
 		DirAccess.make_dir_recursive_absolute(local_path)
