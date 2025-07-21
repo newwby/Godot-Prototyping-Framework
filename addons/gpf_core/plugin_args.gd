@@ -7,11 +7,6 @@ extends Object
 
 ##############################################################################
 
-const AUTOLOAD_PATHS := {
-	"Log": "res://addons/gpf_core/autoload/global_log.gd",
-	"Data": "res://addons/gpf_core/autoload/global_data.gd",
-}
-
 const SETTING_PATH_FORMAT := "addons/prototype_framework/{0}"
 
 # setting name: default value

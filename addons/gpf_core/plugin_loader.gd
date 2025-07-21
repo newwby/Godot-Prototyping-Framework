@@ -14,6 +14,11 @@ extends EditorPlugin
 
 # var
 
+const AUTOLOAD_PATHS := {
+	"Log": "res://addons/gpf_core/autoload/global_log.gd",
+	"Data": "res://addons/gpf_core/autoload/global_data.gd",
+}
+
 const DATABASE_SCENE = preload("uid://d4d1ix211l0fe")
 
 var plugin_panel_instance
@@ -79,8 +84,8 @@ static func get_data_path_setting() -> String:
 
 
 func _add_autoloads() -> void:
-	for name_key in GPFPlugin.AUTOLOAD_PATHS:
-		add_autoload_singleton(name_key, GPFPlugin.AUTOLOAD_PATHS[name_key])
+	for name_key in AUTOLOAD_PATHS:
+		add_autoload_singleton(name_key, AUTOLOAD_PATHS[name_key])
 
 
 func _add_plugin_panel():
@@ -98,7 +103,7 @@ func _add_settings() -> void:
 
 func _remove_autoloads() -> void:
 	# remove singletons and project settings
-	for name_key in GPFPlugin.AUTOLOAD_PATHS:
+	for name_key in AUTOLOAD_PATHS:
 		remove_autoload_singleton(name_key)
 
 
