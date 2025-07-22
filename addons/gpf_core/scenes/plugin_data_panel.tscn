@@ -39,6 +39,16 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_override_constants/separation = 15
 
+[node name="FilterSchemaID" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+
 [node name="DatabaseTree" type="Tree" parent="Scroll/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -58,3 +68,6 @@ size_flags_vertical = 8
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_override_constants/separation = 15
+
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaVersion" to="." method="_on_filter_schema_version_item_selected"]
