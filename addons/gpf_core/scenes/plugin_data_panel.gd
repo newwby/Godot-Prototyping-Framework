@@ -86,6 +86,15 @@ func _init_database() -> void:
 
 # changes the cached schema data & repopulates the database
 func _load_database() -> void:
+	# cache current schema
+	var schema_id = get_selected_schema_id()
+	var schema_ver = get_selected_schema_version()
+	var all_schema_vers = Data.schema_register.get(schema_id, [])
+	active_schema = all_schema_vers.get(schema_ver, {})
+	if active_schema == {}:
+		Log.error(self, "invalid schema lookup {0}.{1}".format([schema_id, schema_ver]))
+	
+	# write the database
 	_clear_database()
 	_populate_database()
 
