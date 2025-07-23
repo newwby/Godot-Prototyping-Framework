@@ -3,10 +3,9 @@ extends Control
 
 #####################################################################
 
-const DB_FIELD_MIN_WIDTH := 50
+const DB_FIELD_MIN_WIDTH := 35
 
-const EXCLUDED_KEYS := ["schema_id", "schema_version"]
-
+var tree_columns := []
 var tree_root: TreeItem
 
 # copies the schema from Data.schema_register for data validation
@@ -26,8 +25,8 @@ var active_schema: Dictionary = {}
 
 func _ready() -> void:
 	visibility_changed.connect(_on_visibility_changed)
-	_init_database()
 	_setup_id_filter()
+	_initial_tree_setup()
 	# display from initial schema version/id
 	_on_filter_schema_id_item_selected(filter_schema_id.selected)
 
@@ -37,6 +36,7 @@ func _ready() -> void:
 # public methods
 
 
+#//TODO cache in this script
 # as populated from Data.schema_register this will correspond to a schema_id
 func get_selected_schema_id() -> String:
 	var schema_id_idx = filter_schema_id.selected
@@ -44,6 +44,7 @@ func get_selected_schema_id() -> String:
 	return schema_id_text
 
 
+#//TODO cache in this script
 # as populated from Data.schema_register this will correspond to a schema_version
 #	from the matching schema_Id
 func get_selected_schema_version() -> String:
@@ -57,8 +58,17 @@ func get_selected_schema_version() -> String:
 # private methods
 
 
+func _cache_schema() -> void:
+	var schema_id = get_selected_schema_id()
+	var schema_ver = get_selected_schema_version()
+	var all_schema_vers = Data.schema_register.get(schema_id, [])
+	active_schema = all_schema_vers.get(schema_ver, {})
+	if active_schema == {}:
+		Log.error(self, "invalid schema lookup {0}.{1}".format([schema_id, schema_ver]))
+
+
 #//TODO move _init_database behaviour into here for schema 
-func _clear_database() -> void:
+func _clear_tree() -> void:
 	var child := tree_root.get_first_child()
 	while child:
 		var next = child.get_next()
@@ -66,37 +76,45 @@ func _clear_database() -> void:
 		child = next
 
 
-func _init_database() -> void:
+func _initial_tree_setup() -> void:
 	database_tree.clear()
-	tree_root = database_tree.create_item()
 	database_tree.hide_root = true
 	database_tree.item_edited.connect(_on_tree_item_edited)
-	
-	var columns := Data.EXPECTED_DATA_STRUCTURE.keys()
-	for key in EXCLUDED_KEYS:
-		columns.erase(key)
-	database_tree.columns = columns.size()
-	
-	for i in range(columns.size()):
-		database_tree.set_column_title(i, columns[i])
-		database_tree.set_column_expand(i, false)
-		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
-		database_tree.set_column_expand(i, true)
+	tree_root = database_tree.create_item()
 
 
-# changes the cached schema data & repopulates the database
-func _load_database() -> void:
-	# cache current schema
-	var schema_id = get_selected_schema_id()
-	var schema_ver = get_selected_schema_version()
-	var all_schema_vers = Data.schema_register.get(schema_id, [])
-	active_schema = all_schema_vers.get(schema_ver, {})
-	if active_schema == {}:
-		Log.error(self, "invalid schema lookup {0}.{1}".format([schema_id, schema_ver]))
+func _load_data_entry(data_entry: Dictionary) -> void:
+	var new_row = database_tree.create_item(tree_root)
+	# id is immutable (#//TODO for now) value defining the data entry in display
+	var data_id = "{0}.{1}.{2}".format([
+		data_entry.get("id_author", "?"),
+		data_entry.get("id_package", "?"),
+		data_entry.get("id_name", "?")
+	])
+	# inject the concatenated id
+	data_entry["id"] = data_id
+	# flatten the schema data entry
+	var entry_schema_data = data_entry.get("data", {})
+	for schema_key in entry_schema_data:
+		data_entry[schema_key] = entry_schema_data[schema_key]
 	
-	# write the database
-	_clear_database()
-	_populate_database()
+	for idx in range(tree_columns.size()):
+		var key = tree_columns[idx]
+		var value = data_entry.get(key, null)
+		new_row.set_text(idx, str(value))
+		new_row.set_autowrap_mode(idx, TextServer.AUTOWRAP_WORD_SMART)
+		new_row.set_tooltip_text(idx, "")
+		# id is not editable
+		new_row.set_editable(idx, (key != "id"))
+
+
+# pass an array of data values (e.g. the .values() property of a Data.*register)
+#	and the plugin will load as the displayed data (assuming it matches schema)
+func _load_data_list(data_list: Array) -> void:
+	for item in data_list:
+		if typeof(item) == TYPE_DICTIONARY:
+			if _verify_data_entry(item):
+				_load_data_entry(item)
 
 
 # when schema id is changed in the dropdown control
@@ -114,14 +132,13 @@ func _on_filter_schema_id_item_selected(index):
 	# default to most recent version
 	var idx = filter_schema_version.item_count-1
 	filter_schema_version.select(idx)
-	_load_database()
+	_reload_database()
 
 
 # when schema version is changed update the data
 func _on_filter_schema_version_item_selected(index):
-	#print(filter_schema_version.selected, " - {0}".format([filter_schema_version.get_item_text(filter_schema_version.selected)]))
-	# temp handling - clearing the entire tree is a bit messy
-	_load_database()
+	_reload_database()
+
 
 # Currently just debug prints the edited item
 #//TODO setup UID logging from path
@@ -141,30 +158,37 @@ func _on_visibility_changed() -> void:
 		pass
 
 
-func _populate_database() -> void:
-	#tree_root.c
-	for item in Data.data_collection:
-		if typeof(item) == TYPE_DICTIONARY:
-			_populate_record(item)
+# changes the cached schema data & repopulates the database
+func _reload_database() -> void:
+	# cache current schema
+	_cache_schema()
+	# write the database
+	_reload_tree_by_schema()
+	#//TODO change based on current schema, load from register (update GlobalData)
+	_load_data_list(Data.data_collection)
 
 
-# record is validated if it's from global Data registers
-# adds record to the database view
-func _populate_record(arg_data: Dictionary) -> void:
-	if _temp_validate_item(arg_data) == false:
+# Called whenever the schema id/version changes, and on initial load
+# Completely resets the displayed database content according to current schema
+# Maps the column index
+func _reload_tree_by_schema() -> void:
+	# refresh the tree root
+	_clear_tree()
+	if active_schema.is_empty():
+		Log.error(self, "cannot write database with inactive schema")
 		return
-	var columns := Data.EXPECTED_DATA_STRUCTURE.keys()
-	for key in EXCLUDED_KEYS:
-		columns.erase(key)
-	var row = database_tree.create_item(tree_root)
-	for i in range(columns.size()):
-		var key = columns[i]
-		var value = arg_data.get(key, "")
-		row.set_text(i, str(value))
-		row.set_editable(i, true)
-		row.set_autowrap_mode(i, TextServer.AUTOWRAP_WORD_SMART)
-		row.set_tooltip_text(i, "")
-		#row.set_tooltip_text(i, columns[i])
+	var schema_id = get_selected_schema_id()
+	var schema_ver = get_selected_schema_version()
+	
+	tree_columns = ["id", "type", "tags"]
+	tree_columns.append_array(active_schema.keys())
+	
+	database_tree.columns = tree_columns.size()
+	
+	for i in range(tree_columns.size()):
+		database_tree.set_column_title(i, tree_columns[i])
+		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
+		database_tree.set_column_expand(i, true)
 
 
 # get schema ids from Data.schema_register on setup
@@ -185,3 +209,21 @@ func _temp_validate_item(arg_record: Dictionary) -> bool:
 		return true
 	# else
 	return false
+
+
+# data must match the active schema to pass validation & enter the db
+func _verify_data_entry(data_entry: Dictionary) -> bool:
+	#//TOOD cache this
+	# check matching identifier keys
+	var active_schema_id = get_selected_schema_id()
+	var active_schema_ver = get_selected_schema_version()
+	if data_entry.get("schema_id", null) != active_schema_id\
+	or data_entry.get("schema_version", null) != active_schema_ver:
+		return false
+	# check data values
+	var schema_data = data_entry.get("data", {})
+	for key in active_schema.keys():
+		if schema_data.has(key) == false:
+			return false
+	# else
+	return true
