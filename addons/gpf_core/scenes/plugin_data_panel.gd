@@ -5,6 +5,8 @@ extends Control
 
 const DB_FIELD_MIN_WIDTH := 50
 
+const EXCLUDED_KEYS := ["schema_id", "schema_version"]
+
 var tree_root: TreeItem
 
 # copies the schema from Data.schema_register for data validation
@@ -71,6 +73,8 @@ func _init_database() -> void:
 	database_tree.item_edited.connect(_on_tree_item_edited)
 	
 	var columns := Data.EXPECTED_DATA_STRUCTURE.keys()
+	for key in EXCLUDED_KEYS:
+		columns.erase(key)
 	database_tree.columns = columns.size()
 	
 	for i in range(columns.size()):
@@ -141,6 +145,8 @@ func _populate_record(arg_data: Dictionary) -> void:
 	if _temp_validate_item(arg_data) == false:
 		return
 	var columns := Data.EXPECTED_DATA_STRUCTURE.keys()
+	for key in EXCLUDED_KEYS:
+		columns.erase(key)
 	var row = database_tree.create_item(tree_root)
 	for i in range(columns.size()):
 		var key = columns[i]
