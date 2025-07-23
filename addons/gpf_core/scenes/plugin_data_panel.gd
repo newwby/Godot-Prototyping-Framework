@@ -47,6 +47,14 @@ func _setup_tree() -> void:
 		#header_row.set_selectable(i, false)
 
 
+#//TODO move _setup tree behaviour into here for schema 
+func _clear_database() -> void:
+	var child := tree_root.get_first_child()
+	while child:
+		var next = child.get_next()
+		child.call_deferred("free")
+		child = next
+
 func _populate_database() -> void:
 	#tree_root.c
 	for item in Data.data_collection:
@@ -145,7 +153,7 @@ func _on_filter_schema_id_item_selected(index):
 func _on_filter_schema_version_item_selected(index):
 	#print(filter_schema_version.selected, " - {0}".format([filter_schema_version.get_item_text(filter_schema_version.selected)]))
 	# temp handling - clearing the entire tree is a bit messy
-	_setup_tree()
+	_clear_database()
 	_populate_database()
 
 
