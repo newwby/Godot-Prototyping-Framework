@@ -236,29 +236,35 @@ func test_fetch_existing_package():
 # checks if fetch_by_schema returns the correct value on missing data
 func test_fetch_missing_schema():
 	var test_schema := "fake_missing_schema_for_test_fetch_by_schema"
+	var test_version := "1.1.7"
 	assert_eq(Data.data_package_register.has(test_schema), false)
 	Log.info(self, "expect imminent Data warning for missing schema test")
-	assert_eq(Data.fetch_by_schema(test_schema), [])
+	assert_eq(Data.fetch_by_schema(test_schema, test_version), [])
 
 
 # check if data exists in package register and fetch_by_schema returns expected result
 # test tears down the test value at conclusion
+#//TODO improve test - test uses older 
 func test_fetch_existing_schema():
 	var test_schema := "faked_present_schema_for_test_fetch_existing_schema"
+	var test_version := "0.4.2"
 	var test_data = [
 		expected_local_test_data,
 		expected_local_test_data,
 		expected_local_test_data,
 	]
-	Data.data_schema_register[test_schema] = test_data
-	assert_has(Data.fetch_by_schema(test_schema), expected_local_test_data)
-	assert_eq(Data.fetch_by_schema(test_schema), test_data)
-	assert_eq(Data.fetch_by_schema(test_schema).size(), 3)
+	#//TODO evaluate if this is a safe test
+	Data.data_schema_register[test_schema] = {}
+	Data.data_schema_register[test_schema][test_version] = test_data
+	assert_has(Data.fetch_by_schema(test_schema, test_version), expected_local_test_data)
+	assert_eq(Data.fetch_by_schema(test_schema, test_version), test_data)
+	assert_eq(Data.fetch_by_schema(test_schema, test_version).size(), 3)
 	# remove testing data, check it is gone
+	#Data.data_schema_register[test_schema].erase(test_version)
 	Data.data_schema_register.erase(test_schema)
 	Log.info(self, "expect imminent Data warning for existing package test teardown")
-	assert_does_not_have(Data.fetch_by_schema(test_schema), test_data)
-	assert_eq(Data.fetch_by_schema(test_schema), [])
+	assert_does_not_have(Data.fetch_by_schema(test_schema, test_version), test_data)
+	assert_eq(Data.fetch_by_schema(test_schema, test_version), [])
 
 
 # checks if fetch_by_tag returns the correct value on missing data
@@ -655,8 +661,8 @@ func _remove_test_user_data() -> void:
 
 
 # used in test_collected_all_in_res & test_collected_all_in_user
-func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
-	if print_debug:
+func _sum_collected_all_in(dir_path: String, dbg_print_flag: bool = false) -> int:
+	if dbg_print_flag:
 		print("\n starting _sum_collected in test: {0}".format([dir_path]))
 	var all_paths := DataUtility.get_file_paths(dir_path)
 	var valid_data_count := 0
@@ -670,10 +676,10 @@ func _sum_collected_all_in(dir_path: String, print_debug: bool = false) -> int:
 				var json_data = json_loader.data
 				if Data.is_valid_json_data(json_data) == OK:
 					valid_data_count += 1
-					if print_debug:
+					if dbg_print_flag:
 						print("path {0} -> VALID".format([path]))
 						continue
-		if print_debug:
+		if dbg_print_flag:
 			print("path {0} -> NOT VALID".format([path]))
 	return valid_data_count
 
