@@ -113,8 +113,10 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 func _load_data_list(data_list: Array) -> void:
 	for item in data_list:
 		if typeof(item) == TYPE_DICTIONARY:
-			if _verify_data_entry(item):
-				_load_data_entry(item)
+			# now-optional verification step removed as GlobalData fetch is
+			#	more granular and grabs specific cache/doesn't pull all information
+			#if _verify_data_entry(item):
+			_load_data_entry(item)
 
 
 # when schema id is changed in the dropdown control
@@ -164,8 +166,8 @@ func _reload_database() -> void:
 	_cache_schema()
 	# write the database
 	_reload_tree_by_schema()
-	#//TODO change based on current schema, load from register (update GlobalData)
-	_load_data_list(Data.data_collection)
+	var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
+	_load_data_list(data_list)
 
 
 # Called whenever the schema id/version changes, and on initial load
