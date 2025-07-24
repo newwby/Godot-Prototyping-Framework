@@ -24,6 +24,9 @@ extends Node
 # validate schema values - update schema values to be variant types to match against
 #	(or read the schema value? could get false positives against TYPE_INT)
 
+#//TODO
+# remove .has() & dict[] = value checking/setting in favour of .get/.set
+
 # handling for converting between versions is not implemented
 # version converting is trickier to handle
 
@@ -47,10 +50,19 @@ var EXPECTED_DATA_STRUCTURE := {
 # record of all allowed schemas
 var schema_register := {}
 
-# data indexed by id_author.id_package.id_name
+# data indexed by concatenated id (id_author.id_package.id_name)
 var data_id_register := {}
+
+# data indexed by schema_id and schema_version (nested, so data is cached as
+#	{"schema_id": {
+#		"1.0.0": {...},
+#		"1.0.1": {...},
+#		"1.1.0": {...},
+#		}
+#	}
 # data indexed by schema_id
 var data_schema_register := {}
+
 # data indexed by author, package, type, or tag
 var data_author_register := {}
 var data_package_register := {}
@@ -133,11 +145,19 @@ func fetch_by_package(package_id: String) -> Array:
 	return fetched_output
 
 
-func fetch_by_schema(schema_id: String) -> Array:
-	var fetched_output = _fetch_data_list(schema_id, data_schema_register)
+# if version is not specified, all versions will be searched
+func fetch_by_schema(schema_id: String, schema_version: String = "") -> Array:
+	var all_id_data = data_schema_register.get(schema_id, {})
+	
+	# fetch all
+	if schema_version == "":
+		print("TODO DEV IMPLEMENT SEARCH ALL VERSIONS")
+		return []
+	
+	var fetched_output = _fetch_data_list(schema_version, all_id_data)
 	if fetched_output.is_empty():
-		Log.warning(self, "cannot find schema_id {0} in data_schema_register".\
-				format([schema_id]))
+		Log.warning(self, "cannot find schema_version {0} in data_schema_register[{1}]".\
+				format([schema_version, schema_id]))
 	return fetched_output
 
 
@@ -318,9 +338,12 @@ func _index_data(json_data: Dictionary) -> void:
 	
 	# index by schema_id
 	var schema_id = json_data["schema_id"]
+	var schema_version = json_data["schema_version"]
 	if data_schema_register.has(schema_id) == false:
-		data_schema_register[schema_id] = []
-	data_schema_register[schema_id].append(json_data)
+		data_schema_register[schema_id] = {}
+	if data_schema_register[schema_id].has(schema_version) == false:
+		data_schema_register[schema_id][schema_version] = []
+	data_schema_register[schema_id][schema_version].append(json_data)
 	
 	# index by author
 	if data_author_register.has(author) == false:
