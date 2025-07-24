@@ -198,19 +198,6 @@ func _setup_id_filter() -> void:
 		filter_schema_id.add_item(schema_id)
 
 
-#//TODO remove
-# temp checker for _populate_record to check if schema id/version matches
-# actually need to add GlobalData filtering method to save iterating over everything
-func _temp_validate_item(arg_record: Dictionary) -> bool:
-	var schema_id = arg_record.get("schema_id", null)
-	var schema_ver = arg_record.get("schema_version", null)
-	if schema_id == get_selected_schema_id()\
-	and schema_ver == get_selected_schema_version():
-		return true
-	# else
-	return false
-
-
 # data must match the active schema to pass validation & enter the db
 func _verify_data_entry(data_entry: Dictionary) -> bool:
 	#//TOOD cache this
