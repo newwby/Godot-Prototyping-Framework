@@ -145,15 +145,8 @@ func fetch_by_package(package_id: String) -> Array:
 	return fetched_output
 
 
-# if version is not specified, all versions will be searched
-func fetch_by_schema(schema_id: String, schema_version: String = "") -> Array:
+func fetch_by_schema(schema_id: String, schema_version: String) -> Array:
 	var all_id_data = data_schema_register.get(schema_id, {})
-	
-	# fetch all
-	if schema_version == "":
-		print("TODO DEV IMPLEMENT SEARCH ALL VERSIONS")
-		return []
-	
 	var fetched_output = _fetch_data_list(schema_version, all_id_data)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find schema_version {0} in data_schema_register[{1}]".\
