@@ -548,3 +548,63 @@ func _verify_schema_structure(schema_data: Dictionary) -> bool:
 			return false
 	
 	return true
+
+
+########################################################
+
+# all json entries are cached by unique id here
+#//TODO .values() replaces data_collection, can deprecate that
+#//TODO replaces data_id_register, can deprecate that
+var all_id_map := {}
+
+func _new_index_json_entry(json_data: Dictionary) -> void:
+	# json_data should be verified, the return arg of _process_json_data
+	if json_data.is_empty():
+		Log.error(self, "data not verified -> {0}".format([json_data]))
+		return
+	
+	# data is cached in the all_id_map using full id as key
+	# data is indexed to separate registers by full id
+	# lookups use intersections of the different registers before looking up
+	#	the actual id values in all_id_map
+	#//TODO this is time bounded by the smallest register, if caching a
+	#	significant number of records could run into lookup lags
+	
+	var id_author = json_data.get("id_author", null)
+	var id_package = json_data.get("id_package", null)
+	var id_name = json_data.get("id_name", null)
+	var full_id = "{0}.{1}.{2}".format([id_author, id_package, id_name])
+	# cache by id
+	all_id_map[full_id] = json_data
+	
+	var schema_id = json_data.get("schema_id", null)
+	var schema_ver = json_data.get("schema_version", null)
+	
+	if data_schema_register.has(schema_id) == false:
+		data_schema_register[schema_id] = {}
+	if data_schema_register[schema_id].has(schema_ver) == false:
+		data_schema_register[schema_id][schema_ver] = {}
+	# index by schema id/version
+	data_schema_register[schema_id][schema_ver][full_id] = true
+	
+	# index by author
+	if data_author_register.has(id_author) == false:
+		data_author_register[id_author] = {}
+	data_author_register[id_author][full_id] = true
+	# index by package
+	if data_package_register.has(id_package) == false:
+		data_package_register[id_package] = {}
+	data_package_register[id_package][full_id] = true
+	
+	# index by type
+	var type = json_data.get("type", null)
+	if data_type_register.has(type) == false:
+		data_type_register[type] = {}
+	data_type_register[type][full_id] = true
+	
+	# index by tag
+	var tags = json_data.get("tags", [])
+	for tag in tags:
+		if data_tag_register.has(tag) == false:
+			data_tag_register[tag] = {}
+		data_tag_register[tag][full_id] = true
