@@ -379,7 +379,9 @@ func _load_all_json_data(target_directory: String) -> void:
 			elif path.begins_with("user://"):
 				user_data_collection.append(verified_data)
 			# store data in registers according to data structure
-			_index_data(verified_data)
+			#//TODO undo this temp for testing
+			#_index_data(verified_data)
+			_new_index_json_entry(verified_data)
 
 
 func _load_schema(schema_file_path: String) -> void:
@@ -608,3 +610,68 @@ func _new_index_json_entry(json_data: Dictionary) -> void:
 		if data_tag_register.has(tag) == false:
 			data_tag_register[tag] = {}
 		data_tag_register[tag][full_id] = true
+
+
+#//TODO implement fetch where can match any one condition (especially for tags)
+# will return an array of Json data entries from intersected registers
+# the criteria can have the following keys with the expected values
+# "id": String (to look up by specific full identifier; author.package.name)
+# "id_author": String (to look up by specific author identifier)
+# "id_package": String (to look up by specific package identifier)
+# "schema_id": String (to look up by specific schema)
+# "schema_version": String (to look up by specific version)
+# "type": String (to look up by specific type)
+# "tags": PackedStringArray (to look up by specific tags, must match all)
+func _new_fetch_data(criteria: Dictionary) -> Array:
+	var final_output := []
+	var valid_ids := {}
+	
+	var request_full_id = criteria.get("id", null)
+	var request_id_author = criteria.get("id_author", null)
+	var request_id_package = criteria.get("id_package", null)
+	var request_schema_id = criteria.get("schema_id", null)
+	var request_schema_ver = criteria.get("schema_version", null)
+	var request_type = criteria.get("type", null)
+	var request_tags = criteria.get("tags", [])
+	
+	if request_full_id != null:
+		if all_id_map.has(request_full_id):
+			valid_ids[request_full_id] = true
+	
+	# 
+	if request_id_author != null:
+		if data_author_register.has(request_id_author):
+			var valid_author_ids = data_author_register[request_id_author].duplicate()
+			valid_ids = intersect(valid_ids, valid_author_ids)
+	
+	for id in valid_ids.keys():
+		if all_id_map.has(id):
+			final_output.append(all_id_map[id])
+	return final_output
+
+
+# must be in both dicts to survive
+func intersect(_a: Dictionary, _b: Dictionary) -> Dictionary:
+	var _a_empty = _a.is_empty()
+	var _b_empty = _b.is_empty()
+	
+	if _a_empty and not _b_empty:
+		return _b
+	elif _b_empty and not _a_empty:
+		return _a
+	elif _a_empty and _b_empty:
+		return {}
+	
+	var bigger_dict := {}
+	var smaller_dict := {}
+	if _a.keys().size() >= _b.keys().size():
+		bigger_dict = _a.duplicate(true)
+		smaller_dict = _b.duplicate(true)
+	else:
+		bigger_dict = _b.duplicate(true)
+		smaller_dict = _a.duplicate(true)
+	
+	for x in smaller_dict.keys():
+		if not x in bigger_dict.keys():
+			smaller_dict.erase(x)
+	return smaller_dict
