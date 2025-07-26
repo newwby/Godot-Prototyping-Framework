@@ -638,12 +638,32 @@ func _new_fetch_data(criteria: Dictionary) -> Array:
 		if all_id_map.has(request_full_id):
 			valid_ids[request_full_id] = true
 	
-	# 
-	if request_id_author != null:
-		if data_author_register.has(request_id_author):
-			var valid_author_ids = data_author_register[request_id_author].duplicate()
-			valid_ids = intersect(valid_ids, valid_author_ids)
+	# find ids for data with the given search term
+	if (request_id_author != null):
+		var valid_author_ids = data_author_register.get(request_id_author, {})
+		valid_ids = _intersect_sets(valid_ids, valid_author_ids)
 	
+	if (request_id_package != null):
+		var valid_package_ids = data_package_register.get(request_id_package, {})
+		valid_ids = _intersect_sets(valid_ids, valid_package_ids)
+	
+	if (request_schema_id != null) and (request_schema_ver != null):
+		var data_by_schema_vers = data_schema_register.get(request_schema_id, {})
+		var valid_schema_ids = data_by_schema_vers.get(request_schema_ver, {})
+		valid_ids = _intersect_sets(valid_ids, valid_schema_ids)
+	
+	if (request_type != null):
+		var valid_type_ids = data_type_register.get(request_type, {})
+		valid_ids = _intersect_sets(valid_ids, valid_type_ids)
+	
+	if (request_tags != null):
+		if typeof(request_tags) == TYPE_ARRAY\
+		or typeof(request_tags) == TYPE_PACKED_STRING_ARRAY:
+			for tag in request_tags:
+				var new_valid_tag_ids = data_tag_register.get(tag, {})
+				valid_ids = _intersect_sets(valid_ids, new_valid_tag_ids)
+	
+	# get the actual data
 	for id in valid_ids.keys():
 		if all_id_map.has(id):
 			final_output.append(all_id_map[id])
@@ -651,7 +671,8 @@ func _new_fetch_data(criteria: Dictionary) -> Array:
 
 
 # must be in both dicts to survive
-func intersect(_a: Dictionary, _b: Dictionary) -> Dictionary:
+# time bounded by lowest size dict
+func _intersect_sets(_a: Dictionary, _b: Dictionary) -> Dictionary:
 	var _a_empty = _a.is_empty()
 	var _b_empty = _b.is_empty()
 	
