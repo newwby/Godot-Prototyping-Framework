@@ -47,6 +47,12 @@ var EXPECTED_DATA_STRUCTURE := {
 	"data": TYPE_DICTIONARY,
 }
 
+
+# all json entries are cached by unique id here
+#//TODO .values() replaces data_collection, can deprecate that
+#//TODO replaces data_id_register, can deprecate that
+var all_id_map := {}
+
 # record of all allowed schemas
 var schema_register := {}
 
@@ -104,6 +110,7 @@ func apply_json(given_object: Object, json_data: Dictionary) -> void:
 # call with caution - loading from disk at runtime could be intensive
 #	depending on user data
 func clear_all_data() -> void:
+	all_id_map.clear()
 	schema_register.clear()
 	data_collection.clear()
 	local_data_collection.clear()
@@ -116,8 +123,66 @@ func clear_all_data() -> void:
 	data_tag_register.clear()
 
 
+#//TODO implement fetch where can match any one condition (especially for tags)
+# will return an array of Json data entries from intersected registers
+# the criteria can have the following keys with the expected values
+# "id": String (to look up by specific full identifier; author.package.name)
+# "id_author": String (to look up by specific author identifier)
+# "id_package": String (to look up by specific package identifier)
+# "schema_id": String (to look up by specific schema)
+# "schema_version": String (to look up by specific version)
+# "type": String (to look up by specific type)
+# "tags": PackedStringArray (to look up by specific tags, must match all)
+func fetch(criteria: Dictionary) -> Array:
+	var final_output := []
+	var valid_ids := {}
+	
+	var request_full_id = criteria.get("id", null)
+	var request_id_author = criteria.get("id_author", null)
+	var request_id_package = criteria.get("id_package", null)
+	var request_schema_id = criteria.get("schema_id", null)
+	var request_schema_ver = criteria.get("schema_version", null)
+	var request_type = criteria.get("type", null)
+	var request_tags = criteria.get("tags", [])
+	
+	if request_full_id != null:
+		if all_id_map.has(request_full_id):
+			valid_ids[request_full_id] = true
+	
+	# find ids for data with the given search term
+	if (request_id_author != null):
+		var valid_author_ids = data_author_register.get(request_id_author, {})
+		valid_ids = _intersect_sets(valid_ids, valid_author_ids)
+	
+	if (request_id_package != null):
+		var valid_package_ids = data_package_register.get(request_id_package, {})
+		valid_ids = _intersect_sets(valid_ids, valid_package_ids)
+	
+	if (request_schema_id != null) and (request_schema_ver != null):
+		var data_by_schema_vers = data_schema_register.get(request_schema_id, {})
+		var valid_schema_ids = data_by_schema_vers.get(request_schema_ver, {})
+		valid_ids = _intersect_sets(valid_ids, valid_schema_ids)
+	
+	if (request_type != null):
+		var valid_type_ids = data_type_register.get(request_type, {})
+		valid_ids = _intersect_sets(valid_ids, valid_type_ids)
+	
+	if (request_tags != null):
+		if typeof(request_tags) == TYPE_ARRAY\
+		or typeof(request_tags) == TYPE_PACKED_STRING_ARRAY:
+			for tag in request_tags:
+				var new_valid_tag_ids = data_tag_register.get(tag, {})
+				valid_ids = _intersect_sets(valid_ids, new_valid_tag_ids)
+	
+	# get the actual data
+	for id in valid_ids.keys():
+		if all_id_map.has(id):
+			final_output.append(all_id_map[id])
+	return final_output
+
+
 func fetch_by_author(data_author: String) -> Array:
-	var fetched_output = _fetch_data_list(data_author, data_author_register)
+	var fetched_output = _fetch_data_list_from_register(data_author, data_author_register)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find data_author {0} in data_author_register".\
 				format([data_author]))
@@ -130,7 +195,7 @@ func fetch_by_id(data_id: String) -> Dictionary:
 		Log.warning(self, "cannot parse data_id - {0} - expected [id_author].[id_package].[id_name]".format([data_id]))
 		return {}
 	
-	var fetched_output = _fetch_data(data_id, data_id_register)
+	var fetched_output = _fetch_data_from_register(data_id, data_id_register)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find data_id {0} in data_id_register".\
 				format([data_id]))
@@ -138,7 +203,7 @@ func fetch_by_id(data_id: String) -> Dictionary:
 
 
 func fetch_by_package(package_id: String) -> Array:
-	var fetched_output = _fetch_data_list(package_id, data_package_register)
+	var fetched_output = _fetch_data_list_from_register(package_id, data_package_register)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find package_id {0} in data_package_register".\
 				format([package_id]))
@@ -147,7 +212,7 @@ func fetch_by_package(package_id: String) -> Array:
 
 func fetch_by_schema(schema_id: String, schema_version: String) -> Array:
 	var all_id_data = data_schema_register.get(schema_id, {})
-	var fetched_output = _fetch_data_list(schema_version, all_id_data)
+	var fetched_output = _fetch_data_list_from_register(schema_version, all_id_data)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find schema_version {0} in data_schema_register[{1}]".\
 				format([schema_version, schema_id]))
@@ -155,7 +220,7 @@ func fetch_by_schema(schema_id: String, schema_version: String) -> Array:
 
 
 func fetch_by_type(data_type: String) -> Array:
-	var fetched_output = _fetch_data_list(data_type, data_type_register)
+	var fetched_output = _fetch_data_list_from_register(data_type, data_type_register)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find data_type {0} in data_type_register".\
 				format([data_type]))
@@ -163,7 +228,7 @@ func fetch_by_type(data_type: String) -> Array:
 
 
 func fetch_by_tag(data_tag: String) -> Array:
-	var fetched_output = _fetch_data_list(data_tag, data_tag_register)
+	var fetched_output = _fetch_data_list_from_register(data_tag, data_tag_register)
 	if fetched_output.is_empty():
 		Log.warning(self, "cannot find data_tag {0} in data_tag_register".\
 				format([data_tag]))
@@ -256,7 +321,7 @@ func verify_user_data_directory() -> void:
 
 # returns an internal array from an indexed register
 # returns empty array if cannnot be found or any argument is invalid
-func _fetch_data(key: String, register: Dictionary) -> Dictionary:
+func _fetch_data_from_register(key: String, register: Dictionary) -> Dictionary:
 	if register.is_empty():
 		return {}
 	elif register.has(key):
@@ -271,7 +336,7 @@ func _fetch_data(key: String, register: Dictionary) -> Dictionary:
 
 # returns a json data value from an indexed register
 # returns empty array if cannnot be found or any argument is invalid
-func _fetch_data_list(key: String, register: Dictionary) -> Array:
+func _fetch_data_list_from_register(key: String, register: Dictionary) -> Array:
 	if register.is_empty():
 		return []
 	elif register.has(key):
@@ -315,53 +380,85 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 		return PackedStringArray([])
 
 
-# json_data should be verified, the return arg of _process_json_data
 func _index_data(json_data: Dictionary) -> void:
-	# validate
+	# json_data should be verified, the return arg of _process_json_data
 	if json_data.is_empty():
 		Log.error(self, "data not verified -> {0}".format([json_data]))
 		return
 	
-	var author = json_data["id_author"]
-	var package = json_data["id_package"]
+	# data is cached in the all_id_map using full id as key
+	# data is indexed to separate registers by full id
+	# lookups use intersections of the different registers before looking up
+	#	the actual id values in all_id_map
+	#//TODO this is time bounded by the smallest register, if caching a
+	#	significant number of records could run into lookup lags
 	
-	# index by id_author.id_package.id_name
-	var id = "{0}.{1}.{2}".format([author, package, json_data["id_name"]])
-	data_id_register[id] = json_data
+	var id_author = json_data.get("id_author", null)
+	var id_package = json_data.get("id_package", null)
+	var id_name = json_data.get("id_name", null)
+	var full_id = "{0}.{1}.{2}".format([id_author, id_package, id_name])
+	# cache by id
+	all_id_map[full_id] = json_data
 	
-	# index by schema_id
-	var schema_id = json_data["schema_id"]
-	var schema_version = json_data["schema_version"]
+	var schema_id = json_data.get("schema_id", null)
+	var schema_ver = json_data.get("schema_version", null)
+	
 	if data_schema_register.has(schema_id) == false:
 		data_schema_register[schema_id] = {}
-	if data_schema_register[schema_id].has(schema_version) == false:
-		data_schema_register[schema_id][schema_version] = []
-	data_schema_register[schema_id][schema_version].append(json_data)
+	if data_schema_register[schema_id].has(schema_ver) == false:
+		data_schema_register[schema_id][schema_ver] = {}
+	# index by schema id/version
+	data_schema_register[schema_id][schema_ver][full_id] = true
 	
 	# index by author
-	if data_author_register.has(author) == false:
-		data_author_register[author] = []
-	data_author_register[author].append(json_data)
-	
+	if data_author_register.has(id_author) == false:
+		data_author_register[id_author] = {}
+	data_author_register[id_author][full_id] = true
 	# index by package
-	if data_package_register.has(package) == false:
-		data_package_register[package] = []
-	data_package_register[package].append(json_data)
+	if data_package_register.has(id_package) == false:
+		data_package_register[id_package] = {}
+	data_package_register[id_package][full_id] = true
 	
 	# index by type
-	var type = json_data["type"]
+	var type = json_data.get("type", null)
 	if data_type_register.has(type) == false:
-		data_type_register[type] = []
-	data_type_register[type].append(json_data)
+		data_type_register[type] = {}
+	data_type_register[type][full_id] = true
 	
 	# index by tag
-	var tags = json_data["tags"]
-	if typeof(tags) == TYPE_ARRAY:
-		if tags.is_empty() == false:
-			for tag in tags:
-				if data_tag_register.has(tag) == false:
-					data_tag_register[tag] = []
-				data_tag_register[tag].append(json_data)
+	var tags = json_data.get("tags", [])
+	for tag in tags:
+		if data_tag_register.has(tag) == false:
+			data_tag_register[tag] = {}
+		data_tag_register[tag][full_id] = true
+
+
+# must be in both dicts to survive
+# time bounded by lowest size dict
+func _intersect_sets(_a: Dictionary, _b: Dictionary) -> Dictionary:
+	var _a_empty = _a.is_empty()
+	var _b_empty = _b.is_empty()
+	
+	if _a_empty and not _b_empty:
+		return _b
+	elif _b_empty and not _a_empty:
+		return _a
+	elif _a_empty and _b_empty:
+		return {}
+	
+	var bigger_dict := {}
+	var smaller_dict := {}
+	if _a.keys().size() >= _b.keys().size():
+		bigger_dict = _a.duplicate(true)
+		smaller_dict = _b.duplicate(true)
+	else:
+		bigger_dict = _b.duplicate(true)
+		smaller_dict = _a.duplicate(true)
+	
+	for x in smaller_dict.keys():
+		if not x in bigger_dict.keys():
+			smaller_dict.erase(x)
+	return smaller_dict
 
 
 # loads every JSON data file in given directory
@@ -381,7 +478,7 @@ func _load_all_json_data(target_directory: String) -> void:
 			# store data in registers according to data structure
 			#//TODO undo this temp for testing
 			#_index_data(verified_data)
-			_new_index_json_entry(verified_data)
+			_index_data(verified_data)
 
 
 func _load_schema(schema_file_path: String) -> void:
@@ -553,146 +650,3 @@ func _verify_schema_structure(schema_data: Dictionary) -> bool:
 
 
 ########################################################
-
-# all json entries are cached by unique id here
-#//TODO .values() replaces data_collection, can deprecate that
-#//TODO replaces data_id_register, can deprecate that
-var all_id_map := {}
-
-func _new_index_json_entry(json_data: Dictionary) -> void:
-	# json_data should be verified, the return arg of _process_json_data
-	if json_data.is_empty():
-		Log.error(self, "data not verified -> {0}".format([json_data]))
-		return
-	
-	# data is cached in the all_id_map using full id as key
-	# data is indexed to separate registers by full id
-	# lookups use intersections of the different registers before looking up
-	#	the actual id values in all_id_map
-	#//TODO this is time bounded by the smallest register, if caching a
-	#	significant number of records could run into lookup lags
-	
-	var id_author = json_data.get("id_author", null)
-	var id_package = json_data.get("id_package", null)
-	var id_name = json_data.get("id_name", null)
-	var full_id = "{0}.{1}.{2}".format([id_author, id_package, id_name])
-	# cache by id
-	all_id_map[full_id] = json_data
-	
-	var schema_id = json_data.get("schema_id", null)
-	var schema_ver = json_data.get("schema_version", null)
-	
-	if data_schema_register.has(schema_id) == false:
-		data_schema_register[schema_id] = {}
-	if data_schema_register[schema_id].has(schema_ver) == false:
-		data_schema_register[schema_id][schema_ver] = {}
-	# index by schema id/version
-	data_schema_register[schema_id][schema_ver][full_id] = true
-	
-	# index by author
-	if data_author_register.has(id_author) == false:
-		data_author_register[id_author] = {}
-	data_author_register[id_author][full_id] = true
-	# index by package
-	if data_package_register.has(id_package) == false:
-		data_package_register[id_package] = {}
-	data_package_register[id_package][full_id] = true
-	
-	# index by type
-	var type = json_data.get("type", null)
-	if data_type_register.has(type) == false:
-		data_type_register[type] = {}
-	data_type_register[type][full_id] = true
-	
-	# index by tag
-	var tags = json_data.get("tags", [])
-	for tag in tags:
-		if data_tag_register.has(tag) == false:
-			data_tag_register[tag] = {}
-		data_tag_register[tag][full_id] = true
-
-
-#//TODO implement fetch where can match any one condition (especially for tags)
-# will return an array of Json data entries from intersected registers
-# the criteria can have the following keys with the expected values
-# "id": String (to look up by specific full identifier; author.package.name)
-# "id_author": String (to look up by specific author identifier)
-# "id_package": String (to look up by specific package identifier)
-# "schema_id": String (to look up by specific schema)
-# "schema_version": String (to look up by specific version)
-# "type": String (to look up by specific type)
-# "tags": PackedStringArray (to look up by specific tags, must match all)
-func _new_fetch_data(criteria: Dictionary) -> Array:
-	var final_output := []
-	var valid_ids := {}
-	
-	var request_full_id = criteria.get("id", null)
-	var request_id_author = criteria.get("id_author", null)
-	var request_id_package = criteria.get("id_package", null)
-	var request_schema_id = criteria.get("schema_id", null)
-	var request_schema_ver = criteria.get("schema_version", null)
-	var request_type = criteria.get("type", null)
-	var request_tags = criteria.get("tags", [])
-	
-	if request_full_id != null:
-		if all_id_map.has(request_full_id):
-			valid_ids[request_full_id] = true
-	
-	# find ids for data with the given search term
-	if (request_id_author != null):
-		var valid_author_ids = data_author_register.get(request_id_author, {})
-		valid_ids = _intersect_sets(valid_ids, valid_author_ids)
-	
-	if (request_id_package != null):
-		var valid_package_ids = data_package_register.get(request_id_package, {})
-		valid_ids = _intersect_sets(valid_ids, valid_package_ids)
-	
-	if (request_schema_id != null) and (request_schema_ver != null):
-		var data_by_schema_vers = data_schema_register.get(request_schema_id, {})
-		var valid_schema_ids = data_by_schema_vers.get(request_schema_ver, {})
-		valid_ids = _intersect_sets(valid_ids, valid_schema_ids)
-	
-	if (request_type != null):
-		var valid_type_ids = data_type_register.get(request_type, {})
-		valid_ids = _intersect_sets(valid_ids, valid_type_ids)
-	
-	if (request_tags != null):
-		if typeof(request_tags) == TYPE_ARRAY\
-		or typeof(request_tags) == TYPE_PACKED_STRING_ARRAY:
-			for tag in request_tags:
-				var new_valid_tag_ids = data_tag_register.get(tag, {})
-				valid_ids = _intersect_sets(valid_ids, new_valid_tag_ids)
-	
-	# get the actual data
-	for id in valid_ids.keys():
-		if all_id_map.has(id):
-			final_output.append(all_id_map[id])
-	return final_output
-
-
-# must be in both dicts to survive
-# time bounded by lowest size dict
-func _intersect_sets(_a: Dictionary, _b: Dictionary) -> Dictionary:
-	var _a_empty = _a.is_empty()
-	var _b_empty = _b.is_empty()
-	
-	if _a_empty and not _b_empty:
-		return _b
-	elif _b_empty and not _a_empty:
-		return _a
-	elif _a_empty and _b_empty:
-		return {}
-	
-	var bigger_dict := {}
-	var smaller_dict := {}
-	if _a.keys().size() >= _b.keys().size():
-		bigger_dict = _a.duplicate(true)
-		smaller_dict = _b.duplicate(true)
-	else:
-		bigger_dict = _b.duplicate(true)
-		smaller_dict = _a.duplicate(true)
-	
-	for x in smaller_dict.keys():
-		if not x in bigger_dict.keys():
-			smaller_dict.erase(x)
-	return smaller_dict
