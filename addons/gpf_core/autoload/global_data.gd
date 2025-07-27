@@ -182,18 +182,21 @@ func fetch(criteria: Dictionary) -> Array:
 
 
 func fetch_by_author(data_author: String) -> Array:
-	var fetched_output = _fetch_data_list_from_register(data_author, data_author_register)
-	if fetched_output.is_empty():
-		Log.warning(self, "cannot find data_author {0} in data_author_register".\
-				format([data_author]))
-	return fetched_output
+	return fetch({"id_author": data_author})
 
 
+#//TODO reimplement with fetch logic, return arg and tests need updating
 func fetch_by_id(data_id: String) -> Dictionary:
 	var data_id_components := data_id.split(".")
 	if data_id_components.size() != 3:
 		Log.warning(self, "cannot parse data_id - {0} - expected [id_author].[id_package].[id_name]".format([data_id]))
 		return {}
+	
+	#return fetch({
+		#"id_author": data_id_components[0],
+		#"id_package": data_id_components[1],
+		#"id_name": data_id_components[2],
+		#})
 	
 	var fetched_output = _fetch_data_from_register(data_id, data_id_register)
 	if fetched_output.is_empty():
@@ -203,36 +206,23 @@ func fetch_by_id(data_id: String) -> Dictionary:
 
 
 func fetch_by_package(package_id: String) -> Array:
-	var fetched_output = _fetch_data_list_from_register(package_id, data_package_register)
-	if fetched_output.is_empty():
-		Log.warning(self, "cannot find package_id {0} in data_package_register".\
-				format([package_id]))
-	return fetched_output
+	return fetch({"id_package": package_id})
 
 
 func fetch_by_schema(schema_id: String, schema_version: String) -> Array:
-	var all_id_data = data_schema_register.get(schema_id, {})
-	var fetched_output = _fetch_data_list_from_register(schema_version, all_id_data)
-	if fetched_output.is_empty():
-		Log.warning(self, "cannot find schema_version {0} in data_schema_register[{1}]".\
-				format([schema_version, schema_id]))
-	return fetched_output
+	return fetch({
+		"schema_id": schema_id,
+		"schema_version": schema_version,
+	})
 
 
 func fetch_by_type(data_type: String) -> Array:
-	var fetched_output = _fetch_data_list_from_register(data_type, data_type_register)
-	if fetched_output.is_empty():
-		Log.warning(self, "cannot find data_type {0} in data_type_register".\
-				format([data_type]))
-	return fetched_output
+	return fetch({"type": data_type})
 
 
+# only searches a singular tag
 func fetch_by_tag(data_tag: String) -> Array:
-	var fetched_output = _fetch_data_list_from_register(data_tag, data_tag_register)
-	if fetched_output.is_empty():
-		Log.warning(self, "cannot find data_tag {0} in data_tag_register".\
-				format([data_tag]))
-	return fetched_output
+	return fetch({"tags": [data_tag]})
 
 
 func get_available_schema_versions(schema_id: String) -> void:
