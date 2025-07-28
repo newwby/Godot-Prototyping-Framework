@@ -85,6 +85,10 @@ func after_all():
 	Data.reload_data()
 
 
+func after_each():
+	Data.reload_data()
+
+
 ##############################################################################
 
 # tests proper
@@ -186,24 +190,22 @@ func test_fetch_missing_author():
 	assert_eq(Data.fetch_by_author(test_author), [])
 
 
-# check if data exists in author register and fetch_by_author returns expected result
-# test tears down the test value at conclusion
+func _inject_data(new_data, skip_integrity_check: bool = false) -> void:
+	if skip_integrity_check or Data.is_valid_json_data(new_data):
+		Data._index_data(new_data)
+
+
+
+# check if can fetch by author
+# modified version of previous test, could be used as blueprint for fetch anything test
 func test_fetch_existing_author():
 	var test_author := "faked_present_author_for_test_fetch_existing_author"
-	var test_data = [
-		expected_local_test_data,
-		expected_local_test_data,
-		expected_local_test_data
-	]
-	Data.data_author_register[test_author] = test_data
-	assert_has(Data.fetch_by_author(test_author), expected_local_test_data)
-	assert_eq(Data.fetch_by_author(test_author), test_data)
-	assert_eq(Data.fetch_by_author(test_author).size(), 3)
-	# remove testing data, check it is gone
-	Data.data_author_register.erase(test_author)
-	Log.info(self, "expect imminent Data warning for existing author test teardown")
-	assert_does_not_have(Data.fetch_by_author(test_author), test_data)
-	assert_eq(Data.fetch_by_author(test_author), [])
+	var test_data = expected_local_test_data.duplicate(true)
+	test_data["id_author"] = test_author
+	_inject_data(test_data, true)
+	var output_data = Data.fetch_by_author(test_author)
+	var is_found: bool = (test_data in output_data)
+	assert_eq(is_found, true)
 
 
 # checks if fetch_by_package returns the correct value on missing data
