@@ -14,9 +14,12 @@ var active_schema: Dictionary = {}
 # main database
 @onready var database_tree = %DatabaseTree
 
-# filter controls
+# top bar/filter controls
 @onready var filter_schema_id = %FilterSchemaID
 @onready var filter_schema_version = %FilterSchemaVersion
+
+# bottom bar controls
+@onready var id_label = %IDLabel
 
 #####################################################################
 
@@ -80,6 +83,7 @@ func _initial_tree_setup() -> void:
 	database_tree.clear()
 	database_tree.hide_root = true
 	database_tree.item_edited.connect(_on_tree_item_edited)
+	database_tree.item_selected.connect(_on_tree_item_selected)
 	tree_root = database_tree.create_item()
 
 
@@ -142,16 +146,17 @@ func _on_filter_schema_version_item_selected(index):
 	_reload_database()
 
 
-# Currently just debug prints the edited item
-#//TODO setup UID logging from path
 func _on_tree_item_edited() -> void:
-	var edited_item: TreeItem = database_tree.get_edited()
-	var edited_col = database_tree.get_edited_column()
-	var new_text = edited_item.get_text(edited_col)
-	print("{0} - {1} - {2}".format([edited_item, edited_col, new_text]))
-	for i in database_tree.columns:
-		print(edited_item.get_text(i))
+	pass
+	#var item: TreeItem = database_tree.get_edited()
+	#var edited_col = database_tree.get_edited_column()
+	#var new_text = item.get_text(edited_col)
 
+
+func _on_tree_item_selected() -> void:
+	var item: TreeItem = database_tree.get_selected()
+	var selected_text = item.get_text(0)
+	id_label.text = selected_text
 
 #// Behaviour for when plugin panel is shown
 #//TODO legacy? Remove?
