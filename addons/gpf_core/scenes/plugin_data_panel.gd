@@ -200,6 +200,7 @@ func _reload_tree_by_schema() -> void:
 		database_tree.set_column_title(i, tree_columns[i])
 		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
 		database_tree.set_column_expand(i, true)
+		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
 
 
 # get schema ids from Data.schema_register on setup
