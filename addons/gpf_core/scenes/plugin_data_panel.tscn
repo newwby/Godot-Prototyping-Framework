@@ -181,8 +181,8 @@ focus_neighbor_left = NodePath("../Create")
 text = "Delete Selected"
 
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaVersion" to="." method="_on_filter_schema_version_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterAuthor" to="." method="_on_filter_schema_version_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterPackage" to="." method="_on_filter_schema_version_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterType" to="." method="_on_filter_schema_version_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterTag" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaVersion" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterAuthor" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterPackage" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterType" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterTag" to="." method="_on_filter_item_selected"]

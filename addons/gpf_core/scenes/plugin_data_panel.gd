@@ -140,6 +140,39 @@ func _load_data_list(data_list: Array) -> void:
 			_load_data_entry(item)
 
 
+func _load_filters() -> void:
+	var schema_id = get_selected_schema_id()
+	var schema_ver = get_selected_schema_version()
+
+	filter_author.clear()
+	filter_author.add_item("All Authors")
+	var schema_author_keys = Data.get_available_authors(schema_id, schema_ver)
+	#filter_author.visible = (!schema_author_keys.is_empty())
+	for key in schema_author_keys:
+		filter_author.add_item(key)
+	
+	filter_package.clear()
+	filter_package.add_item("All Packages")
+	var schema_package_keys = Data.get_available_packages(schema_id, schema_ver)
+	#filter_package.visible = (!schema_package_keys.is_empty())
+	for key in schema_package_keys:
+		filter_package.add_item(key)
+	
+	filter_type.clear()
+	filter_type.add_item("All Types")
+	var schema_type_keys = Data.get_available_types(schema_id, schema_ver)
+	#filter_type.visible = (!schema_type_keys.is_empty())
+	for key in schema_type_keys:
+		filter_type.add_item(key)
+	
+	filter_tag.clear()
+	filter_tag.add_item("All Tags")
+	var schema_tag_keys = Data.get_available_tags(schema_id, schema_ver)
+	#filter_tag.visible = (!schema_tag_keys.is_empty())
+	for key in schema_tag_keys:
+		filter_tag.add_item(key)
+
+
 # when schema id is changed in the dropdown control
 #	update the schema versions
 #	default to the highest version
@@ -158,8 +191,8 @@ func _on_filter_schema_id_item_selected(index):
 	_reload_database()
 
 
-# when schema version is changed update the data
-func _on_filter_schema_version_item_selected(index):
+# whenever the schema version, or any filter option, is changed
+func _on_filter_item_selected(_index):
 	_reload_database()
 
 
@@ -196,44 +229,35 @@ func _reload_database() -> void:
 	_cache_schema()
 	# write the database
 	_reload_tree_by_schema()
-	var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
-	_load_data_list(data_list)
+	
+	var query := {}
+	var schema_id: String = get_selected_schema_id()
+	var schema_ver: String = get_selected_schema_version()
+	var author: String = filter_author.get_item_text(filter_author.selected)
+	var package: String = filter_package.get_item_text(filter_package.selected)
+	var type: String = filter_type.get_item_text(filter_type.selected)
+	var tag: String = filter_tag.get_item_text(filter_tag.selected)
+	
+	query["schema_id"] = schema_id
+	query["schema_version"] = schema_ver
+	
+	if author != "All Authors":
+		query["id_author"] = author
+	if package != "All Packages":
+		query["id_package"] = package
+	if package != "All Types":
+		query["type"] = type
+	if package != "All Tags":
+		query["tags"] = tag
+	
+	#var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
+	var data_list = Data.fetch(query)
+	
 	_load_filters()
+	
+	_load_data_list(data_list)
 	call_deferred("_select_first_item")
 
-
-func _load_filters() -> void:
-	var schema_id = get_selected_schema_id()
-	var schema_ver = get_selected_schema_version()
-
-	filter_author.clear()
-	filter_author.add_item("All Authors")
-	var schema_author_keys = Data.get_available_authors(schema_id, schema_ver)
-	#filter_author.visible = (!schema_author_keys.is_empty())
-	for key in schema_author_keys:
-		filter_author.add_item(key)
-	
-	filter_package.clear()
-	filter_package.add_item("All Packages")
-	var schema_package_keys = Data.get_available_packages(schema_id, schema_ver)
-	#filter_package.visible = (!schema_package_keys.is_empty())
-	for key in schema_package_keys:
-		filter_package.add_item(key)
-	
-	filter_type.clear()
-	filter_type.add_item("All Types")
-	var schema_type_keys = Data.get_available_types(schema_id, schema_ver)
-	#filter_type.visible = (!schema_type_keys.is_empty())
-	for key in schema_type_keys:
-		filter_type.add_item(key)
-	
-	filter_tag.clear()
-	filter_tag.add_item("All Tags")
-	var schema_tag_keys = Data.get_available_tags(schema_id, schema_ver)
-	#filter_tag.visible = (!schema_tag_keys.is_empty())
-	for key in schema_tag_keys:
-		filter_tag.add_item(key)
-	
 
 # Called whenever the schema id/version changes, and on initial load
 # Completely resets the displayed database content according to current schema
