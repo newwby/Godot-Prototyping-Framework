@@ -43,16 +43,29 @@ theme_override_constants/separation = 15
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "demo_enemy"
+popup/item_0/id = 0
+popup/item_1/text = "demo_item"
+popup/item_1/id = 1
+popup/item_2/text = "demo_weapon"
+popup/item_2/id = 2
 
 [node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "1.0"
+popup/item_0/id = 0
 
 [node name="DatabaseTree" type="Tree" parent="Scroll/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+columns = 6
 column_titles_visible = true
 hide_folding = true
 hide_root = true
@@ -88,12 +101,15 @@ layout_mode = 2
 [node name="CRUD" type="HBoxContainer" parent="Scroll/VBox/BottomBar/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 10
+theme_override_constants/separation = 10
 
 [node name="Create" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
+text = "Create New"
 
 [node name="Delete" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
+text = "Delete Selected"
 
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaVersion" to="." method="_on_filter_schema_version_item_selected"]
