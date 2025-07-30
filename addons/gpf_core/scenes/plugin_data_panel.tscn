@@ -43,6 +43,7 @@ theme_override_constants/separation = 15
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
+focus_neighbor_right = NodePath("../FilterSchemaVersion")
 selected = 0
 item_count = 3
 popup/item_0/text = "demo_enemy"
@@ -56,6 +57,7 @@ popup/item_2/id = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
+focus_neighbor_left = NodePath("../FilterSchemaID")
 selected = 0
 item_count = 1
 popup/item_0/text = "1.0"
@@ -69,7 +71,6 @@ columns = 6
 column_titles_visible = true
 hide_folding = true
 hide_root = true
-select_mode = 1
 auto_tooltip = false
 
 [node name="BottomBar" type="MarginContainer" parent="Scroll/VBox"]
@@ -105,10 +106,12 @@ theme_override_constants/separation = 10
 
 [node name="Create" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
+focus_neighbor_right = NodePath("../Delete")
 text = "Create New"
 
 [node name="Delete" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
+focus_neighbor_left = NodePath("../Create")
 text = "Delete Selected"
 
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]

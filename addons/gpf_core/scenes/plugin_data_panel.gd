@@ -211,6 +211,7 @@ func _select_first_item():
 	var first_tree_item = tree_root.get_child(0)
 	if first_tree_item is TreeItem:
 		first_tree_item.select(0)
+		database_tree.grab_focus()
 
 
 # get schema ids from Data.schema_register on setup
