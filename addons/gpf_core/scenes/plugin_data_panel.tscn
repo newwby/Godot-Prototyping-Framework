@@ -45,7 +45,11 @@ custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 theme_override_constants/separation = 15
 
-[node name="FilterSchemaID" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters"]
+[node name="LeftHBox" type="HBoxContainer" parent="Scroll/VBox/TopBar/DBFilters"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FilterSchemaID" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -59,14 +63,58 @@ popup/item_1/id = 1
 popup/item_2/text = "demo_weapon"
 popup/item_2/id = 2
 
-[node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters"]
+[node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 focus_neighbor_left = NodePath("../FilterSchemaID")
+focus_neighbor_right = NodePath("../../RightHBox/FilterAuthor")
 selected = 0
 item_count = 1
 popup/item_0/text = "1.0"
+popup/item_0/id = 0
+
+[node name="RightHBox" type="HBoxContainer" parent="Scroll/VBox/TopBar/DBFilters"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_constants/separation = 10
+
+[node name="FilterAuthor" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+focus_neighbor_left = NodePath("../../LeftHBox/FilterSchemaVersion")
+selected = 0
+item_count = 1
+popup/item_0/id = 0
+
+[node name="FilterPackage" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+focus_neighbor_left = NodePath("../FilterAuthor")
+focus_neighbor_right = NodePath("../FilterType")
+selected = 0
+item_count = 1
+popup/item_0/id = 0
+
+[node name="FilterType" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+focus_neighbor_left = NodePath("../FilterPackage")
+focus_neighbor_right = NodePath("../FilterTag")
+selected = 0
+item_count = 1
+popup/item_0/id = 0
+
+[node name="FilterTag" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+focus_neighbor_left = NodePath("../FilterType")
+selected = 0
+item_count = 1
 popup/item_0/id = 0
 
 [node name="DatabaseTree" type="Tree" parent="Scroll/VBox"]
@@ -132,5 +180,9 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../Create")
 text = "Delete Selected"
 
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/FilterSchemaVersion" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaVersion" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterAuthor" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterPackage" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterType" to="." method="_on_filter_schema_version_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterTag" to="." method="_on_filter_schema_version_item_selected"]

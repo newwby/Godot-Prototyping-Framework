@@ -18,6 +18,11 @@ var active_schema: Dictionary = {}
 @onready var filter_schema_id = %FilterSchemaID
 @onready var filter_schema_version = %FilterSchemaVersion
 
+@onready var filter_author = %FilterAuthor
+@onready var filter_package = %FilterPackage
+@onready var filter_type = %FilterType
+@onready var filter_tag = %FilterTag
+
 # bottom bar controls
 @onready var id_label = %IDLabel
 @onready var path_label = %PathLabel
@@ -193,8 +198,42 @@ func _reload_database() -> void:
 	_reload_tree_by_schema()
 	var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
 	_load_data_list(data_list)
+	_load_filters()
 	call_deferred("_select_first_item")
 
+
+func _load_filters() -> void:
+	var schema_id = get_selected_schema_id()
+	var schema_ver = get_selected_schema_version()
+
+	filter_author.clear()
+	filter_author.add_item("All Authors")
+	var schema_author_keys = Data.get_available_authors(schema_id, schema_ver)
+	#filter_author.visible = (!schema_author_keys.is_empty())
+	for key in schema_author_keys:
+		filter_author.add_item(key)
+	
+	filter_package.clear()
+	filter_package.add_item("All Packages")
+	var schema_package_keys = Data.get_available_packages(schema_id, schema_ver)
+	#filter_package.visible = (!schema_package_keys.is_empty())
+	for key in schema_package_keys:
+		filter_package.add_item(key)
+	
+	filter_type.clear()
+	filter_type.add_item("All Types")
+	var schema_type_keys = Data.get_available_types(schema_id, schema_ver)
+	#filter_type.visible = (!schema_type_keys.is_empty())
+	for key in schema_type_keys:
+		filter_type.add_item(key)
+	
+	filter_tag.clear()
+	filter_tag.add_item("All Tags")
+	var schema_tag_keys = Data.get_available_tags(schema_id, schema_ver)
+	#filter_tag.visible = (!schema_tag_keys.is_empty())
+	for key in schema_tag_keys:
+		filter_tag.add_item(key)
+	
 
 # Called whenever the schema id/version changes, and on initial load
 # Completely resets the displayed database content according to current schema
