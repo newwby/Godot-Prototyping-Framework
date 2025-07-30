@@ -155,8 +155,12 @@ func _on_tree_item_edited() -> void:
 
 func _on_tree_item_selected() -> void:
 	var item: TreeItem = database_tree.get_selected()
-	var selected_text = item.get_text(0)
-	id_label.text = selected_text
+	if item != null:
+		var selected_text = item.get_text(0)
+		var schema_id = get_selected_schema_id()
+		var schema_ver = get_selected_schema_version()
+		var set_selection_text := "{0} ({1} {2})".format([selected_text, schema_id, schema_ver])
+		id_label.text = set_selection_text
 
 #// Behaviour for when plugin panel is shown
 #//TODO legacy? Remove?
