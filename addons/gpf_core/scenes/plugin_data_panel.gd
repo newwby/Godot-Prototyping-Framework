@@ -177,6 +177,7 @@ func _reload_database() -> void:
 	_reload_tree_by_schema()
 	var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
 	_load_data_list(data_list)
+	call_deferred("_select_first_item")
 
 
 # Called whenever the schema id/version changes, and on initial load
@@ -201,6 +202,15 @@ func _reload_tree_by_schema() -> void:
 		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
 		database_tree.set_column_expand(i, true)
 		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
+
+
+# called to default the selection to top of spreadsheet when sheet is reloaded
+func _select_first_item():
+	if tree_root == null:
+		return
+	var first_tree_item = tree_root.get_child(0)
+	if first_tree_item is TreeItem:
+		first_tree_item.select(0)
 
 
 # get schema ids from Data.schema_register on setup
