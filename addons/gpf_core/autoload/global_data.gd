@@ -59,7 +59,7 @@ var schema_register := {}
 # data indexed by concatenated id (id_author.id_package.id_name)
 var data_id_register := {}
 
-# data indexed by schema_id and schema_version (nested, so data is cached as
+# data indexed by schema_id and schema_version - nested, so data is cached as:
 #	{"schema_id": {
 #		"1.0.0": {...},
 #		"1.0.1": {...},
@@ -74,6 +74,24 @@ var data_author_register := {}
 var data_package_register := {}
 var data_type_register := {}
 var data_tag_register := {}
+
+# data indexed in the same pattern as data_schema_register but with a further
+#	 nested value where values are stored, per schema id/version pair, as array
+# e.g.
+#	{
+#	"schema_id": {
+#		"1.0.0": {
+#			"id_author": [],
+#			"id_package": [],
+#			"type": [],
+#			"tags": [],
+#			},
+#		"1.0.1": {...},
+#		"1.2.0": {...},
+#		},
+#	"other_schema_id": {...}
+#	}
+var property_schema_register := {}
 
 # un-indexed data, recorded in order loaded
 # retrieval from this collection will be slower, fetching from registers is preferred
@@ -225,6 +243,26 @@ func fetch_by_tag(data_tag: String) -> Array:
 	return fetch({"tags": [data_tag]})
 
 
+# specify the schema_arguments to search in property_schema_register
+func get_available_authors(schema_id: String = "", schema_version: String = "") -> Array:
+	if (schema_id == "") and (schema_version == ""):
+		return data_author_register.keys()
+	else:
+		return _get_available_values(schema_id, schema_version, "id_author")
+
+
+# specify the schema_arguments to search in property_schema_register
+func get_available_packages(schema_id: String = "", schema_version: String = "") -> Array:
+	if (schema_id == "") and (schema_version == ""):
+		return data_package_register.keys()
+	else:
+		return _get_available_values(schema_id, schema_version, "id_package")
+
+
+func get_available_schemas() -> Array:
+	return schema_register.keys()
+
+
 func get_available_schema_versions(schema_id: String) -> void:
 	var all_versions := []
 	if schema_id in schema_register.keys():
@@ -236,12 +274,20 @@ func get_available_schema_versions(schema_id: String) -> void:
 	Log.error(self, "cannot find schema_id '{0}' in schema_register".format([schema_id]))
 
 
-func get_available_tags() -> Array:
-	return data_tag_register.keys()
+# specify the schema_arguments to search in property_schema_register
+func get_available_tags(schema_id: String = "", schema_version: String = "") -> Array:
+	if (schema_id == "") and (schema_version == ""):
+		return data_tag_register.keys()
+	else:
+		return _get_available_values(schema_id, schema_version, "tags")
 
 
-func get_available_types() -> Array:
-	return data_type_register.keys()
+# specify the schema_arguments to search in property_schema_register
+func get_available_types(schema_id: String = "", schema_version: String = "") -> Array:
+	if (schema_id == "") and (schema_version == ""):
+		return data_type_register.keys()
+	else:
+		return _get_available_values(schema_id, schema_version, "type")
 
 
 # ProjectSetting can be changed by developer to determine the data directory
@@ -370,6 +416,17 @@ func _get_all_paths(target_directory: String) -> PackedStringArray:
 		return PackedStringArray([])
 
 
+# used in 'get_available' methods
+func _get_available_values(schema_id: String, schema_version: String, key: String) -> Array:
+	var all_schema_versions = property_schema_register.get(schema_id, {})
+	var all_schema_values = all_schema_versions.get(schema_version, {})
+	var desired_schema_values = all_schema_values.get(key, [])
+	if typeof(desired_schema_values) == TYPE_ARRAY:
+		return desired_schema_values
+	else:
+		return []
+
+
 func _index_data(json_data: Dictionary) -> void:
 	# json_data should be verified, the return arg of _process_json_data
 	if json_data.is_empty():
@@ -421,6 +478,37 @@ func _index_data(json_data: Dictionary) -> void:
 		if data_tag_register.has(tag) == false:
 			data_tag_register[tag] = {}
 		data_tag_register[tag][full_id] = true
+	
+	# assign property_schema_register values
+	#_index_by_schema(schema_id, schema_ver, id_author, id_package, type, tags)
+	# initially confirm property_schema_register structure
+	if property_schema_register.has(schema_id) == false:
+		property_schema_register[schema_id] = {}
+	if property_schema_register[schema_id].has(schema_ver) == false:
+		property_schema_register[schema_id][schema_ver] = {}
+		
+	var schema_entry = property_schema_register[schema_id][schema_ver]
+	# update
+	if schema_entry.has("id_author") == false:
+		schema_entry["id_author"] = []
+	if schema_entry["id_author"].has(id_author) == false:
+		schema_entry["id_author"].append(id_author)
+	
+	if schema_entry.has("id_package") == false:
+		schema_entry["id_package"] = []
+	if schema_entry["id_package"].has(id_package) == false:
+		schema_entry["id_package"].append(id_package)
+	
+	if schema_entry.has("type") == false:
+		schema_entry["type"] = []
+	if schema_entry["type"].has(type) == false:
+		schema_entry["type"].append(type)
+	
+	if schema_entry.has("tags") == false:
+		schema_entry["tags"] = []
+	for tag in tags:
+		if schema_entry["tags"].has(tag) == false:
+			schema_entry["tags"].append(tag)
 
 
 # must be in both dicts to survive
