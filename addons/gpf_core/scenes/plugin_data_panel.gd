@@ -20,6 +20,7 @@ var active_schema: Dictionary = {}
 
 # bottom bar controls
 @onready var id_label = %IDLabel
+@onready var path_label = %PathLabel
 
 #####################################################################
 
@@ -72,6 +73,7 @@ func _cache_schema() -> void:
 
 #//TODO move _init_database behaviour into here for schema 
 func _clear_tree() -> void:
+	uid_map.clear()
 	var child := tree_root.get_first_child()
 	while child:
 		var next = child.get_next()
@@ -86,15 +88,19 @@ func _initial_tree_setup() -> void:
 	database_tree.item_selected.connect(_on_tree_item_selected)
 	tree_root = database_tree.create_item()
 
+# data entry paths are indexed by the tree item displaying their value
+# {TreeItem: String}
+var uid_map := {}
 
 func _load_data_entry(data_entry: Dictionary) -> void:
-	var new_row = database_tree.create_item(tree_root)
+	var new_row: TreeItem = database_tree.create_item(tree_root)
 	# id is immutable (#//TODO for now) value defining the data entry in display
 	var data_id = "{0}.{1}.{2}".format([
 		data_entry.get("id_author", "?"),
 		data_entry.get("id_package", "?"),
 		data_entry.get("id_name", "?")
 	])
+	
 	# inject the concatenated id
 	data_entry["id"] = data_id
 	# flatten the schema data entry
@@ -110,6 +116,12 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 		new_row.set_tooltip_text(idx, "")
 		# id is not editable
 		new_row.set_editable(idx, (key != "id"))
+	
+	# index the data value
+	var path = data_entry.get("path", null)
+	if path == null:
+		Log.warning(self, "cannot load path from data_entry: {0}".format([data_entry]))
+	uid_map[new_row] = path
 
 
 # pass an array of data values (e.g. the .values() property of a Data.*register)
@@ -161,6 +173,10 @@ func _on_tree_item_selected() -> void:
 		var schema_ver = get_selected_schema_version()
 		var set_selection_text := "{0} ({1} {2})".format([selected_text, schema_id, schema_ver])
 		id_label.text = set_selection_text
+		
+		var record_path = uid_map.get(item, null)
+		if typeof(record_path) == TYPE_STRING:
+			path_label.text = record_path
 
 #// Behaviour for when plugin panel is shown
 #//TODO legacy? Remove?
@@ -186,6 +202,7 @@ func _reload_database() -> void:
 func _reload_tree_by_schema() -> void:
 	# refresh the tree root
 	_clear_tree()
+	
 	if active_schema.is_empty():
 		Log.error(self, "cannot write database with inactive schema")
 		return
