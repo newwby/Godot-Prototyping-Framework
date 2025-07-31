@@ -10,6 +10,9 @@ var tree_root: TreeItem
 
 # copies the schema from Data.schema_register for data validation
 var active_schema: Dictionary = {}
+# cached on schema change
+var active_schema_id: String = ""
+var active_schema_version: String = ""
 
 # main database
 @onready var database_tree = %DatabaseTree
@@ -72,6 +75,8 @@ func _cache_schema() -> void:
 	var schema_ver = get_selected_schema_version()
 	var all_schema_vers = Data.schema_register.get(schema_id, [])
 	active_schema = all_schema_vers.get(schema_ver, {})
+	active_schema_id = schema_id
+	active_schema_version = schema_ver
 	if active_schema == {}:
 		Log.error(self, "invalid schema lookup {0}.{1}".format([schema_id, schema_ver]))
 
@@ -141,33 +146,30 @@ func _load_data_list(data_list: Array) -> void:
 
 
 func _load_filters() -> void:
-	var schema_id = get_selected_schema_id()
-	var schema_ver = get_selected_schema_version()
-
 	filter_author.clear()
 	filter_author.add_item("All Authors")
-	var schema_author_keys = Data.get_available_authors(schema_id, schema_ver)
+	var schema_author_keys = Data.get_available_authors(active_schema_id, active_schema_version)
 	#filter_author.visible = (!schema_author_keys.is_empty())
 	for key in schema_author_keys:
 		filter_author.add_item(key)
 	
 	filter_package.clear()
 	filter_package.add_item("All Packages")
-	var schema_package_keys = Data.get_available_packages(schema_id, schema_ver)
+	var schema_package_keys = Data.get_available_packages(active_schema_id, active_schema_version)
 	#filter_package.visible = (!schema_package_keys.is_empty())
 	for key in schema_package_keys:
 		filter_package.add_item(key)
 	
 	filter_type.clear()
 	filter_type.add_item("All Types")
-	var schema_type_keys = Data.get_available_types(schema_id, schema_ver)
+	var schema_type_keys = Data.get_available_types(active_schema_id, active_schema_version)
 	#filter_type.visible = (!schema_type_keys.is_empty())
 	for key in schema_type_keys:
 		filter_type.add_item(key)
 	
 	filter_tag.clear()
 	filter_tag.add_item("All Tags")
-	var schema_tag_keys = Data.get_available_tags(schema_id, schema_ver)
+	var schema_tag_keys = Data.get_available_tags(active_schema_id, active_schema_version)
 	#filter_tag.visible = (!schema_tag_keys.is_empty())
 	for key in schema_tag_keys:
 		filter_tag.add_item(key)
@@ -178,9 +180,13 @@ func _load_filters() -> void:
 #	default to the highest version
 func _on_filter_schema_id_item_selected(index):
 	#print(filter_schema_id.selected, " - {0}".format([filter_schema_id.get_item_text(filter_schema_id.selected)]))
-	var schema_id_text = get_selected_schema_id()
-	var schema_versions = Data.schema_register.get(schema_id_text, [])
-	
+	#var current_schema = active_schema_id
+	# need to call to get_id as hasn't been set when this is called before cache_schema
+	# cache schema called in _reload_database currently, needs to be moved earlier
+	var new_schema = get_selected_schema_id()
+	#print(current_schema, " -> ", new_schema)
+	var schema_versions = Data.schema_register.get(new_schema, [])
+	#print("schema versions = ", schema_versions, " from ", new_schema)
 	# setup the version dropdown
 	filter_schema_version.clear()
 	for i in schema_versions:
@@ -207,9 +213,7 @@ func _on_tree_item_selected() -> void:
 	var item: TreeItem = database_tree.get_selected()
 	if item != null:
 		var selected_text = item.get_text(0)
-		var schema_id = get_selected_schema_id()
-		var schema_ver = get_selected_schema_version()
-		var set_selection_text := "{0} ({1} {2})".format([selected_text, schema_id, schema_ver])
+		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
 		id_label.text = set_selection_text
 		
 		var record_path = uid_map.get(item, null)
@@ -231,15 +235,14 @@ func _reload_database() -> void:
 	_reload_tree_by_schema()
 	
 	var query := {}
-	var schema_id: String = get_selected_schema_id()
-	var schema_ver: String = get_selected_schema_version()
+	# filters are populated from schema keys so text will be valid for query
 	var author: String = filter_author.get_item_text(filter_author.selected)
 	var package: String = filter_package.get_item_text(filter_package.selected)
 	var type: String = filter_type.get_item_text(filter_type.selected)
 	var tag: String = filter_tag.get_item_text(filter_tag.selected)
 	
-	query["schema_id"] = schema_id
-	query["schema_version"] = schema_ver
+	query["schema_id"] = active_schema_id
+	query["schema_version"] = active_schema_version
 	
 	if author != "All Authors":
 		query["id_author"] = author
@@ -250,9 +253,13 @@ func _reload_database() -> void:
 	if package != "All Tags":
 		query["tags"] = tag
 	
-	#var data_list = Data.fetch_by_schema(get_selected_schema_id(), get_selected_schema_version())
 	var data_list = Data.fetch(query)
 	
+	#//TODO filters shouldn't reload unless schema has changed
+	#//TODO cache the schema id/ver and check if changed before reloading filters
+	# 	and changing the selected item - item should persist between
+	#//TODO confirm that resetting to 'all' reloads all
+	#//TODO confirm can search by multiple filters once they persist
 	_load_filters()
 	
 	_load_data_list(data_list)
@@ -269,8 +276,6 @@ func _reload_tree_by_schema() -> void:
 	if active_schema.is_empty():
 		Log.error(self, "cannot write database with inactive schema")
 		return
-	var schema_id = get_selected_schema_id()
-	var schema_ver = get_selected_schema_version()
 	
 	tree_columns = ["id", "type", "tags"]
 	tree_columns.append_array(active_schema.keys())
@@ -305,10 +310,8 @@ func _setup_id_filter() -> void:
 func _verify_data_entry(data_entry: Dictionary) -> bool:
 	#//TOOD cache this
 	# check matching identifier keys
-	var active_schema_id = get_selected_schema_id()
-	var active_schema_ver = get_selected_schema_version()
 	if data_entry.get("schema_id", null) != active_schema_id\
-	or data_entry.get("schema_version", null) != active_schema_ver:
+	or data_entry.get("schema_version", null) != active_schema_version:
 		return false
 	# check data values
 	var schema_data = data_entry.get("data", {})
