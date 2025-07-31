@@ -48,7 +48,6 @@ func _ready() -> void:
 # public methods
 
 
-#//TODO cache in this script
 # as populated from Data.schema_register this will correspond to a schema_id
 func get_selected_schema_id() -> String:
 	var schema_id_idx = filter_schema_id.selected
@@ -56,7 +55,6 @@ func get_selected_schema_id() -> String:
 	return schema_id_text
 
 
-#//TODO cache in this script
 # as populated from Data.schema_register this will correspond to a schema_version
 #	from the matching schema_Id
 func get_selected_schema_version() -> String:
@@ -97,6 +95,7 @@ func _initial_tree_setup() -> void:
 	database_tree.item_edited.connect(_on_tree_item_edited)
 	database_tree.item_selected.connect(_on_tree_item_selected)
 	tree_root = database_tree.create_item()
+	call_deferred("_select_first_item")
 
 # data entry paths are indexed by the tree item displaying their value
 # {TreeItem: String}
@@ -256,14 +255,12 @@ func _reload_database() -> void:
 	var data_list = Data.fetch(query)
 	
 	#//TODO filters shouldn't reload unless schema has changed
-	#//TODO cache the schema id/ver and check if changed before reloading filters
 	# 	and changing the selected item - item should persist between
 	#//TODO confirm that resetting to 'all' reloads all
 	#//TODO confirm can search by multiple filters once they persist
+	#//TODO confirm filtering by tags works
 	_load_filters()
-	
 	_load_data_list(data_list)
-	call_deferred("_select_first_item")
 
 
 # Called whenever the schema id/version changes, and on initial load
@@ -308,7 +305,6 @@ func _setup_id_filter() -> void:
 
 # data must match the active schema to pass validation & enter the db
 func _verify_data_entry(data_entry: Dictionary) -> bool:
-	#//TOOD cache this
 	# check matching identifier keys
 	if data_entry.get("schema_id", null) != active_schema_id\
 	or data_entry.get("schema_version", null) != active_schema_version:
