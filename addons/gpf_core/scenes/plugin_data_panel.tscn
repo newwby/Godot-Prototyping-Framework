@@ -49,11 +49,18 @@ theme_override_constants/separation = 15
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FilterSchemaID" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
+[node name="VBox" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox"]
+layout_mode = 2
+text = "Schema Name"
+
+[node name="FilterSchemaID" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-focus_neighbor_right = NodePath("../FilterSchemaVersion")
+focus_neighbor_right = NodePath("../../VBox2/FilterSchemaVersion")
 selected = 0
 item_count = 3
 popup/item_0/text = "demo_enemy"
@@ -63,12 +70,19 @@ popup/item_1/id = 1
 popup/item_2/text = "demo_weapon"
 popup/item_2/id = 2
 
-[node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
+[node name="VBox2" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox2"]
+layout_mode = 2
+text = "Version"
+
+[node name="FilterSchemaVersion" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../FilterSchemaID")
-focus_neighbor_right = NodePath("../../RightHBox/FilterAuthor")
+focus_neighbor_left = NodePath("../../VBox/FilterSchemaID")
+focus_neighbor_right = NodePath("../../../RightHBox/VBox/FilterAuthor")
 selected = 0
 item_count = 1
 popup/item_0/text = "1.0"
@@ -77,42 +91,76 @@ popup/item_0/id = 0
 [node name="RightHBox" type="HBoxContainer" parent="Scroll/VBox/TopBar/DBFilters"]
 layout_mode = 2
 size_flags_horizontal = 10
+size_flags_vertical = 8
 theme_override_constants/separation = 10
 
-[node name="FilterAuthor" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+[node name="VBox" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+layout_mode = 2
+
+[node name="Author" type="Label" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox"]
+layout_mode = 2
+text = "Author"
+horizontal_alignment = 1
+
+[node name="FilterAuthor" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../../LeftHBox/FilterSchemaVersion")
+focus_neighbor_left = NodePath("../../../LeftHBox/VBox2/FilterSchemaVersion")
+focus_neighbor_right = NodePath("../../VBox2/FilterPackage")
 selected = 0
 item_count = 1
 popup/item_0/id = 0
 
-[node name="FilterPackage" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+[node name="VBox2" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+layout_mode = 2
+
+[node name="Package" type="Label" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox2"]
+layout_mode = 2
+text = "Package"
+horizontal_alignment = 1
+
+[node name="FilterPackage" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../FilterAuthor")
-focus_neighbor_right = NodePath("../FilterType")
+focus_neighbor_left = NodePath("../../VBox/FilterAuthor")
+focus_neighbor_right = NodePath("../../VBox3/FilterType")
 selected = 0
 item_count = 1
 popup/item_0/id = 0
 
-[node name="FilterType" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+[node name="VBox3" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+layout_mode = 2
+
+[node name="Type" type="Label" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox3"]
+layout_mode = 2
+text = "Type"
+horizontal_alignment = 1
+
+[node name="FilterType" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox3"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../FilterPackage")
-focus_neighbor_right = NodePath("../FilterTag")
+focus_neighbor_left = NodePath("../../VBox2/FilterPackage")
+focus_neighbor_right = NodePath("../../VBox4/FilterTag")
 selected = 0
 item_count = 1
 popup/item_0/id = 0
 
-[node name="FilterTag" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+[node name="VBox4" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+layout_mode = 2
+
+[node name="Tag" type="Label" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox4"]
+layout_mode = 2
+text = "Tag"
+horizontal_alignment = 1
+
+[node name="FilterTag" type="OptionButton" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox4"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../FilterType")
+focus_neighbor_left = NodePath("../../VBox3/FilterType")
 selected = 0
 item_count = 1
 popup/item_0/id = 0
@@ -180,9 +228,9 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../Create")
 text = "Delete Selected"
 
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/FilterSchemaVersion" to="." method="_on_filter_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterAuthor" to="." method="_on_filter_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterPackage" to="." method="_on_filter_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterType" to="." method="_on_filter_item_selected"]
-[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/FilterTag" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox2/FilterSchemaVersion" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox/FilterAuthor" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox2/FilterPackage" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox3/FilterType" to="." method="_on_filter_item_selected"]
+[connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox4/FilterTag" to="." method="_on_filter_item_selected"]
