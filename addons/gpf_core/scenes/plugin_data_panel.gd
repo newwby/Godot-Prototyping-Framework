@@ -68,15 +68,23 @@ func get_selected_schema_version() -> String:
 # private methods
 
 
-func _cache_schema() -> void:
+# returns whether the schema changed or not - determines whether to reload filters
+func _cache_schema() -> bool:
 	var schema_id = get_selected_schema_id()
 	var schema_ver = get_selected_schema_version()
 	var all_schema_vers = Data.schema_register.get(schema_id, [])
 	active_schema = all_schema_vers.get(schema_ver, {})
+	
+	var has_schema_changed := false
+	if active_schema_id != schema_id\
+	or active_schema_version != schema_ver:
+		has_schema_changed = true
+	
 	active_schema_id = schema_id
 	active_schema_version = schema_ver
 	if active_schema == {}:
 		Log.error(self, "invalid schema lookup {0}.{1}".format([schema_id, schema_ver]))
+	return has_schema_changed
 
 
 #//TODO move _init_database behaviour into here for schema 
@@ -229,7 +237,7 @@ func _on_visibility_changed() -> void:
 # changes the cached schema data & repopulates the database
 func _reload_database() -> void:
 	# cache current schema
-	_cache_schema()
+	var has_schema_changed: bool = _cache_schema()
 	# write the database
 	_reload_tree_by_schema()
 	
@@ -259,7 +267,8 @@ func _reload_database() -> void:
 	#//TODO confirm that resetting to 'all' reloads all
 	#//TODO confirm can search by multiple filters once they persist
 	#//TODO confirm filtering by tags works
-	_load_filters()
+	if has_schema_changed:
+		_load_filters()
 	_load_data_list(data_list)
 
 
