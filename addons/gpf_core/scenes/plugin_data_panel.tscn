@@ -149,6 +149,7 @@ item_count = 1
 popup/item_0/id = 0
 
 [node name="VBox4" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
+visible = false
 layout_mode = 2
 
 [node name="Tag" type="Label" parent="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox4"]
