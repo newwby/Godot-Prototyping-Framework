@@ -8,6 +8,10 @@ const DB_FIELD_MIN_WIDTH := 35
 var tree_columns := []
 var tree_root: TreeItem
 
+# data entry paths are indexed by the tree item displaying their value
+# {TreeItem: String}
+var uid_map := {}
+
 # copies the schema from Data.schema_register for data validation
 var active_schema: Dictionary = {}
 # cached on schema change
@@ -105,9 +109,6 @@ func _initial_tree_setup() -> void:
 	tree_root = database_tree.create_item()
 	call_deferred("_select_first_item")
 
-# data entry paths are indexed by the tree item displaying their value
-# {TreeItem: String}
-var uid_map := {}
 
 func _load_data_entry(data_entry: Dictionary) -> void:
 	var new_row: TreeItem = database_tree.create_item(tree_root)
@@ -210,10 +211,51 @@ func _on_filter_item_selected(_index):
 
 
 func _on_tree_item_edited() -> void:
-	pass
-	#var item: TreeItem = database_tree.get_edited()
-	#var edited_col = database_tree.get_edited_column()
-	#var new_text = item.get_text(edited_col)
+	var item: TreeItem = database_tree.get_edited()
+	var edited_col = database_tree.get_edited_column()
+	var new_text = item.get_text(edited_col)
+	var file_path = uid_map.get(item, null)
+	
+	var key
+	var value
+	var save_data = {}
+	for expected_key in Data.EXPECTED_DATA_STRUCTURE.keys():
+		save_data[expected_key] = null
+	save_data["schema_id"] = active_schema_id
+	save_data["schema_version"] = active_schema_version
+	save_data["data"] = {}
+	for i in range(tree_columns.size()):
+		key = tree_columns[i]
+		value = item.get_text(i)
+		
+		var is_id = (key == "id")
+		var is_mandatory = (key in Data.EXPECTED_DATA_STRUCTURE.keys())
+		var in_schema = (key in active_schema.keys())
+		#print(key, ": ", item.get_text(i), " ({0}/{1}/{2})".format([is_id, is_mandatory, in_schema]))
+		
+		if is_id:
+			var id_split = value.split(".")
+			var id_author = id_split[0]
+			var id_package = id_split[1]
+			var id_name = id_split[2]
+			save_data["id_author"] = id_author
+			save_data["id_package"] = id_package
+			save_data["id_name"] = id_name
+		if is_mandatory:
+			save_data[key] = value
+		if in_schema:
+			save_data["data"][key] = value
+	#print("saving data as \n{0}".format([save_data]))
+	
+	if file_path != null:
+		print("{0}{1}\n{2}\n{3}\n".format(
+			["edited item saved at: ", file_path,
+			"new values are:", save_data])
+			)
+	#//TODO
+	# Data.save_json(arg_path, arg_data)
+	# Data.reload_specific() //or// Data.reindex_specific()
+	# reload_database (no filter change)
 
 
 func _on_tree_item_selected() -> void:
