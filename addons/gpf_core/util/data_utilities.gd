@@ -182,6 +182,25 @@ static func get_file_paths(
 	return output
 
 
+static func save_json(
+		raw_json: Dictionary,
+		file_path: String,
+		) -> Error:
+	var json_to_save = JSON.stringify(raw_json, "\t")
+	
+	var directory_path = file_path.get_base_dir()
+	# force create target directory if it doesn't already exist; throw error otherwise
+	if validate_directory(directory_path) == false:
+		Log.error(null, "DataUtility.save_json invalid directory/cannot create")
+		return ERR_CANT_CREATE
+	
+	var file = FileAccess.open(file_path, FileAccess.WRITE)
+	if file.store_string(json_to_save):
+		return OK
+	else:
+		return ERR_CANT_RESOLVE
+
+
 # method to save any resource or resource-extended custom class to disk.
 # call this method with 'if save_resource(*args) == OK' to validate
 # if called on a non-existing file or path it will write the entire path
