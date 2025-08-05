@@ -51,6 +51,9 @@ var EXPECTED_DATA_STRUCTURE := {
 # all json entries are cached by unique id here
 #//TODO .values() replaces data_collection, can deprecate that
 #//TODO replaces data_id_register, can deprecate that
+#//TODO need to address issue with ids across schema versions not being unique
+#	e.g. version 1.1, 1.2 may share an id - this only indexes the last found
+#	(store by path or id+schema as UID instead?)
 var all_id_map := {}
 
 # record of all allowed schemas
