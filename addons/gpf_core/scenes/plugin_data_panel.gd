@@ -112,6 +112,8 @@ func _initial_tree_setup() -> void:
 
 func _load_data_entry(data_entry: Dictionary) -> void:
 	var new_row: TreeItem = database_tree.create_item(tree_root)
+	if new_row == null:
+		return
 	# id is immutable (#//TODO for now) value defining the data entry in display
 	var data_id = "{0}.{1}.{2}".format([
 		data_entry.get("id_author", "?"),
@@ -242,16 +244,43 @@ func _on_tree_item_edited() -> void:
 			save_data["id_package"] = id_package
 			save_data["id_name"] = id_name
 		if is_mandatory:
-			save_data[key] = value
+			if key == "tags":
+				#//TODO fix this, need to deconstruct tags and recode
+				#//TODO also need to encode as correct data value based on schema
+				save_data[key] = [value]
+			else:
+				save_data[key] = value
 		if in_schema:
-			save_data["data"][key] = value
+			var type = typeof(active_schema[key])
+			var saved_value = value
+			match type:
+				TYPE_FLOAT:
+					if value.is_valid_float():
+						saved_value = float(value)
+				TYPE_INT:
+					if value.is_valid_int():
+						saved_value = float(value)
+				#TYPE_ARRAY:
+					#saved_value = [value]
+			save_data["data"][key] = saved_value
 	#print("saving data as \n{0}".format([save_data]))
 	
 	if file_path != null:
-		print("{0}{1}\n{2}\n{3}\n".format(
-			["edited item saved at: ", file_path,
-			"new values are:", save_data])
-			)
+		#print("{0}{1}\n{2}\n{3}\n".format(
+			#["edited item saved at: ", file_path,
+			#"new values are:", save_data])
+			#)
+		#//TODO remove and tidy placeholder saving behavour
+		#//TODO need to force reload editor if running in-debug
+		#//TODO need to add handling for tags, mandatory key type verification
+		save_data["id_author"] = "data_test"
+		save_data["id_package"] = "testpkg"
+		save_data["id_name"] = "testfile"
+		var test_file_path = "res://data/save_test/test_file.json"
+		DataUtility.save_json(save_data, test_file_path)
+		#DataUtility.save_json(save_data, file_path)
+		Data.reload_data()
+		_reload_database()
 	#//TODO
 	# Data.save_json(arg_path, arg_data)
 	# Data.reload_specific() //or// Data.reindex_specific()
@@ -263,6 +292,7 @@ func _on_tree_item_selected() -> void:
 	if item != null:
 		var selected_text = item.get_text(0)
 		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
+		#//TODO check
 		id_label.text = set_selection_text
 		
 		var record_path = uid_map.get(item, null)
