@@ -91,80 +91,6 @@ func _cache_schema() -> bool:
 	return has_schema_changed
 
 
-func _validate_all_rows() -> void:
-	if tree_root == null:
-			return
-	for row in tree_root.get_children():
-		_validate_row(row)
-
-# checks all data in the tree for if invalid - shows visual display if invalid
-# pass a TreeItem to validate the data in that row
-func _validate_row(row: TreeItem) -> bool:
-	if row == null:
-		Log.error(self, "null arg passed to _validate_row")
-		return false
-	
-	var key
-	var value
-	var invalid_columns := PackedInt32Array([])
-	
-	for i in range(tree_columns.size()):
-		row.clear_custom_bg_color(i)
-		row.set_tooltip_text(i, "")
-		key = tree_columns[i]
-		value = row.get_text(i)
-		if key in tree_columns:
-			if _validate_value(key, value) == false:
-				invalid_columns.append(i)
-	
-	if (invalid_columns.is_empty() == false):
-		for i in invalid_columns:
-			row.set_custom_bg_color(i, Color.RED, false)
-			row.set_tooltip_text(i, "Invalid value")
-		return false
-	else:
-		return true
-
-# confirms whether a value type & expected structure matches schema
-func _validate_value(key, value) -> bool:
-	#print("validate - ", key, " ", value)
-	var value_type = typeof(value)
-	# specific handling for ID & tag
-	match key:
-		"id":
-			#//TODO add validation
-			return true
-		"tags":
-			#//TODO add validation
-			return true
-		_:
-			# check if mandatory key other than id/tags
-			if key in Data.EXPECTED_DATA_STRUCTURE.keys():
-				# expected data structure values are typeof results
-				return typeof(key) == Data.EXPECTED_DATA_STRUCTURE[key]
-			
-			# check if in schema/data
-			elif key in active_schema.keys():
-				var schema_type = typeof(active_schema[key])
-				var saved_value = value
-				match schema_type:
-					TYPE_FLOAT:
-						if value_type == TYPE_STRING:
-							return value.is_valid_float()
-						else:
-							return (value_type == TYPE_FLOAT)
-					TYPE_INT:
-						if value_type == TYPE_STRING:
-							return value.is_valid_int()
-						else:
-							return (value_type == TYPE_INT)
-					_:
-						return typeof(value) == schema_type
-			else:
-				Log.warning(self, "_validate_value -> key {0} not found".format([key]))
-				return false
-
-
 # delete all tree items
 func _clear_tree() -> void:
 	uid_map.clear()
@@ -323,6 +249,64 @@ func _on_tree_item_edited() -> void:
 		_resave_row(item)
 
 
+func _on_tree_item_selected() -> void:
+	var item: TreeItem = database_tree.get_selected()
+	if item != null:
+		var selected_text = item.get_text(0)
+		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
+		#//TODO check
+		id_label.text = set_selection_text
+		
+		var record_path = uid_map.get(item, null)
+		if typeof(record_path) == TYPE_STRING:
+			path_label.text = record_path
+
+#// Behaviour for when plugin panel is shown
+#//TODO legacy? Remove?
+func _on_visibility_changed() -> void:
+	if is_visible_in_tree():
+		pass
+
+
+# changes the cached schema data & repopulates the database
+func _reload_database() -> void:
+	# cache current schema
+	var has_schema_changed: bool = _cache_schema()
+	# write the database, reload according to schema
+	_load_tree_structure()
+	
+	var query := {}
+	# filters are populated from schema keys so text will be valid for query
+	var author: String = filter_author.get_item_text(filter_author.selected)
+	var package: String = filter_package.get_item_text(filter_package.selected)
+	var type: String = filter_type.get_item_text(filter_type.selected)
+	var tag: String = filter_tag.get_item_text(filter_tag.selected)
+	
+	query["schema_id"] = active_schema_id
+	query["schema_version"] = active_schema_version
+	
+	if author != "All Authors":
+		query["id_author"] = author
+	if package != "All Packages":
+		query["id_package"] = package
+	if package != "All Types":
+		query["type"] = type
+	if package != "All Tags":
+		query["tags"] = tag
+	
+	var data_list = Data.fetch(query)
+	
+	#//TODO filters shouldn't reload unless schema has changed
+	# 	and changing the selected item - item should persist between
+	#//TODO confirm that resetting to 'all' reloads all
+	#//TODO confirm can search by multiple filters once they persist
+	#//TODO confirm filtering by tags works
+	if has_schema_changed:
+		_load_filters()
+	_load_data_list(data_list)
+	_validate_all_rows()
+
+
 func _resave_row(row: TreeItem) -> void:
 	if row == null:
 		Log.error(self, "invalid arg for _resave_row")
@@ -393,64 +377,6 @@ func _resave_row(row: TreeItem) -> void:
 	# reload_database (no filter change)
 
 
-func _on_tree_item_selected() -> void:
-	var item: TreeItem = database_tree.get_selected()
-	if item != null:
-		var selected_text = item.get_text(0)
-		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
-		#//TODO check
-		id_label.text = set_selection_text
-		
-		var record_path = uid_map.get(item, null)
-		if typeof(record_path) == TYPE_STRING:
-			path_label.text = record_path
-
-#// Behaviour for when plugin panel is shown
-#//TODO legacy? Remove?
-func _on_visibility_changed() -> void:
-	if is_visible_in_tree():
-		pass
-
-
-# changes the cached schema data & repopulates the database
-func _reload_database() -> void:
-	# cache current schema
-	var has_schema_changed: bool = _cache_schema()
-	# write the database, reload according to schema
-	_load_tree_structure()
-	
-	var query := {}
-	# filters are populated from schema keys so text will be valid for query
-	var author: String = filter_author.get_item_text(filter_author.selected)
-	var package: String = filter_package.get_item_text(filter_package.selected)
-	var type: String = filter_type.get_item_text(filter_type.selected)
-	var tag: String = filter_tag.get_item_text(filter_tag.selected)
-	
-	query["schema_id"] = active_schema_id
-	query["schema_version"] = active_schema_version
-	
-	if author != "All Authors":
-		query["id_author"] = author
-	if package != "All Packages":
-		query["id_package"] = package
-	if package != "All Types":
-		query["type"] = type
-	if package != "All Tags":
-		query["tags"] = tag
-	
-	var data_list = Data.fetch(query)
-	
-	#//TODO filters shouldn't reload unless schema has changed
-	# 	and changing the selected item - item should persist between
-	#//TODO confirm that resetting to 'all' reloads all
-	#//TODO confirm can search by multiple filters once they persist
-	#//TODO confirm filtering by tags works
-	if has_schema_changed:
-		_load_filters()
-	_load_data_list(data_list)
-	_validate_all_rows()
-
-
 # called to default the selection to top of spreadsheet when sheet is reloaded
 func _select_first_item():
 	if tree_root == null:
@@ -466,6 +392,81 @@ func _setup_id_filter() -> void:
 	filter_schema_id.clear()
 	for schema_id in Data.schema_register.keys():
 		filter_schema_id.add_item(schema_id)
+
+
+func _validate_all_rows() -> void:
+	if tree_root == null:
+			return
+	for row in tree_root.get_children():
+		_validate_row(row)
+
+
+# checks all data in the tree for if invalid - shows visual display if invalid
+# pass a TreeItem to validate the data in that row
+func _validate_row(row: TreeItem) -> bool:
+	if row == null:
+		Log.error(self, "null arg passed to _validate_row")
+		return false
+	
+	var key
+	var value
+	var invalid_columns := PackedInt32Array([])
+	
+	for i in range(tree_columns.size()):
+		row.clear_custom_bg_color(i)
+		row.set_tooltip_text(i, "")
+		key = tree_columns[i]
+		value = row.get_text(i)
+		if key in tree_columns:
+			if _validate_value(key, value) == false:
+				invalid_columns.append(i)
+	
+	if (invalid_columns.is_empty() == false):
+		for i in invalid_columns:
+			row.set_custom_bg_color(i, Color.RED, false)
+			row.set_tooltip_text(i, "Invalid value")
+		return false
+	else:
+		return true
+
+# confirms whether a value type & expected structure matches schema
+func _validate_value(key, value) -> bool:
+	#print("validate - ", key, " ", value)
+	var value_type = typeof(value)
+	# specific handling for ID & tag
+	match key:
+		"id":
+			#//TODO add validation
+			return true
+		"tags":
+			#//TODO add validation
+			return true
+		_:
+			# check if mandatory key other than id/tags
+			if key in Data.EXPECTED_DATA_STRUCTURE.keys():
+				# expected data structure values are typeof results
+				return typeof(key) == Data.EXPECTED_DATA_STRUCTURE[key]
+			
+			# check if in schema/data
+			elif key in active_schema.keys():
+				var schema_type = typeof(active_schema[key])
+				var saved_value = value
+				match schema_type:
+					TYPE_FLOAT:
+						if value_type == TYPE_STRING:
+							return value.is_valid_float()
+						else:
+							return (value_type == TYPE_FLOAT)
+					TYPE_INT:
+						if value_type == TYPE_STRING:
+							return value.is_valid_int()
+						else:
+							return (value_type == TYPE_INT)
+					_:
+						return typeof(value) == schema_type
+			else:
+				Log.warning(self, "_validate_value -> key {0} not found".format([key]))
+				return false
 
 
 # data must match the active schema to pass validation & enter the db
