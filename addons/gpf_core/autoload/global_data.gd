@@ -144,6 +144,34 @@ func clear_all_data() -> void:
 	data_tag_register.clear()
 
 
+# takes an array of strings (or PoolStringArray) and returns as comma
+#	separated string
+# for converting tags to a readable list
+func decode_tags(string_array) -> String:
+	var arg_type := typeof(string_array)
+	if not arg_type in [TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY]:
+		Log.error(self, "_decode_tags passed invalid type ({0}) argument: {1}".format(arg_type, string_array))
+		return ""
+	# else
+	var output_string := ""
+	var valid_strings := PackedStringArray([])
+	for item in string_array:
+		if typeof(item) == TYPE_STRING:
+			valid_strings.append(item)
+	output_string = ", ".join(valid_strings)
+	return output_string
+
+
+# takes a comma separated string and returns it as an array
+# for converting a readable tag list back to a dict encoded tag list
+func encode_tags(tag_string: String) -> Array:
+	var split_tag_string = tag_string.split(",")
+	var output_array := []
+	for string_value in split_tag_string:
+		output_array.append(string_value.strip_edges())
+	return output_array
+
+
 #//TODO implement fetch where can match any one condition (especially for tags)
 # will return an array of Json data entries from intersected registers
 # the criteria can have the following keys with the expected values
