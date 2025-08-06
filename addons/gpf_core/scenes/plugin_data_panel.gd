@@ -340,8 +340,6 @@ func _resave_row(row: TreeItem) -> void:
 			save_data["id_name"] = id_name
 		if is_mandatory:
 			if key == "tags":
-				#//TODO fix this, need to deconstruct tags and recode
-				#//TODO also need to encode as correct data value based on schema
 				save_data[key] = Data.encode_tags(value)
 			else:
 				save_data[key] = value
@@ -360,21 +358,10 @@ func _resave_row(row: TreeItem) -> void:
 			save_data["data"][key] = saved_value
 	
 	if file_path != null:
-		#//TODO remove and tidy placeholder saving behavour
 		#//TODO need to force reload editor if running in-debug
-		#//TODO need to add handling for tags, mandatory key type verification
-		save_data["id_author"] = "data_test"
-		save_data["id_package"] = "testpkg"
-		save_data["id_name"] = "testfile"
-		var test_file_path = "res://data/save_test/test_file.json"
-		DataUtility.save_json(save_data, test_file_path)
-		#DataUtility.save_json(save_data, file_path)
+		DataUtility.save_json(save_data, file_path)
 		Data.reload_data()
-		_reload_database()
-	#//TODO
-	# Data.save_json(arg_path, arg_data)
-	# Data.reload_specific() //or// Data.reindex_specific()
-	# reload_database (no filter change)
+		call_deferred("_reload_database")
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded
