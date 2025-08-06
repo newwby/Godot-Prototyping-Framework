@@ -91,6 +91,112 @@ func _cache_schema() -> bool:
 	return has_schema_changed
 
 
+func _validate_all_rows() -> void:
+	if tree_root == null:
+			return
+	for row in tree_root.get_children():
+		_validate_row(row)
+
+# checks all data in the tree for if invalid - shows visual display if invalid
+# pass a TreeItem to validate the data in that row
+func _validate_row(row: TreeItem) -> bool:
+	if row == null:
+		Log.error(self, "null arg passed to _validate_row")
+		return false
+	
+	var key
+	var value
+	var invalid_columns := PackedInt32Array([])
+	
+	for i in range(tree_columns.size()):
+		row.clear_custom_bg_color(i)
+		row.set_tooltip_text(i, "")
+		key = tree_columns[i]
+		value = row.get_text(i)
+		if key in tree_columns:
+			if _validate_value(key, value) == false:
+				invalid_columns.append(i)
+	
+	if (invalid_columns.is_empty() == false):
+		for i in invalid_columns:
+			row.set_custom_bg_color(i, Color.RED, false)
+			row.set_tooltip_text(i, "Invalid value")
+		return false
+	else:
+		return true
+
+# confirms whether a value type & expected structure matches schema
+func _validate_value(key, value) -> bool:
+	#print("validate - ", key, " ", value)
+	var value_type = typeof(value)
+	# specific handling for ID & tag
+	match key:
+		"id":
+			#//TODO add validation
+			return true
+		"tags":
+			#//TODO add validation
+			return true
+		_:
+			# check if mandatory key other than id/tags
+			if key in Data.EXPECTED_DATA_STRUCTURE.keys():
+				# expected data structure values are typeof results
+				return typeof(key) == Data.EXPECTED_DATA_STRUCTURE[key]
+			
+			# check if in schema/data
+			elif key in active_schema.keys():
+				var schema_type = typeof(active_schema[key])
+				var saved_value = value
+				match schema_type:
+					TYPE_FLOAT:
+						if value_type == TYPE_STRING:
+							return value.is_valid_float()
+						else:
+							return (value_type == TYPE_FLOAT)
+					TYPE_INT:
+						if value_type == TYPE_STRING:
+							return value.is_valid_int()
+						else:
+							return (value_type == TYPE_INT)
+					_:
+						return typeof(value) == schema_type
+			else:
+				Log.warning(self, "_validate_value -> key {0} not found".format([key]))
+				return false
+	
+	
+		#var is_id = (key == "id")
+		#var is_mandatory = (key in Data.EXPECTED_DATA_STRUCTURE.keys())
+		#var in_schema = (key in active_schema.keys())
+		##print(key, ": ", item.get_text(i), " ({0}/{1}/{2})".format([is_id, is_mandatory, in_schema]))
+		#
+		#if is_id:
+			#var id_split = value.split(".")
+			#var id_author = id_split[0]
+			#var id_package = id_split[1]
+			#var id_name = id_split[2]
+			#save_data["id_author"] = id_author
+			#save_data["id_package"] = id_package
+			#save_data["id_name"] = id_name
+		#if is_mandatory:
+			#if key == "tags":
+				##//TODO fix this, need to deconstruct tags and recode
+				##//TODO also need to encode as correct data value based on schema
+				#save_data[key] = [value]
+			#else:
+				#save_data[key] = value
+		#if in_schema:
+			#var type = typeof(active_schema[key])
+			#var saved_value = value
+			#match type:
+				#TYPE_FLOAT:
+					#if value.is_valid_float():
+						#saved_value = float(value)
+				#TYPE_INT:
+					#if value.is_valid_int():
+						#saved_value = float(value)
+
+
 #//TODO move _init_database behaviour into here for schema 
 func _clear_tree() -> void:
 	uid_map.clear()
@@ -241,6 +347,8 @@ func _on_tree_item_edited() -> void:
 	var new_text = item.get_text(edited_col)
 	var file_path = uid_map.get(item, null)
 	
+	var is_valid = _validate_row(item)
+	
 	var key
 	var value
 	var save_data = {}
@@ -293,6 +401,14 @@ func _on_tree_item_edited() -> void:
 			#["edited item saved at: ", file_path,
 			#"new values are:", save_data])
 			#)
+		# BREAK
+		#return
+		
+		if is_valid == false:
+			print("cannot save row -> ", item, " with edit ", new_text, " as invalid row")
+			return
+		# else
+		
 		#//TODO remove and tidy placeholder saving behavour
 		#//TODO need to force reload editor if running in-debug
 		#//TODO need to add handling for tags, mandatory key type verification
@@ -365,6 +481,7 @@ func _reload_database() -> void:
 	if has_schema_changed:
 		_load_filters()
 	_load_data_list(data_list)
+	_validate_all_rows()
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded
