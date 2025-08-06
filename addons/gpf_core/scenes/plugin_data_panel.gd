@@ -163,41 +163,9 @@ func _validate_value(key, value) -> bool:
 			else:
 				Log.warning(self, "_validate_value -> key {0} not found".format([key]))
 				return false
-	
-	
-		#var is_id = (key == "id")
-		#var is_mandatory = (key in Data.EXPECTED_DATA_STRUCTURE.keys())
-		#var in_schema = (key in active_schema.keys())
-		##print(key, ": ", item.get_text(i), " ({0}/{1}/{2})".format([is_id, is_mandatory, in_schema]))
-		#
-		#if is_id:
-			#var id_split = value.split(".")
-			#var id_author = id_split[0]
-			#var id_package = id_split[1]
-			#var id_name = id_split[2]
-			#save_data["id_author"] = id_author
-			#save_data["id_package"] = id_package
-			#save_data["id_name"] = id_name
-		#if is_mandatory:
-			#if key == "tags":
-				##//TODO fix this, need to deconstruct tags and recode
-				##//TODO also need to encode as correct data value based on schema
-				#save_data[key] = [value]
-			#else:
-				#save_data[key] = value
-		#if in_schema:
-			#var type = typeof(active_schema[key])
-			#var saved_value = value
-			#match type:
-				#TYPE_FLOAT:
-					#if value.is_valid_float():
-						#saved_value = float(value)
-				#TYPE_INT:
-					#if value.is_valid_int():
-						#saved_value = float(value)
 
 
-#//TODO move _init_database behaviour into here for schema 
+# delete all tree items
 func _clear_tree() -> void:
 	uid_map.clear()
 	var child := tree_root.get_first_child()
@@ -237,6 +205,7 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 	for idx in range(tree_columns.size()):
 		var key = tree_columns[idx]
 		var value = data_entry.get(key, null)
+		
 		new_row.set_text(idx, str(value))
 		new_row.set_autowrap_mode(idx, TextServer.AUTOWRAP_WORD_SMART)
 		new_row.set_tooltip_text(idx, "")
