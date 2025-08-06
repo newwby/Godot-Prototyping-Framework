@@ -185,6 +185,29 @@ func _load_filters() -> void:
 		filter_tag.add_item(key)
 
 
+# Called whenever the schema id/version changes, and on initial load
+# Completely resets the displayed database content according to current schema
+# Maps the column index
+func _load_tree_structure() -> void:
+	# refresh the tree root
+	_clear_tree()
+	
+	if active_schema.is_empty():
+		Log.error(self, "cannot write database with inactive schema")
+		return
+	
+	tree_columns = ["id", "type", "tags"]
+	tree_columns.append_array(active_schema.keys())
+	
+	database_tree.columns = tree_columns.size()
+	
+	for i in range(tree_columns.size()):
+		database_tree.set_column_title(i, tree_columns[i])
+		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
+		database_tree.set_column_expand(i, true)
+		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
+
+
 # when schema id is changed in the dropdown control
 #	update the schema versions
 #	default to the highest version
@@ -310,8 +333,8 @@ func _on_visibility_changed() -> void:
 func _reload_database() -> void:
 	# cache current schema
 	var has_schema_changed: bool = _cache_schema()
-	# write the database
-	_reload_tree_by_schema()
+	# write the database, reload according to schema
+	_load_tree_structure()
 	
 	var query := {}
 	# filters are populated from schema keys so text will be valid for query
@@ -342,29 +365,6 @@ func _reload_database() -> void:
 	if has_schema_changed:
 		_load_filters()
 	_load_data_list(data_list)
-
-
-# Called whenever the schema id/version changes, and on initial load
-# Completely resets the displayed database content according to current schema
-# Maps the column index
-func _reload_tree_by_schema() -> void:
-	# refresh the tree root
-	_clear_tree()
-	
-	if active_schema.is_empty():
-		Log.error(self, "cannot write database with inactive schema")
-		return
-	
-	tree_columns = ["id", "type", "tags"]
-	tree_columns.append_array(active_schema.keys())
-	
-	database_tree.columns = tree_columns.size()
-	
-	for i in range(tree_columns.size()):
-		database_tree.set_column_title(i, tree_columns[i])
-		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
-		database_tree.set_column_expand(i, true)
-		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded
