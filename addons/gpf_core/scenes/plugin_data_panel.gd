@@ -206,6 +206,9 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 		var key = tree_columns[idx]
 		var value = data_entry.get(key, null)
 		
+		if key == "tags":
+			value = Data.decode_tags(value)
+		
 		new_row.set_text(idx, str(value))
 		new_row.set_autowrap_mode(idx, TextServer.AUTOWRAP_WORD_SMART)
 		new_row.set_tooltip_text(idx, "")
@@ -314,13 +317,22 @@ func _on_tree_item_edited() -> void:
 	var item: TreeItem = database_tree.get_edited()
 	var edited_col = database_tree.get_edited_column()
 	var new_text = item.get_text(edited_col)
-	var file_path = uid_map.get(item, null)
 	
 	var is_valid = _validate_row(item)
-	
+	if is_valid:
+		_resave_row(item)
+
+
+func _resave_row(row: TreeItem) -> void:
+	if row == null:
+		Log.error(self, "invalid arg for _resave_row")
+		return
+	# else
 	var key
 	var value
 	var save_data = {}
+	var file_path = uid_map.get(row, null)
+	
 	for expected_key in Data.EXPECTED_DATA_STRUCTURE.keys():
 		save_data[expected_key] = null
 	save_data["schema_id"] = active_schema_id
@@ -328,12 +340,11 @@ func _on_tree_item_edited() -> void:
 	save_data["data"] = {}
 	for i in range(tree_columns.size()):
 		key = tree_columns[i]
-		value = item.get_text(i)
+		value = row.get_text(i)
 		
 		var is_id = (key == "id")
 		var is_mandatory = (key in Data.EXPECTED_DATA_STRUCTURE.keys())
 		var in_schema = (key in active_schema.keys())
-		#print(key, ": ", item.get_text(i), " ({0}/{1}/{2})".format([is_id, is_mandatory, in_schema]))
 		
 		if is_id:
 			var id_split = value.split(".")
@@ -347,7 +358,7 @@ func _on_tree_item_edited() -> void:
 			if key == "tags":
 				#//TODO fix this, need to deconstruct tags and recode
 				#//TODO also need to encode as correct data value based on schema
-				save_data[key] = [value]
+				save_data[key] = Data.encode_tags(value)
 			else:
 				save_data[key] = value
 		if in_schema:
@@ -363,21 +374,8 @@ func _on_tree_item_edited() -> void:
 				#TYPE_ARRAY:
 					#saved_value = [value]
 			save_data["data"][key] = saved_value
-	#print("saving data as \n{0}".format([save_data]))
 	
 	if file_path != null:
-		#print("{0}{1}\n{2}\n{3}\n".format(
-			#["edited item saved at: ", file_path,
-			#"new values are:", save_data])
-			#)
-		# BREAK
-		#return
-		
-		if is_valid == false:
-			print("cannot save row -> ", item, " with edit ", new_text, " as invalid row")
-			return
-		# else
-		
 		#//TODO remove and tidy placeholder saving behavour
 		#//TODO need to force reload editor if running in-debug
 		#//TODO need to add handling for tags, mandatory key type verification
