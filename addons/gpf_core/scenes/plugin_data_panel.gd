@@ -3,6 +3,11 @@ extends Control
 
 #####################################################################
 
+#//TODO
+# data files can have additional keys in schema["data"] - how to display and edit?  set_edit_multiline() and display as dict?
+
+#####################################################################
+
 const DB_FIELD_MIN_WIDTH := 35
 
 var tree_columns := []
@@ -106,6 +111,7 @@ func _initial_tree_setup() -> void:
 	database_tree.hide_root = true
 	database_tree.item_edited.connect(_on_tree_item_edited)
 	database_tree.item_selected.connect(_on_tree_item_selected)
+	
 	tree_root = database_tree.create_item()
 	call_deferred("_select_first_item")
 
@@ -250,6 +256,9 @@ func _on_tree_item_edited() -> void:
 
 
 func _on_tree_item_selected() -> void:
+	if is_instance_valid(id_label) == false\
+	or is_instance_valid(path_label) == false:
+		return
 	var item: TreeItem = database_tree.get_selected()
 	if item != null:
 		var selected_text = item.get_text(0)
@@ -258,6 +267,8 @@ func _on_tree_item_selected() -> void:
 		id_label.text = set_selection_text
 		
 		var record_path = uid_map.get(item, null)
+		if record_path == null:
+			path_label.text = ""
 		if typeof(record_path) == TYPE_STRING:
 			path_label.text = record_path
 
@@ -316,6 +327,8 @@ func _resave_row(row: TreeItem) -> void:
 	var value
 	var save_data = {}
 	var file_path = uid_map.get(row, null)
+	if file_path == null:
+		return
 	
 	for expected_key in Data.EXPECTED_DATA_STRUCTURE.keys():
 		save_data[expected_key] = null
@@ -394,6 +407,9 @@ func _validate_row(row: TreeItem) -> bool:
 	if row == null:
 		Log.error(self, "null arg passed to _validate_row")
 		return false
+	# don't show errors on unmapped rows, e.g. the add new record row
+	if !(row in uid_map.keys()):
+		return true
 	
 	var key
 	var value
@@ -415,6 +431,7 @@ func _validate_row(row: TreeItem) -> bool:
 		return false
 	else:
 		return true
+
 
 # confirms whether a value type & expected structure matches schema
 func _validate_value(key, value) -> bool:
