@@ -1,16 +1,22 @@
 {
 	"data": {
 		"damage": 3.0,
-		"health": 15.0,
-		"name": "Goblin"
+		"health": 5.0,
+		"name": "Test file"
 	},
-	"id_author": "gpf",
-	"id_name": "demo_goblin",
+	"id_author": "data_test",
+	"id_name": "testfile",
 	"id_package": "testpkg",
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
 	"tags": [
-		"[\"test\"]ds"
+		"blue",
+		"[red]",
+		"[ green",
+		"yellow",
+		"black",
+		"white",
+		"orange"
 	],
-	"type": "undefined"
+	"type": "test type"
 }

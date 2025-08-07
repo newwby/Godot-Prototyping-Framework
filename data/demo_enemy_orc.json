@@ -1,14 +1,18 @@
 {
+	"data": {
+		"damage": 5.0,
+		"health": 15.6,
+		"name": "Orc"
+	},
+	"id_author": "gpf",
+	"id_name": "demo_orc",
+	"id_package": "testpkg",
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
-	"id_author": "gpf",
-	"id_package": "testpkg",
-	"id_name": "demo_orc",
-	"type": "undefined",
-	"tags": [],
-	"data": {
-		"name": "Orc",
-		"health": 15.0,
-		"damage": 5.0
-	}
+	"tags": [
+		"big boy",
+		"bruiser",
+		"ugly"
+	],
+	"type": "undefined"
 }
