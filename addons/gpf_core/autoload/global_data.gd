@@ -148,6 +148,9 @@ func clear_all_data() -> void:
 #	separated string
 # for converting tags to a readable list
 func decode_tags(string_array) -> String:
+	# on invalid entry
+	if string_array == null:
+		return ""
 	var arg_type := typeof(string_array)
 	if not arg_type in [TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY]:
 		Log.error(self, "_decode_tags passed invalid type ({0}) argument: {1}".format(arg_type, string_array))
