@@ -109,8 +109,11 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../../LeftHBox/VBox2/FilterSchemaVersion")
 focus_neighbor_right = NodePath("../../VBox2/FilterPackage")
 selected = 0
-item_count = 1
+item_count = 2
+popup/item_0/text = "All Authors"
 popup/item_0/id = 0
+popup/item_1/text = "gpf"
+popup/item_1/id = 1
 
 [node name="VBox2" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 layout_mode = 2
@@ -127,8 +130,11 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox/FilterAuthor")
 focus_neighbor_right = NodePath("../../VBox3/FilterType")
 selected = 0
-item_count = 1
+item_count = 2
+popup/item_0/text = "All Packages"
 popup/item_0/id = 0
+popup/item_1/text = "testpkg"
+popup/item_1/id = 1
 
 [node name="VBox3" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 layout_mode = 2
@@ -145,8 +151,11 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox2/FilterPackage")
 focus_neighbor_right = NodePath("../../VBox4/FilterTag")
 selected = 0
-item_count = 1
+item_count = 2
+popup/item_0/text = "All Types"
 popup/item_0/id = 0
+popup/item_1/text = "undefined"
+popup/item_1/id = 1
 
 [node name="VBox4" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 visible = false
@@ -163,8 +172,11 @@ custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox3/FilterType")
 selected = 0
-item_count = 1
+item_count = 2
+popup/item_0/text = "All Tags"
 popup/item_0/id = 0
+popup/item_1/text = "[\"test\"]ds"
+popup/item_1/id = 1
 
 [node name="DatabaseTree" type="Tree" parent="Scroll/VBox"]
 unique_name_in_owner = true
@@ -205,13 +217,13 @@ alignment = 1
 [node name="IDLabel" type="Label" parent="Scroll/VBox/BottomBar/Margin/HBox/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Placeholder.ID.Value (Schema Version)"
+text = "gpf.testpkg.demo_goblin (demo_enemy 1.0)"
 label_settings = SubResource("LabelSettings_278tr")
 
 [node name="PathLabel" type="Label" parent="Scroll/VBox/BottomBar/Margin/HBox/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "res://data/placeholder_path"
+text = "res://data/save_test/test_file.json"
 label_settings = SubResource("LabelSettings_cqbx2")
 
 [node name="CRUD" type="HBoxContainer" parent="Scroll/VBox/BottomBar/Margin/HBox"]
