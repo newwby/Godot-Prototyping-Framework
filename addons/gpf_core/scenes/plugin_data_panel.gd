@@ -5,6 +5,7 @@ extends Control
 
 #//TODO
 # data files can have additional keys in schema["data"] - how to display and edit?  set_edit_multiline() and display as dict?
+# write custom file dialog to prevent going up out of user://data & to hide user://data/_schema
 
 #####################################################################
 
@@ -38,6 +39,8 @@ var active_schema_version: String = ""
 # bottom bar controls
 @onready var id_label = %IDLabel
 @onready var path_label = %PathLabel
+@onready var create_record_button = $Scroll/VBox/BottomBar/Margin/HBox/CRUD/Create
+@onready var delete_record_button = $Scroll/VBox/BottomBar/Margin/HBox/CRUD/Delete
 
 #####################################################################
 
@@ -111,7 +114,8 @@ func _initial_tree_setup() -> void:
 	database_tree.hide_root = true
 	database_tree.item_edited.connect(_on_tree_item_edited)
 	database_tree.item_selected.connect(_on_tree_item_selected)
-	
+	create_record_button.pressed.connect(_on_create_button_pressed)
+	delete_record_button.pressed.connect(_on_delete_button_pressed)
 	tree_root = database_tree.create_item()
 	call_deferred("_select_first_item")
 
@@ -216,6 +220,36 @@ func _load_tree_structure() -> void:
 		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
 		database_tree.set_column_expand(i, true)
 		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
+
+
+func _on_create_button_pressed() -> void:
+	var file_dialog := FileDialog.new()
+	file_dialog.access = FileDialog.ACCESS_USERDATA
+	#file_dialog.mode = FileDialog.MODE_SAVE_FILE
+	file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	file_dialog.current_dir = Data.get_user_data_path()
+	file_dialog.title = "Select Save Location"
+	file_dialog.file_selected.connect(_on_create_file_selected)
+	file_dialog.add_filter("*.json ; JSON Files")
+	file_dialog.connect("file_selected", Callable(self, "_on_file_selected"))
+	add_child(file_dialog)
+	file_dialog.popup_centered()
+
+
+func _on_create_file_selected(path: String) -> void:
+	print(path)
+	if not path.ends_with(".json"):
+		path += ".json"
+	print("Actually saving to:", path)
+	_load_data_entry({})
+
+
+func _on_delete_button_pressed() -> void:
+	var selected_row: TreeItem = database_tree.get_selected()
+	if selected_row != null:
+		var uid_path = uid_map.get(selected_row, "[no path]")
+		print("delete row button not implemented yet - could've deleted {0} at {1} though".\
+				format([selected_row.get_text(0), uid_path]))
 
 
 # when schema id is changed in the dropdown control
