@@ -154,7 +154,7 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 	# index the data value
 	var path = data_entry.get("path", null)
 	if path == null:
-		Log.warning(self, "cannot load path from data_entry: {0}".format([data_entry]))
+		Log.warning(self, "_load_data_entry: cannot load path from data_entry: {0}".format([data_entry]))
 	uid_map[new_row] = path
 
 
