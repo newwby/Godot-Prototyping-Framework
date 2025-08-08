@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://d4d1ix211l0fe"]
+[gd_scene load_steps=5 format=3 uid="uid://d4d1ix211l0fe"]
 
 [ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_data_panel.gd" id="1_278tr"]
+[ext_resource type="PackedScene" uid="uid://cnsfh524us4yn" path="res://addons/gpf_core/scenes/id_confirm_panel.tscn" id="2_cqbx2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_278tr"]
 font_size = 14
@@ -240,6 +241,10 @@ text = "Create New"
 layout_mode = 2
 focus_neighbor_left = NodePath("../Create")
 text = "Delete Selected"
+
+[node name="IDConfirmPanel" parent="." instance=ExtResource("2_cqbx2")]
+unique_name_in_owner = true
+visible = false
 
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/VBox2/FilterSchemaVersion" to="." method="_on_filter_item_selected"]
