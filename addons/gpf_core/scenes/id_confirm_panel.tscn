@@ -1,0 +1,106 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnsfh524us4yn"]
+
+[ext_resource type="Script" uid="uid://xh0pswjhdgoi" path="res://addons/gpf_core/scenes/id_confirm_panel.gd" id="1_ye8jx"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ye8jx"]
+bg_color = Color(0.0705882, 0.0705882, 0.0705882, 1)
+
+[node name="IDConfirmPanel" type="PopupPanel"]
+auto_translate_mode = 1
+size = Vector2i(480, 270)
+visible = true
+min_size = Vector2i(480, 270)
+script = ExtResource("1_ye8jx")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 476.0
+offset_bottom = 266.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ye8jx")
+
+[node name="Border" type="MarginContainer" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 476.0
+offset_bottom = 266.0
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VboxExt" type="VBoxContainer" parent="Border"]
+layout_mode = 2
+theme_override_constants/separation = 25
+alignment = 1
+
+[node name="VBoxID" type="VBoxContainer" parent="Border/VboxExt"]
+layout_mode = 2
+
+[node name="Author" type="HBoxContainer" parent="Border/VboxExt/VBoxID"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Border/VboxExt/VBoxID/Author"]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+text = "ID Author"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Author"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+placeholder_text = "DemoAuthor"
+
+[node name="Package" type="HBoxContainer" parent="Border/VboxExt/VBoxID"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Border/VboxExt/VBoxID/Package"]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+text = "ID Package"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Package"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+placeholder_text = "DemoPackage"
+
+[node name="Name" type="HBoxContainer" parent="Border/VboxExt/VBoxID"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Border/VboxExt/VBoxID/Name"]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+text = "ID Name"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Name"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 2
+placeholder_text = "DemoFile"
+
+[node name="Buttons" type="HBoxContainer" parent="Border/VboxExt"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Confirm" type="Button" parent="Border/VboxExt/Buttons"]
+custom_minimum_size = Vector2(75, 25)
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="Border/VboxExt/Buttons"]
+custom_minimum_size = Vector2(75, 25)
+layout_mode = 2
+text = "Cancel"
+
+[connection signal="pressed" from="Border/VboxExt/Buttons/Cancel" to="." method="hide"]
