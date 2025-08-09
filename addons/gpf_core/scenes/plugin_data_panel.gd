@@ -41,6 +41,9 @@ var active_schema_version: String = ""
 @onready var path_label = %PathLabel
 @onready var create_record_button = $Scroll/VBox/BottomBar/Margin/HBox/CRUD/Create
 @onready var delete_record_button = $Scroll/VBox/BottomBar/Margin/HBox/CRUD/Delete
+@onready var edit_record_id_button = $Scroll/VBox/BottomBar/Margin/HBox/CRUD/Edit
+
+@onready var id_confirm_panel = %IDConfirmPanel
 
 #####################################################################
 
@@ -116,6 +119,7 @@ func _initial_tree_setup() -> void:
 	database_tree.item_selected.connect(_on_tree_item_selected)
 	create_record_button.pressed.connect(_on_create_button_pressed)
 	delete_record_button.pressed.connect(_on_delete_button_pressed)
+	edit_record_id_button.pressed.connect(_on_edit_id_button_pressed)
 	tree_root = database_tree.create_item()
 	call_deferred("_select_first_item")
 
@@ -233,10 +237,12 @@ func _on_create_button_pressed() -> void:
 	file_dialog.add_filter("*.json ; JSON Files")
 	file_dialog.connect("file_selected", Callable(self, "_on_file_selected"))
 	add_child(file_dialog)
+	#//TODO row should pop up after confirming ID
 	file_dialog.popup_centered()
 
 
 func _on_create_file_selected(path: String) -> void:
+	id_confirm_panel.popup_centered()
 	print(path)
 	if not path.ends_with(".json"):
 		path += ".json"
@@ -250,6 +256,11 @@ func _on_delete_button_pressed() -> void:
 		var uid_path = uid_map.get(selected_row, "[no path]")
 		print("delete row button not implemented yet - could've deleted {0} at {1} though".\
 				format([selected_row.get_text(0), uid_path]))
+
+
+func _on_edit_id_button_pressed() -> void:
+	#//TODO pass selected row info, validate that a row is selected
+	id_confirm_panel.popup_centered()
 
 
 # when schema id is changed in the dropdown control

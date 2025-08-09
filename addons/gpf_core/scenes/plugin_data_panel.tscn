@@ -237,6 +237,11 @@ layout_mode = 2
 focus_neighbor_right = NodePath("../Delete")
 text = "Create New"
 
+[node name="Edit" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
+layout_mode = 2
+focus_neighbor_right = NodePath("../Delete")
+text = "Edit Selected ID"
+
 [node name="Delete" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
 focus_neighbor_left = NodePath("../Create")
