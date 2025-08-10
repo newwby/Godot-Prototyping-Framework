@@ -234,17 +234,20 @@ theme_override_constants/separation = 10
 
 [node name="Create" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
-focus_neighbor_right = NodePath("../Delete")
+focus_neighbor_left = NodePath("../Delete")
+focus_neighbor_right = NodePath("../Edit")
 text = "Create New"
 
 [node name="Edit" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
+focus_neighbor_left = NodePath("../Create")
 focus_neighbor_right = NodePath("../Delete")
 text = "Edit Selected ID"
 
 [node name="Delete" type="Button" parent="Scroll/VBox/BottomBar/Margin/HBox/CRUD"]
 layout_mode = 2
-focus_neighbor_left = NodePath("../Create")
+focus_neighbor_left = NodePath("../Edit")
+focus_neighbor_right = NodePath("../Create")
 text = "Delete Selected"
 
 [node name="IDConfirmPanel" parent="." instance=ExtResource("2_cqbx2")]
