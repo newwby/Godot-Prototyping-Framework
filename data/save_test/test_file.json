@@ -5,8 +5,8 @@
 		"name": "Test file"
 	},
 	"id_author": "data_test",
-	"id_name": "testfile",
-	"id_package": "testpkg",
+	"id_name": "name",
+	"id_package": "test",
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
 	"tags": [

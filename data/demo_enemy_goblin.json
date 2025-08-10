@@ -5,8 +5,8 @@
 		"name": "Goblin"
 	},
 	"id_author": "gpf",
-	"id_name": "demo_goblin",
-	"id_package": "testpkg",
+	"id_name": "gobbo",
+	"id_package": "test",
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
 	"tags": [
