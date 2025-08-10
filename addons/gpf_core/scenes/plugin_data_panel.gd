@@ -247,6 +247,7 @@ func _on_create_file_selected(path: String) -> void:
 	if not path.ends_with(".json"):
 		path += ".json"
 	print("Actually saving to:", path)
+	#//TODO need to validate there's a filename
 	_load_data_entry({})
 
 
@@ -260,7 +261,21 @@ func _on_delete_button_pressed() -> void:
 
 func _on_edit_id_button_pressed() -> void:
 	#//TODO pass selected row info, validate that a row is selected
-	id_confirm_panel.popup_centered()
+	var selected_row: TreeItem = database_tree.get_selected()
+	if selected_row == null:
+		return
+	var id_text = selected_row.get_text(0)
+	var id_text_split = id_text.split(".")
+	if id_text_split.size() != 3:
+		Log.error(self, "invalid id")
+	var id_author = id_text_split[0]
+	var id_package = id_text_split[1]
+	var id_name = id_text_split[2]
+	#//TODO panel needs to pass changes back by signal to the selected row
+	if is_instance_valid(id_confirm_panel):
+		id_confirm_panel.open_panel(id_author, id_package, id_name)
+	else:
+		Log.error(self, "null id_confirm_panel on edit id button pressed")
 
 
 # when schema id is changed in the dropdown control
