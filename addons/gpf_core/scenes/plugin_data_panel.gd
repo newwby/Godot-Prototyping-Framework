@@ -260,9 +260,10 @@ func _on_delete_button_pressed() -> void:
 
 
 func _on_edit_id_button_pressed() -> void:
-	#//TODO pass selected row info, validate that a row is selected
+	#//wouldn't hurt to have a keyboard shortcut for this, or a row button?
 	var selected_row: TreeItem = database_tree.get_selected()
 	if selected_row == null:
+		Log.warning(self, "no selected button; _on_edit_id_button_pressed")
 		return
 	var id_text = selected_row.get_text(0)
 	var id_text_split = id_text.split(".")
@@ -320,6 +321,7 @@ func _on_tree_item_selected() -> void:
 	or is_instance_valid(path_label) == false:
 		return
 	var item: TreeItem = database_tree.get_selected()
+	edit_record_id_button.disabled = (item == null)
 	if item != null:
 		var selected_text = item.get_text(0)
 		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
@@ -376,6 +378,8 @@ func _reload_database() -> void:
 		_load_filters()
 	_load_data_list(data_list)
 	_validate_all_rows()
+	call_deferred("_select_first_item")
+	call_deferred("_on_tree_item_selected")
 
 
 func _resave_row(row: TreeItem) -> void:
