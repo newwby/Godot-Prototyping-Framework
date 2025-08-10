@@ -49,7 +49,8 @@ text = "ID Author"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Author"]
+[node name="AuthorEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Author"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 30)
 layout_mode = 2
 placeholder_text = "DemoAuthor"
@@ -66,7 +67,8 @@ text = "ID Package"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Package"]
+[node name="PackageEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Package"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 30)
 layout_mode = 2
 placeholder_text = "DemoPackage"
@@ -83,7 +85,8 @@ text = "ID Name"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Name"]
+[node name="NameEdit" type="LineEdit" parent="Border/VboxExt/VBoxID/Name"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 30)
 layout_mode = 2
 placeholder_text = "DemoFile"
