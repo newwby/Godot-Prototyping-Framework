@@ -306,11 +306,20 @@ func _on_filter_item_selected(_index):
 	_reload_database()
 
 
+#//TODO need to handle if edit or if create
+#//TODO need to handle validation/if null
+func _on_id_confirm_panel_id_changed(author, package, name):
+	var item: TreeItem = database_tree.get_selected()
+	var is_valid = _validate_row(item)
+	if is_valid:
+		item.set_text(0, "{0}.{1}.{2}".\
+				format([str(author), str(package), str(name)
+				]))
+		_resave_row(item)
+
+
 func _on_tree_item_edited() -> void:
 	var item: TreeItem = database_tree.get_edited()
-	var edited_col = database_tree.get_edited_column()
-	var new_text = item.get_text(edited_col)
-	
 	var is_valid = _validate_row(item)
 	if is_valid:
 		_resave_row(item)

@@ -260,3 +260,4 @@ visible = false
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox2/FilterPackage" to="." method="_on_filter_item_selected"]
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox3/FilterType" to="." method="_on_filter_item_selected"]
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/RightHBox/VBox4/FilterTag" to="." method="_on_filter_item_selected"]
+[connection signal="id_changed" from="IDConfirmPanel" to="." method="_on_id_confirm_panel_id_changed"]
