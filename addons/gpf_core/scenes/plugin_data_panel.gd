@@ -24,6 +24,11 @@ var active_schema: Dictionary = {}
 var active_schema_id: String = ""
 var active_schema_version: String = ""
 
+# reusing id_confirm_panel for creating new records & editing row ids so
+#	need to differentiate
+var is_creating_file := false
+var is_editing_id := false
+
 # main database
 @onready var database_tree = %DatabaseTree
 
@@ -227,6 +232,8 @@ func _load_tree_structure() -> void:
 
 
 func _on_create_button_pressed() -> void:
+	is_creating_file = true
+	is_editing_id = false
 	var file_dialog := FileDialog.new()
 	file_dialog.access = FileDialog.ACCESS_USERDATA
 	#file_dialog.mode = FileDialog.MODE_SAVE_FILE
@@ -242,13 +249,31 @@ func _on_create_button_pressed() -> void:
 
 
 func _on_create_file_selected(path: String) -> void:
-	id_confirm_panel.popup_centered()
-	print(path)
+	
+	#//fix path
 	if not path.ends_with(".json"):
 		path += ".json"
+	
+	#//TODO really the file_dialog should not even close if invalid file name
+	if path.get_file().get_basename() == "":
+		Log.warning(self, "Did not specify any file name")
+		return
+	elif path.get_file().is_valid_filename() == false:
+		Log.warning(self, "Did not specify valid file name")
+		return
+	
 	print("Actually saving to:", path)
+	
 	#//TODO need to validate there's a filename
-	_load_data_entry({})
+	#//TODO need to save to disk before the database is reloaded or row is lost
+	#_load_data_entry({})
+	id_confirm_panel.open_panel("", "", "")
+	#//need a new row and path
+	#//TODO would like to hide this until return of ID edit
+	_load_data_entry({
+		"path": path
+	})
+	tree_root.select(tree_root.get_child_count())
 
 
 func _on_delete_button_pressed() -> void:
@@ -260,7 +285,9 @@ func _on_delete_button_pressed() -> void:
 
 
 func _on_edit_id_button_pressed() -> void:
-	#//wouldn't hurt to have a keyboard shortcut for this, or a row button?
+	is_creating_file = false
+	is_editing_id = true
+	#//TODO wouldn't hurt to have a keyboard shortcut for this, or a row button?
 	var selected_row: TreeItem = database_tree.get_selected()
 	if selected_row == null:
 		Log.warning(self, "no selected button; _on_edit_id_button_pressed")
@@ -309,9 +336,18 @@ func _on_filter_item_selected(_index):
 #//TODO need to handle if edit or if create
 #//TODO need to handle validation/if null
 func _on_id_confirm_panel_id_changed(author, package, name):
-	var item: TreeItem = database_tree.get_selected()
-	var is_valid = _validate_row(item)
-	if is_valid:
+	var item: TreeItem = null
+	if is_editing_id:
+		item = database_tree.get_selected()
+		# why checking if valid?
+		#var is_valid = _validate_row(item)
+		#if is_valid:
+	if is_creating_file:
+		print("Sorry feature not properly implemented!")
+		#//TODO in order to fix this the schema needs to populate with correct data
+		#//TODO fix test files
+		item = tree_root.get_child(tree_root.get_child_count()-1)
+	if item != null:
 		item.set_text(0, "{0}.{1}.{2}".\
 				format([str(author), str(package), str(name)
 				]))
@@ -336,7 +372,6 @@ func _on_tree_item_selected() -> void:
 		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
 		#//TODO check
 		id_label.text = set_selection_text
-		
 		var record_path = uid_map.get(item, null)
 		if record_path == null:
 			path_label.text = ""
@@ -445,6 +480,7 @@ func _resave_row(row: TreeItem) -> void:
 	
 	if file_path != null:
 		#//TODO need to force reload editor if running in-debug
+		print("SAVING LOGSPAM")
 		DataUtility.save_json(save_data, file_path)
 		Data.reload_data()
 		call_deferred("_reload_database")
