@@ -342,6 +342,15 @@ func _on_filter_item_selected(_index):
 #//TODO need to handle if edit or if create
 #//TODO need to handle validation/if null
 func _on_id_confirm_panel_id_changed(author, package, name):
+	for validate_arg in [author, package, name]:
+		if typeof(validate_arg) != TYPE_STRING:
+			Log.error(self, "invalid argument type in _on_id_confirm_panel_id_changed")
+			return
+		if validate_arg == "":
+			Log.warning(self, "id argument cannot be blank")
+			_reload_database()
+			return
+	
 	var item: TreeItem = null
 	if is_editing_id:
 		item = database_tree.get_selected()
