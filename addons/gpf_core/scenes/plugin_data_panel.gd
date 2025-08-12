@@ -10,6 +10,10 @@ extends Control
 # horizontal scrolling
 # resizable row headers
 
+#//TODO BUGFIXES
+# specifying author & package will show all data if result == 0
+# Index out of bounds: attempted to access column 10 in a Tree with only 6 columns.
+
 #####################################################################
 
 const DB_FIELD_MIN_WIDTH := 35
@@ -283,6 +287,12 @@ func _on_create_file_selected(path: String) -> void:
 	#//TODO would like to hide this until return of ID edit
 	_load_data_entry(placeholder_data)
 	tree_root.select(tree_root.get_child_count())
+	# discard filter selections as we want confirmation of the new file appearing
+	#//TODO new id data doesn't show up in the filter immediately, even when deferred
+	#	- potential issue is that the file indexing by GlobalData is also deferred
+	
+	#await get_tree().create_timer(0.5)
+	self.call_deferred("_load_filters")
 
 
 func _on_delete_button_pressed() -> void:
