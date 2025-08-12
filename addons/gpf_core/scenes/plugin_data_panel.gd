@@ -6,6 +6,9 @@ extends Control
 #//TODO
 # data files can have additional keys in schema["data"] - how to display and edit?  set_edit_multiline() and display as dict?
 # write custom file dialog to prevent going up out of user://data & to hide user://data/_schema
+# fit to row width
+# horizontal scrolling
+# resizable row headers
 
 #####################################################################
 
@@ -285,9 +288,16 @@ func _on_create_file_selected(path: String) -> void:
 func _on_delete_button_pressed() -> void:
 	var selected_row: TreeItem = database_tree.get_selected()
 	if selected_row != null:
-		var uid_path = uid_map.get(selected_row, "[no path]")
-		print("delete row button not implemented yet - could've deleted {0} at {1} though".\
-				format([selected_row.get_text(0), uid_path]))
+		var default_arg = "[no path]"
+		var uid_path = uid_map.get(selected_row, default_arg)
+		if uid_path == default_arg:
+			Log.error(self, "_on_delete_button_pressed can't find path for selected file")
+			return
+		else:
+			DataUtility.delete_file(uid_path)
+			#//TODO deindexing data would be less invasive
+			Data.reload_data()
+			call_deferred("_reload_database")
 
 
 func _on_edit_id_button_pressed() -> void:
