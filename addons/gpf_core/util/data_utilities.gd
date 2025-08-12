@@ -80,6 +80,25 @@ static func clean_file_name(
 	return new_string
 
 
+static func delete_file(file_path: String) -> Error:
+	if (file_path.begins_with("res://") == false) and (OS.is_debug_build() == false):
+		Log.error(null, "invalid file_path argument ({0}) passed to delete_file".\
+				format([file_path]))
+		return ERR_INVALID_PARAMETER
+	if FileAccess.file_exists(file_path):
+		var absolute_path = ProjectSettings.globalize_path(file_path)
+		var error := OS.move_to_trash(absolute_path)
+		if error == OK:
+			Log.debug_info(null, "file at {0} deleted successfully by delete_file".\
+					format([file_path]))
+		else:
+			Log.debug_info(null, "file at {0} failed to move to trash in delete_file. Error {1}.".\
+					format([file_path, error]))
+		return error
+	else:
+		return ERR_CANT_OPEN
+
+
 # returns names of all directories within a path (recursively)
 static func get_dir_names_recursive(
 		arg_directory_path: String
