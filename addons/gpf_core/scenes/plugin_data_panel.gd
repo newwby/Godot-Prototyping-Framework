@@ -269,10 +269,16 @@ func _on_create_file_selected(path: String) -> void:
 	#_load_data_entry({})
 	id_confirm_panel.open_panel("", "", "")
 	#//need a new row and path
-	#//TODO would like to hide this until return of ID edit
-	_load_data_entry({
+	
+	var placeholder_data := {
+		"schema_id": active_schema_id,
+		"schema_version": active_schema_version,
+		"data": active_schema,
 		"path": path
-	})
+	}
+	
+	#//TODO would like to hide this until return of ID edit
+	_load_data_entry(placeholder_data)
 	tree_root.select(tree_root.get_child_count())
 
 
@@ -339,14 +345,10 @@ func _on_id_confirm_panel_id_changed(author, package, name):
 	var item: TreeItem = null
 	if is_editing_id:
 		item = database_tree.get_selected()
-		# why checking if valid?
-		#var is_valid = _validate_row(item)
-		#if is_valid:
 	if is_creating_file:
-		print("Sorry feature not properly implemented!")
-		#//TODO in order to fix this the schema needs to populate with correct data
-		#//TODO fix test files
 		item = tree_root.get_child(tree_root.get_child_count()-1)
+	
+	# adjust id
 	if item != null:
 		item.set_text(0, "{0}.{1}.{2}".\
 				format([str(author), str(package), str(name)
@@ -479,8 +481,6 @@ func _resave_row(row: TreeItem) -> void:
 			save_data["data"][key] = saved_value
 	
 	if file_path != null:
-		#//TODO need to force reload editor if running in-debug
-		print("SAVING LOGSPAM")
 		DataUtility.save_json(save_data, file_path)
 		Data.reload_data()
 		call_deferred("_reload_database")
