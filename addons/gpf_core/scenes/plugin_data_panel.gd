@@ -10,9 +10,31 @@ extends Control
 # horizontal scrolling
 # resizable row headers
 
+# _validate_value metho validation
+# _on_tree_item_selected review (selection text specifically)
+
+# _reload_database TODO
+#//TODO confirm that resetting to 'all' reloads all
+#//TODO confirm can search by multiple filters once they persist
+#//TODO reintroduce and fix filtering by tag
+
 #//TODO BUGFIXES
 # specifying author & package will show all data if result == 0
 # Index out of bounds: attempted to access column 10 in a Tree with only 6 columns.
+
+# newly created row shouldn't appear (hide or delay?) in DB until after ID is confirmed
+# _on_create_button_pressed tidy up (file dialog behaviour)
+# file dialog should not close if file name is invalid
+# _on_create_file_selected needs to validate filename/path before opening id_edit panel
+
+# filter bug on creating file - not populated with new id/type etc
+#//TODO new id data doesn't show up in the filter immediately, even when deferred
+#	- potential issue is that the file indexing by GlobalData is also deferred
+
+#//TODO deindex data would be less invasive on _on_delete_button (rather than full GData reload)
+#//TODO _on_edit_id_button_pressed keyboard shortcut or row shortcut
+#//TODO _on_edit_id_button_pressed - panel needs to pass changes back by signal to the selected row
+#//TODO _on_id_confirm_panel_id_changed - need to handle validation/if null
 
 #####################################################################
 
@@ -140,7 +162,6 @@ func _load_data_entry(data_entry: Dictionary) -> void:
 	var new_row: TreeItem = database_tree.create_item(tree_root)
 	if new_row == null:
 		return
-	# id is immutable (#//TODO for now) value defining the data entry in display
 	var data_id = "{0}.{1}.{2}".format([
 		data_entry.get("id_author", "?"),
 		data_entry.get("id_package", "?"),
@@ -251,31 +272,20 @@ func _on_create_button_pressed() -> void:
 	file_dialog.add_filter("*.json ; JSON Files")
 	file_dialog.connect("file_selected", Callable(self, "_on_file_selected"))
 	add_child(file_dialog)
-	#//TODO row should pop up after confirming ID
 	file_dialog.popup_centered()
 
 
 func _on_create_file_selected(path: String) -> void:
-	
-	#//fix path
+	# fix path if no extension
 	if not path.ends_with(".json"):
 		path += ".json"
 	
-	#//TODO really the file_dialog should not even close if invalid file name
 	if path.get_file().get_basename() == "":
 		Log.warning(self, "Did not specify any file name")
 		return
 	elif path.get_file().is_valid_filename() == false:
 		Log.warning(self, "Did not specify valid file name")
 		return
-	
-	print("Actually saving to:", path)
-	
-	#//TODO need to validate there's a filename
-	#//TODO need to save to disk before the database is reloaded or row is lost
-	#_load_data_entry({})
-	id_confirm_panel.open_panel("", "", "")
-	#//need a new row and path
 	
 	var placeholder_data := {
 		"schema_id": active_schema_id,
@@ -284,14 +294,11 @@ func _on_create_file_selected(path: String) -> void:
 		"path": path
 	}
 	
-	#//TODO would like to hide this until return of ID edit
+	id_confirm_panel.open_panel("", "", "")
+	
 	_load_data_entry(placeholder_data)
 	tree_root.select(tree_root.get_child_count())
 	# discard filter selections as we want confirmation of the new file appearing
-	#//TODO new id data doesn't show up in the filter immediately, even when deferred
-	#	- potential issue is that the file indexing by GlobalData is also deferred
-	
-	#await get_tree().create_timer(0.5)
 	self.call_deferred("_load_filters")
 
 
@@ -305,7 +312,6 @@ func _on_delete_button_pressed() -> void:
 			return
 		else:
 			DataUtility.delete_file(uid_path)
-			#//TODO deindexing data would be less invasive
 			Data.reload_data()
 			call_deferred("_reload_database")
 
@@ -313,7 +319,7 @@ func _on_delete_button_pressed() -> void:
 func _on_edit_id_button_pressed() -> void:
 	is_creating_file = false
 	is_editing_id = true
-	#//TODO wouldn't hurt to have a keyboard shortcut for this, or a row button?
+	
 	var selected_row: TreeItem = database_tree.get_selected()
 	if selected_row == null:
 		Log.warning(self, "no selected button; _on_edit_id_button_pressed")
@@ -325,7 +331,7 @@ func _on_edit_id_button_pressed() -> void:
 	var id_author = id_text_split[0]
 	var id_package = id_text_split[1]
 	var id_name = id_text_split[2]
-	#//TODO panel needs to pass changes back by signal to the selected row
+	
 	if is_instance_valid(id_confirm_panel):
 		id_confirm_panel.open_panel(id_author, id_package, id_name)
 	else:
@@ -359,8 +365,6 @@ func _on_filter_item_selected(_index):
 	_reload_database()
 
 
-#//TODO need to handle if edit or if create
-#//TODO need to handle validation/if null
 func _on_id_confirm_panel_id_changed(author, package, name):
 	for validate_arg in [author, package, name]:
 		if typeof(validate_arg) != TYPE_STRING:
@@ -401,7 +405,6 @@ func _on_tree_item_selected() -> void:
 	if item != null:
 		var selected_text = item.get_text(0)
 		var set_selection_text := "{0} ({1} {2})".format([selected_text, active_schema_id, active_schema_version])
-		#//TODO check
 		id_label.text = set_selection_text
 		var record_path = uid_map.get(item, null)
 		if record_path == null:
@@ -410,7 +413,6 @@ func _on_tree_item_selected() -> void:
 			path_label.text = record_path
 
 #// Behaviour for when plugin panel is shown
-#//TODO legacy? Remove?
 func _on_visibility_changed() -> void:
 	if is_visible_in_tree():
 		pass
@@ -444,11 +446,6 @@ func _reload_database() -> void:
 	
 	var data_list = Data.fetch(query)
 	
-	#//TODO filters shouldn't reload unless schema has changed
-	# 	and changing the selected item - item should persist between
-	#//TODO confirm that resetting to 'all' reloads all
-	#//TODO confirm can search by multiple filters once they persist
-	#//TODO confirm filtering by tags works
 	if has_schema_changed:
 		_load_filters()
 	_load_data_list(data_list)
@@ -575,13 +572,13 @@ func _validate_row(row: TreeItem) -> bool:
 func _validate_value(key, value) -> bool:
 	#print("validate - ", key, " ", value)
 	var value_type = typeof(value)
+	
 	# specific handling for ID & tag
+	# NO VALIDATION - TO ADD
 	match key:
 		"id":
-			#//TODO add validation
 			return true
 		"tags":
-			#//TODO add validation
 			return true
 		_:
 			# check if mandatory key other than id/tags
