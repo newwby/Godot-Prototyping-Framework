@@ -4,8 +4,11 @@ extends Control
 #####################################################################
 
 #//TODO
-# data files can have additional keys in schema["data"] - how to display and edit?  set_edit_multiline() and display as dict?
+# data files can have additional keys in schema["data"]
+#	- how to display and edit?  set_edit_multiline() and display as dict?
+
 # write custom file dialog to prevent going up out of user://data & to hide user://data/_schema
+
 # fit to row width
 # horizontal scrolling
 # resizable row headers
@@ -33,7 +36,6 @@ extends Control
 
 #//TODO deindex data would be less invasive on _on_delete_button (rather than full GData reload)
 #//TODO _on_edit_id_button_pressed keyboard shortcut or row shortcut
-#//TODO _on_edit_id_button_pressed - panel needs to pass changes back by signal to the selected row
 #//TODO _on_id_confirm_panel_id_changed - need to handle validation/if null
 
 #####################################################################
@@ -577,6 +579,13 @@ func _validate_value(key, value) -> bool:
 	# NO VALIDATION - TO ADD
 	match key:
 		"id":
+			var value_split = str(value).split(".")
+			if value_split.size() != 3:
+				return false
+			for substr in value_split:
+				if str(substr) == "":
+					return false
+			# else
 			return true
 		"tags":
 			return true
