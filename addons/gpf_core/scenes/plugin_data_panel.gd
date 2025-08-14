@@ -13,7 +13,6 @@ extends Control
 # horizontal scrolling
 # resizable row headers
 
-# _validate_value metho validation
 # _on_tree_item_selected review (selection text specifically)
 
 # _reload_database TODO
@@ -235,7 +234,7 @@ func _load_filters() -> void:
 	var schema_tag_keys = Data.get_available_tags(active_schema_id, active_schema_version)
 	#filter_tag.visible = (!schema_tag_keys.is_empty())
 	for key in schema_tag_keys:
-		filter_tag.add_item(key)
+		filter_tag.add_item(str(key))
 
 
 # Called whenever the schema id/version changes, and on initial load
@@ -576,7 +575,7 @@ func _validate_value(key, value) -> bool:
 	var value_type = typeof(value)
 	
 	# specific handling for ID & tag
-	# NO VALIDATION - TO ADD
+	# id has to match a format
 	match key:
 		"id":
 			var value_split = str(value).split(".")
@@ -587,8 +586,15 @@ func _validate_value(key, value) -> bool:
 					return false
 			# else
 			return true
+		
+		# tags are converted to string when displayed in filter
 		"tags":
-			return true
+			if typeof(value) != TYPE_STRING:
+				return false
+			else:
+				return true
+		
+		# otherwise check against expected data structure or schema
 		_:
 			# check if mandatory key other than id/tags
 			if key in Data.EXPECTED_DATA_STRUCTURE.keys():
