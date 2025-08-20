@@ -1,3 +1,4 @@
+@tool
 extends PopupPanel
 
 signal id_changed(author, package, name)
