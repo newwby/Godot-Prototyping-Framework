@@ -19,7 +19,7 @@ const AUTOLOAD_PATHS := {
 	"Data": "res://addons/gpf_core/autoload/global_data.gd",
 }
 
-const DATABASE_SCENE = preload("uid://d4d1ix211l0fe")
+const DATABASE_SCENE = preload("uid://bcbxp7nlp1t0q")
 
 const SETTING_PATH_FORMAT := "addons/prototype_framework/{0}"
 

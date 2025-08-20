@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcbxp7nlp1t0q"]
+
+[ext_resource type="PackedScene" uid="uid://d4d1ix211l0fe" path="res://addons/gpf_core/scenes/plugin_database/data_root.tscn" id="1_t6hkm"]
+
+[node name="PluginDatabaseView" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="DataPanel" parent="." instance=ExtResource("1_t6hkm")]
+layout_mode = 2

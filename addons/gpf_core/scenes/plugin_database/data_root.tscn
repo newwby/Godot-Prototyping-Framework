@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://d4d1ix211l0fe"]
 
-[ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_data_panel.gd" id="1_278tr"]
-[ext_resource type="PackedScene" uid="uid://cnsfh524us4yn" path="res://addons/gpf_core/scenes/id_confirm_panel.tscn" id="2_cqbx2"]
+[ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_database/data_root.gd" id="1_mgm5o"]
+[ext_resource type="PackedScene" uid="uid://cnsfh524us4yn" path="res://addons/gpf_core/scenes/plugin_database/id_confirm_panel.tscn" id="2_cpari"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_278tr"]
 font_size = 14
@@ -21,7 +21,7 @@ theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
-script = ExtResource("1_278tr")
+script = ExtResource("1_mgm5o")
 
 [node name="BkgPanel" type="Panel" parent="."]
 layout_mode = 2
@@ -250,7 +250,7 @@ focus_neighbor_left = NodePath("../Edit")
 focus_neighbor_right = NodePath("../Create")
 text = "Delete Selected"
 
-[node name="IDConfirmPanel" parent="." instance=ExtResource("2_cqbx2")]
+[node name="IDConfirmPanel" parent="." instance=ExtResource("2_cpari")]
 unique_name_in_owner = true
 visible = false
 
