@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://bcbxp7nlp1t0q"]
+[gd_scene load_steps=4 format=3 uid="uid://bcbxp7nlp1t0q"]
 
 [ext_resource type="PackedScene" uid="uid://d4d1ix211l0fe" path="res://addons/gpf_core/scenes/plugin_database/data_root.tscn" id="1_t6hkm"]
+[ext_resource type="Script" uid="uid://d0ao1sgy4euf8" path="res://addons/gpf_core/scenes/plugin_database/plugin_data_panel.gd" id="1_y210l"]
+[ext_resource type="PackedScene" uid="uid://cfk7r2b5xn4ll" path="res://addons/gpf_core/scenes/plugin_database/schema_root.tscn" id="3_334vp"]
 
 [node name="PluginDatabaseView" type="MarginContainer"]
 anchors_preset = 15
@@ -14,6 +16,41 @@ theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
+script = ExtResource("1_y210l")
 
-[node name="DataPanel" parent="." instance=ExtResource("1_t6hkm")]
+[node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
+
+[node name="ButtonHBox" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ShowData" type="Button" parent="VBox/ButtonHBox"]
+self_modulate = Color(0.784314, 0.784314, 1, 1)
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Data"
+
+[node name="ShowSchema" type="Button" parent="VBox/ButtonHBox"]
+self_modulate = Color(1, 0.784314, 0.784314, 1)
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Schema"
+
+[node name="ViewContainer" type="MarginContainer" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DataPanel" parent="VBox/ViewContainer" instance=ExtResource("1_t6hkm")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SchemaPanel" parent="VBox/ViewContainer" instance=ExtResource("3_334vp")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[connection signal="pressed" from="VBox/ButtonHBox/ShowData" to="." method="_on_show_data_pressed"]
+[connection signal="pressed" from="VBox/ButtonHBox/ShowSchema" to="." method="_on_show_schema_pressed"]
