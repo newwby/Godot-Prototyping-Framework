@@ -10,6 +10,7 @@ font_size = 14
 font_size = 10
 
 [node name="DataPanel" type="MarginContainer"]
+modulate = Color(0.784314, 0.784314, 1, 1)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -110,11 +111,25 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../../LeftHBox/VBox2/FilterSchemaVersion")
 focus_neighbor_right = NodePath("../../VBox2/FilterPackage")
 selected = 0
-item_count = 2
+item_count = 9
 popup/item_0/text = "All Authors"
 popup/item_0/id = 0
-popup/item_1/text = "gpf"
+popup/item_1/text = "gpf2"
 popup/item_1/id = 1
+popup/item_2/text = "gpf"
+popup/item_2/id = 2
+popup/item_3/text = "data_test"
+popup/item_3/id = 3
+popup/item_4/text = "42"
+popup/item_4/id = 4
+popup/item_5/text = "1323"
+popup/item_5/id = 5
+popup/item_6/text = "ads"
+popup/item_6/id = 6
+popup/item_7/text = "rewer"
+popup/item_7/id = 7
+popup/item_8/text = "2"
+popup/item_8/id = 8
 
 [node name="VBox2" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 layout_mode = 2
@@ -131,11 +146,27 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox/FilterAuthor")
 focus_neighbor_right = NodePath("../../VBox3/FilterType")
 selected = 0
-item_count = 2
+item_count = 10
 popup/item_0/text = "All Packages"
 popup/item_0/id = 0
-popup/item_1/text = "testpkg"
+popup/item_1/text = "demo"
 popup/item_1/id = 1
+popup/item_2/text = "testpkg"
+popup/item_2/id = 2
+popup/item_3/text = "test"
+popup/item_3/id = 3
+popup/item_4/text = "42"
+popup/item_4/id = 4
+popup/item_5/text = "23123"
+popup/item_5/id = 5
+popup/item_6/text = "a"
+popup/item_6/id = 6
+popup/item_7/text = "testpkg2"
+popup/item_7/id = 7
+popup/item_8/text = "reer"
+popup/item_8/id = 8
+popup/item_9/text = "k"
+popup/item_9/id = 9
 
 [node name="VBox3" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 layout_mode = 2
@@ -152,11 +183,17 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox2/FilterPackage")
 focus_neighbor_right = NodePath("../../VBox4/FilterTag")
 selected = 0
-item_count = 2
+item_count = 5
 popup/item_0/text = "All Types"
 popup/item_0/id = 0
-popup/item_1/text = "undefined"
+popup/item_1/text = "sfdfd'"
 popup/item_1/id = 1
+popup/item_2/text = "undefined"
+popup/item_2/id = 2
+popup/item_3/text = "test type"
+popup/item_3/id = 3
+popup/item_4/text = "<null>"
+popup/item_4/id = 4
 
 [node name="VBox4" type="VBoxContainer" parent="Scroll/VBox/TopBar/DBFilters/RightHBox"]
 visible = false
@@ -173,17 +210,41 @@ custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 focus_neighbor_left = NodePath("../../VBox3/FilterType")
 selected = 0
-item_count = 2
+item_count = 15
 popup/item_0/text = "All Tags"
 popup/item_0/id = 0
-popup/item_1/text = "[\"test\"]ds"
+popup/item_1/text = "goblinoid"
 popup/item_1/id = 1
+popup/item_2/text = "mook"
+popup/item_2/id = 2
+popup/item_3/text = "3.0"
+popup/item_3/id = 3
+popup/item_4/text = "big boy"
+popup/item_4/id = 4
+popup/item_5/text = "bruiser"
+popup/item_5/id = 5
+popup/item_6/text = "ugly"
+popup/item_6/id = 6
+popup/item_7/text = "blue"
+popup/item_7/id = 7
+popup/item_8/text = "[red]"
+popup/item_8/id = 8
+popup/item_9/text = "[ green"
+popup/item_9/id = 9
+popup/item_10/text = "yellow"
+popup/item_10/id = 10
+popup/item_11/text = "black"
+popup/item_11/id = 11
+popup/item_12/text = "white"
+popup/item_12/id = 12
+popup/item_13/text = "orange"
+popup/item_13/id = 13
+popup/item_14/id = 14
 
 [node name="DatabaseTree" type="Tree" parent="Scroll/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-columns = 6
 column_titles_visible = true
 hide_folding = true
 hide_root = true
@@ -218,13 +279,13 @@ alignment = 1
 [node name="IDLabel" type="Label" parent="Scroll/VBox/BottomBar/Margin/HBox/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "gpf.testpkg.demo_goblin (demo_enemy 1.0)"
+text = "gpf2.demo.gobbin2 (demo_enemy 1.0)"
 label_settings = SubResource("LabelSettings_278tr")
 
 [node name="PathLabel" type="Label" parent="Scroll/VBox/BottomBar/Margin/HBox/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "res://data/save_test/test_file.json"
+text = "res://data/demo_enemy_goblin.json"
 label_settings = SubResource("LabelSettings_cqbx2")
 
 [node name="CRUD" type="HBoxContainer" parent="Scroll/VBox/BottomBar/Margin/HBox"]
