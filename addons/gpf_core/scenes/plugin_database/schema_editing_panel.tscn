@@ -1,0 +1,86 @@
+[gd_scene load_steps=4 format=3 uid="uid://ypprpsngoxal"]
+
+[ext_resource type="Script" uid="uid://d3h5bqr5pgcv7" path="res://addons/gpf_core/scenes/plugin_database/schema_editing_panel.gd" id="1_tep0q"]
+[ext_resource type="PackedScene" uid="uid://bhxkfgmp671uq" path="res://addons/gpf_core/scenes/plugin_database/schema_data_value_root.tscn" id="2_r5gi5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ye8jx"]
+bg_color = Color(0.0705882, 0.0705882, 0.0705882, 1)
+
+[node name="SchemaEditingPanel" type="PopupPanel"]
+auto_translate_mode = 1
+size = Vector2i(720, 405)
+visible = true
+min_size = Vector2i(480, 270)
+script = ExtResource("1_tep0q")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 716.0
+offset_bottom = 401.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ye8jx")
+
+[node name="Border" type="MarginContainer" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 716.0
+offset_bottom = 401.0
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VboxExt" type="VBoxContainer" parent="Border"]
+layout_mode = 2
+theme_override_constants/separation = 25
+alignment = 1
+
+[node name="TopRow" type="HBoxContainer" parent="Border/VboxExt"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="AddNew" type="Button" parent="Border/VboxExt/TopRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 25)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Add New Entry"
+
+[node name="Scroll" type="ScrollContainer" parent="Border/VboxExt"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DataValueContainer" type="VBoxContainer" parent="Border/VboxExt/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="DataValueRoot" parent="Border/VboxExt/Scroll/DataValueContainer" instance=ExtResource("2_r5gi5")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Border/VboxExt"]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="Confirm" type="Button" parent="Border/VboxExt/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 25)
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="Border/VboxExt/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 25)
+layout_mode = 2
+text = "Cancel"
+
+[connection signal="pressed" from="Border/VboxExt/TopRow/AddNew" to="." method="_on_add_new_pressed"]
+[connection signal="pressed" from="Border/VboxExt/Buttons/Confirm" to="." method="_on_confirm_button_pressed"]
+[connection signal="pressed" from="Border/VboxExt/Buttons/Cancel" to="." method="_on_cancel_button_pressed"]
