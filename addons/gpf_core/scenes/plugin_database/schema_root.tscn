@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://cfk7r2b5xn4ll"]
+[gd_scene load_steps=3 format=3 uid="uid://cfk7r2b5xn4ll"]
+
+[ext_resource type="Script" uid="uid://nft3qtcpf077" path="res://addons/gpf_core/scenes/plugin_database/schema_root.gd" id="1_0q5x4"]
+[ext_resource type="PackedScene" uid="uid://ypprpsngoxal" path="res://addons/gpf_core/scenes/plugin_database/schema_editing_panel.tscn" id="2_mr3ty"]
 
 [node name="SchemaPanel" type="MarginContainer"]
 modulate = Color(1, 0.784314, 0.784314, 1)
@@ -13,6 +16,7 @@ theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
+script = ExtResource("1_0q5x4")
 
 [node name="BkgPanel" type="Panel" parent="."]
 layout_mode = 2
@@ -141,4 +145,13 @@ layout_mode = 2
 focus_neighbor_left = NodePath("../EditVersion")
 text = "Delete Selected Version"
 
+[node name="SchemaEditingPanel" parent="." instance=ExtResource("2_mr3ty")]
+unique_name_in_owner = true
+visible = false
+
 [connection signal="item_selected" from="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox/FilterSchemaID" to="." method="_on_filter_schema_id_item_selected"]
+[connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/SchemaCRUD/CreateNew" to="." method="_on_create_new_pressed"]
+[connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/SchemaCRUD/DeleteAll" to="." method="_on_delete_all_pressed"]
+[connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/AddVersion" to="." method="_on_add_version_pressed"]
+[connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/EditVersion" to="." method="_on_edit_version_pressed"]
+[connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/DeleteVersion" to="." method="_on_delete_version_pressed"]
