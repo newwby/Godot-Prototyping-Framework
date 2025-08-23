@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://d4d1ix211l0fe"]
 
 [ext_resource type="Script" uid="uid://d3a1o5ewsp25k" path="res://addons/gpf_core/scenes/plugin_database/data_root.gd" id="1_mgm5o"]
-[ext_resource type="PackedScene" uid="uid://cnsfh524us4yn" path="res://addons/gpf_core/scenes/plugin_database/id_confirm_panel.tscn" id="2_cpari"]
+[ext_resource type="PackedScene" uid="uid://cnsfh524us4yn" path="res://addons/gpf_core/scenes/plugin_database/data_id_confirm_panel.tscn" id="2_cpari"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_278tr"]
 font_size = 14
