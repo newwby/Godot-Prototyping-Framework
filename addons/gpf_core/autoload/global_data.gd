@@ -363,11 +363,15 @@ func is_version_semantic(version_key) -> bool:
 	# Check if the key is a valid format, type or string in specific regex format
 	# Regex ensures the key is 1-3 numeric sections separated by periods
 	#	Example matches: "1", "2.0", "3.5.2" (but not "1.2.3.4" or "a.b.c")
-	var valid_format =\
-			key.is_valid_int() or\
-			key.is_valid_float() or\
-			key.match("^\\d+(\\.\\d+){0,2}$")
-	return valid_format
+	#var regex_match: bool = key.match("^\\d+(\\.\\d+){0,2}$")
+	var regex := RegEx.new()
+	regex.compile("^\\d+(\\.\\d+){0,2}$")
+	var regex_match = regex.search(key) != null
+	#var valid_format =\
+			#key.is_valid_int() or\
+			#key.is_valid_float() or\
+			#regex_match
+	return regex_match
 
 
 # all schema should be loaded before any data
