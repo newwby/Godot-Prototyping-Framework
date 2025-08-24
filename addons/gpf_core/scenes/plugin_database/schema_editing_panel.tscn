@@ -1,10 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://ypprpsngoxal"]
+[gd_scene load_steps=5 format=3 uid="uid://ypprpsngoxal"]
 
 [ext_resource type="Script" uid="uid://d3h5bqr5pgcv7" path="res://addons/gpf_core/scenes/plugin_database/schema_editing_panel.gd" id="1_tep0q"]
 [ext_resource type="PackedScene" uid="uid://bhxkfgmp671uq" path="res://addons/gpf_core/scenes/plugin_database/schema_data_value_root.tscn" id="2_r5gi5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ye8jx"]
 bg_color = Color(0.0705882, 0.0705882, 0.0705882, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_r5gi5"]
+font_size = 12
+font_color = Color(1, 0.294118, 0.294118, 1)
 
 [node name="SchemaEditingPanel" type="PopupPanel"]
 auto_translate_mode = 1
@@ -37,17 +41,41 @@ alignment = 1
 
 [node name="TopRow" type="HBoxContainer" parent="Border/VboxExt"]
 layout_mode = 2
-size_flags_horizontal = 0
 theme_override_constants/separation = 15
 alignment = 1
 
 [node name="VBox" type="VBoxContainer" parent="Border/VboxExt/TopRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="VersionID" type="Label" parent="Border/VboxExt/TopRow/VBox"]
+[node name="HBox" type="HBoxContainer" parent="Border/VboxExt/TopRow/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="VersionID" type="Label" parent="Border/VboxExt/TopRow/VBox/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "EDITING VERSION x.x.x"
+text = "EDITING VERSION"
+
+[node name="IDEdit" type="LineEdit" parent="Border/VboxExt/TopRow/VBox/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+placeholder_text = "x.x.x"
+
+[node name="VSeparator" type="VSeparator" parent="Border/VboxExt/TopRow/VBox/HBox"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+
+[node name="ErrorWarning" type="Label" parent="Border/VboxExt/TopRow/VBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 1
+text = "invalid version ID, match format [0-9].[0-9].[0-9] e.g. 1.0.0"
+label_settings = SubResource("LabelSettings_r5gi5")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="AddNew" type="Button" parent="Border/VboxExt/TopRow/VBox"]
 unique_name_in_owner = true
@@ -55,6 +83,9 @@ custom_minimum_size = Vector2(75, 25)
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Add New Entry"
+
+[node name="HSeparator" type="HSeparator" parent="Border/VboxExt/TopRow/VBox"]
+layout_mode = 2
 
 [node name="Scroll" type="ScrollContainer" parent="Border/VboxExt"]
 custom_minimum_size = Vector2(0, 100)
@@ -90,6 +121,7 @@ custom_minimum_size = Vector2(75, 25)
 layout_mode = 2
 text = "Cancel"
 
+[connection signal="text_changed" from="Border/VboxExt/TopRow/VBox/HBox/IDEdit" to="." method="_on_id_edit_text_changed"]
 [connection signal="pressed" from="Border/VboxExt/TopRow/VBox/AddNew" to="." method="_on_add_new_pressed"]
 [connection signal="pressed" from="Border/VboxExt/Buttons/Confirm" to="." method="_on_confirm_button_pressed"]
 [connection signal="pressed" from="Border/VboxExt/Buttons/Cancel" to="." method="_on_cancel_button_pressed"]
