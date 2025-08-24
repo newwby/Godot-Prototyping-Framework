@@ -7,20 +7,18 @@ signal panel_opening()
 @onready var data_value_root = %DataValueRoot
 
 
-func close_panel() -> void:
-	pass
+func close_panel(save: bool) -> void:
+	if save:
+		print("saving")
+	hide()
 
 
 func open_panel(selected_version_data) -> void:
-	print("open ", selected_version_data)
 	if typeof(selected_version_data) == TYPE_DICTIONARY:
 		reset_panel()
-		#add_new_data_value()
-		#print(version_data)
 		var value_data
 		for key in selected_version_data.keys():
 			value_data = selected_version_data[key]
-			print("{0}: {1}".format([key, typeof(value_data)]))
 			add_new_data_value(key, value_data)
 	popup_centered()
 
@@ -48,8 +46,8 @@ func _on_add_new_pressed():
 
 
 func _on_confirm_button_pressed():
-	pass
+	close_panel(true)
 
 
 func _on_cancel_button_pressed():
-	pass
+	close_panel(false)
