@@ -42,6 +42,11 @@ func _ready():
 # public methods
 
 
+func open_editing_panel(version_data):
+	if is_instance_valid(schema_editing_panel):
+		schema_editing_panel.open_panel(version_data)
+
+
 func select_schema_id(schema_id_name):
 	active_version_list = Data.schema_register.get(schema_id_name)
 	if typeof(active_version_list) == TYPE_DICTIONARY:
@@ -126,13 +131,7 @@ func _load_tree_structure() -> void:
 
 
 func _on_add_version_pressed():
-	if is_instance_valid(schema_editing_panel):
-		var selected_row = database_tree.get_selected()
-		if selected_row == null:
-			return
-		var version_key = selected_row.get_text(0)
-		var selected_version = active_version_list.get(version_key, {})
-		schema_editing_panel.open_panel(selected_version)
+	open_editing_panel({"First Key": "", "Second Key": 1.0, "Third Key": []})
 
 
 func _on_create_new_pressed():
@@ -148,7 +147,12 @@ func _on_delete_version_pressed():
 
 
 func _on_edit_version_pressed():
-	pass # Replace with function body.
+	var selected_row = database_tree.get_selected()
+	if selected_row == null:
+		return
+	var version_key = selected_row.get_text(0)
+	var selected_version = active_version_list.get(version_key, {})
+	open_editing_panel(selected_version)
 
 
 # when the schema ID is changed
