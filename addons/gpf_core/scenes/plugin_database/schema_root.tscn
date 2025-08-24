@@ -58,13 +58,6 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 selected = 0
-item_count = 3
-popup/item_0/text = "demo_enemy"
-popup/item_0/id = 0
-popup/item_1/text = "demo_item"
-popup/item_1/id = 1
-popup/item_2/text = "demo_weapon"
-popup/item_2/id = 2
 
 [node name="VSeparator" type="VSeparator" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox"]
 layout_mode = 2
