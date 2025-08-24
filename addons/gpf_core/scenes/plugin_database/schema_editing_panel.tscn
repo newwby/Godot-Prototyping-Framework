@@ -63,6 +63,7 @@ alignment = 1
 [node name="DataValueRoot" parent="Border/VboxExt/Scroll/DataValueContainer" instance=ExtResource("2_r5gi5")]
 unique_name_in_owner = true
 layout_mode = 2
+is_root = true
 
 [node name="Buttons" type="HBoxContainer" parent="Border/VboxExt"]
 layout_mode = 2
