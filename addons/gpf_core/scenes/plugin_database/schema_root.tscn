@@ -72,6 +72,7 @@ size_flags_vertical = 3
 column_titles_visible = true
 hide_folding = true
 hide_root = true
+select_mode = 1
 auto_tooltip = false
 
 [node name="BottomBar" type="MarginContainer" parent="Scroll/VBox"]
