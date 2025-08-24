@@ -147,3 +147,4 @@ visible = false
 [connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/AddVersion" to="." method="_on_add_version_pressed"]
 [connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/EditVersion" to="." method="_on_edit_version_pressed"]
 [connection signal="pressed" from="Scroll/VBox/BottomBar/Margin/HBox/VersionCRUD/DeleteVersion" to="." method="_on_delete_version_pressed"]
+[connection signal="update_schema" from="SchemaEditingPanel" to="." method="_on_schema_editing_panel_update_schema"]

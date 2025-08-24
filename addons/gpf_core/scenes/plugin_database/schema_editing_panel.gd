@@ -49,7 +49,15 @@ func add_new_data_value(key, value):
 
 func close_panel(save: bool) -> void:
 	if save:
-		print("saving")
+		var new_version_data = {}
+		if is_instance_valid(data_value_container):
+			for child in data_value_container.get_children():
+				if child == data_value_root:
+					continue
+				# else
+				if "key_name" in child\
+				and "value_type" in child:
+					version_data[child.key_name] = child.value_type
 		update_schema.emit(version_id, version_data)
 	
 	# clear everything else
@@ -86,7 +94,13 @@ func reset_panel() -> void:
 func set_version_id(new_version_id: String) -> void:
 	if is_instance_valid(version_id_edit_field):
 		version_id_edit_field.text = new_version_id
-		_on_id_edit_text_changed(new_version_id)
+		var is_semantic = Data.is_version_semantic(new_version_id)
+		toggle_version_id_error(is_semantic)
+
+
+func toggle_version_id_error(is_valid: bool) -> void:
+	id_invalid_error_warning_label.visible = !is_valid
+	confirm_changes_button.disabled = !is_valid
 
 
 ##############################################################################
@@ -108,5 +122,6 @@ func _on_cancel_button_pressed():
 
 func _on_id_edit_text_changed(new_text):
 	var is_semantic = Data.is_version_semantic(new_text)
-	id_invalid_error_warning_label.visible = !is_semantic
-	confirm_changes_button.disabled = !is_semantic
+	toggle_version_id_error(is_semantic)
+	if is_semantic:
+		version_id = new_text

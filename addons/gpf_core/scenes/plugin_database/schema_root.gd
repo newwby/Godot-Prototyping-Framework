@@ -180,3 +180,13 @@ func _select_first_item():
 	if first_tree_item is TreeItem:
 		first_tree_item.select(0)
 		database_tree.grab_focus()
+
+
+# on return from editing panel
+# need to force overwrite the entry for that version in active_schema
+#	then push that change back to the file
+func _on_schema_editing_panel_update_schema(version_id, version_data):
+	var new_version_schema = active_version_list.duplicate()
+	new_version_schema.set(version_id, version_data)
+	print("old = {0}\nnew = {1}".format([active_version_list, new_version_schema]))
+	
