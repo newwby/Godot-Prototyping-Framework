@@ -42,9 +42,9 @@ func _ready():
 # public methods
 
 
-func open_editing_panel(version_data):
+func open_editing_panel(version_id, version_data):
 	if is_instance_valid(schema_editing_panel):
-		schema_editing_panel.open_panel(version_data)
+		schema_editing_panel.open_panel(version_id, version_data)
 
 
 func select_schema_id(schema_id_name):
@@ -131,7 +131,10 @@ func _load_tree_structure() -> void:
 
 
 func _on_add_version_pressed():
-	open_editing_panel({"First Key": "", "Second Key": 1.0, "Third Key": []})
+	open_editing_panel(
+		"1.0",
+		{"First Key": "", "Second Key": 1.0, "Third Key": []}
+		)
 
 
 func _on_create_new_pressed():
@@ -152,7 +155,7 @@ func _on_edit_version_pressed():
 		return
 	var version_key = selected_row.get_text(0)
 	var selected_version = active_version_list.get(version_key, {})
-	open_editing_panel(selected_version)
+	open_editing_panel(version_key, selected_version)
 
 
 # when the schema ID is changed
