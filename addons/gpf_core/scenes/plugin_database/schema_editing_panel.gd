@@ -27,6 +27,7 @@ var version_data := {}
 
 @onready var id_invalid_error_warning_label = %ErrorWarning
 
+@onready var confirm_changes_button = %Confirm
 #@onready var version_id_label = %VersionID
 @onready var version_id_edit_field = %IDEdit
 
@@ -108,3 +109,4 @@ func _on_cancel_button_pressed():
 func _on_id_edit_text_changed(new_text):
 	var is_semantic = Data.is_version_semantic(new_text)
 	id_invalid_error_warning_label.visible = !is_semantic
+	confirm_changes_button.disabled = !is_semantic
