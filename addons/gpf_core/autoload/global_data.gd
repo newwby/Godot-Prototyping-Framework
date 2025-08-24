@@ -15,7 +15,8 @@ extends Node
 #	i.e. semantic versioning
 
 #//TODO
-# further tests for data loading
+# fix tests, tests are currently broke (August 2025)
+
 # implement dataLoaders that convert valid JSONdata to class objects
 # dataLoaders need to contain shadowed methods that can be written to custom instance??
 # or use a property set by data mapping (property to data key)
@@ -355,6 +356,20 @@ func is_valid_json_data(json_data: Dictionary) -> int:
 		return OK
 
 
+# verify if the given arg is 1-3 integers separated by periods.
+# i.e. 1.0.1, 2.0, or 4
+func is_version_semantic(version_key) -> bool:
+	var key = str(version_key)
+	# Check if the key is a valid format, type or string in specific regex format
+	# Regex ensures the key is 1-3 numeric sections separated by periods
+	#	Example matches: "1", "2.0", "3.5.2" (but not "1.2.3.4" or "a.b.c")
+	var valid_format =\
+			key.is_valid_int() or\
+			key.is_valid_float() or\
+			key.match("^\\d+(\\.\\d+){0,2}$")
+	return valid_format
+
+
 # all schema should be loaded before any data
 func load_all_data() -> void:
 	verify_user_data_directory()
@@ -370,6 +385,21 @@ func load_all_data() -> void:
 func reload_data() -> void:
 	clear_all_data()
 	load_all_data()
+
+
+# WIP method
+# removes a data entry from the id register
+#//TODO does not remove from active registers currently
+# should be called if deleting files on disk
+# if a file is not erased from disk reloading GlobalData will re-index the data
+# returns OK if record was found and erased, error otherwise
+func unindex(data_id: String) -> Error:
+	var id_map_key = all_id_map.find_key(data_id)
+	var existed: bool = all_id_map.erase(id_map_key)
+	if existed:
+		return OK
+	else:
+		return ERR_CANT_OPEN
 
 
 # if user data doesn't contain the valid directories, create them
@@ -730,6 +760,7 @@ func _verify_schema_match(json_data: Dictionary) -> bool:
 			# else
 			return true
 	
+	#//Does this always log on error of any schema mismatch?
 	Log.warning(self, "cannot find schema for {0}.{1}".format([schema_id, schema_version]))
 	return false
 
@@ -738,17 +769,10 @@ func _verify_schema_match(json_data: Dictionary) -> bool:
 # string : dictionary
 # where the string key is 1-3 integers separated by periods.
 # i.e. 1.0.1, 2.0, or 4
-#func _verify_schema(schema_data: Dictionary) -> bool:
-	#return true
 func _verify_schema_structure(schema_data: Dictionary) -> bool:
+	# verify if schema version keys are correctly semantic
 	for key in schema_data.keys():
-		# Check if the key is a valid format, type or string in specific regex format
-		# Regex ensures the key is 1-3 numeric sections separated by periods
-		#	Example matches: "1", "2.0", "3.5.2" (but not "1.2.3.4" or "a.b.c")
-		var valid_format =\
-				key.is_valid_int() or\
-				key.is_valid_float() or\
-				key.match("^\\d+(\\.\\d+){0,2}$")
+		var valid_format = is_version_semantic(key)
 		if not valid_format:
 			Log.warning(self, "Invalid key format: {0}".format([key]))
 			return false
