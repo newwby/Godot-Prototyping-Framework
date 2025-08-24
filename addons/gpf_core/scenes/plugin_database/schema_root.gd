@@ -165,6 +165,22 @@ func _on_filter_schema_id_item_selected(index):
 		select_schema_id(schema_id_name)
 
 
+# on return from editing panel
+# need to force overwrite the entry for that version in active_schema
+#	then push that change back to the file
+func _on_schema_editing_panel_update_schema(reference_version_id, updated_version_data):
+	#print("bkup")
+	var original_data = active_version_list.get(reference_version_id, {})
+	#var modified_data = updated_version_data.get(reference_version_id, {})
+	for key in updated_version_data:
+		if original_data.has(key):
+			print("key is ", key, " and new value is ", updated_version_data[key], " and old value is ", original_data[key])
+	
+	#var new_version_schema = active_version_list
+	#new_version_schema.set(reference_version_id, updated_version_data)
+	#print("old = {0}\nnew = {1}".format([active_version_list, new_version_schema]))
+	
+
 func _reload_database() -> void:
 	_load_tree_structure()
 	_load_data_list()
@@ -180,13 +196,3 @@ func _select_first_item():
 	if first_tree_item is TreeItem:
 		first_tree_item.select(0)
 		database_tree.grab_focus()
-
-
-# on return from editing panel
-# need to force overwrite the entry for that version in active_schema
-#	then push that change back to the file
-func _on_schema_editing_panel_update_schema(version_id, version_data):
-	var new_version_schema = active_version_list.duplicate()
-	new_version_schema.set(version_id, version_data)
-	print("old = {0}\nnew = {1}".format([active_version_list, new_version_schema]))
-	
