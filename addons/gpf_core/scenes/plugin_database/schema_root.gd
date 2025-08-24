@@ -8,7 +8,7 @@ extends MarginContainer
 
 # variables
 
-const DB_FIELD_MIN_WIDTH := 50.0
+const DB_FIELD_MIN_WIDTH := 100.0
 
 var tree_root: TreeItem
 
@@ -97,7 +97,9 @@ func _load_version_item(version_key) -> void:
 	# schema version key
 	new_row.set_text(0, str(version_key))
 	# schema data values
-	new_row.set_text(1, str(version_data.keys()))
+	var schema_data_values = Data.decode_tags(version_data.keys())
+	new_row.set_text(1, schema_data_values)
+	
 	# both
 	for idx in range(2):
 		new_row.set_autowrap_mode(idx, TextServer.AUTOWRAP_WORD_SMART)
@@ -118,8 +120,9 @@ func _load_tree_structure() -> void:
 	for i in range(tree_columns.size()):
 		database_tree.set_column_title(i, tree_columns[i])
 		database_tree.set_column_custom_minimum_width(i, DB_FIELD_MIN_WIDTH)
-		database_tree.set_column_expand(i, true)
 		database_tree.set_column_title_alignment(i, HORIZONTAL_ALIGNMENT_LEFT)
+	database_tree.set_column_expand(0, false)
+	database_tree.set_column_expand(1, true)
 
 
 func _on_add_version_pressed():
