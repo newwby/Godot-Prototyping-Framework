@@ -127,7 +127,12 @@ func _load_tree_structure() -> void:
 
 func _on_add_version_pressed():
 	if is_instance_valid(schema_editing_panel):
-		schema_editing_panel.popup_centered()
+		var selected_row = database_tree.get_selected()
+		if selected_row == null:
+			return
+		var version_key = selected_row.get_text(0)
+		var selected_version = active_version_list.get(version_key, {})
+		schema_editing_panel.open_panel(selected_version)
 
 
 func _on_create_new_pressed():

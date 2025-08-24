@@ -57,7 +57,6 @@ text = "SCHEMA"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-selected = 0
 
 [node name="VSeparator" type="VSeparator" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox"]
 layout_mode = 2
