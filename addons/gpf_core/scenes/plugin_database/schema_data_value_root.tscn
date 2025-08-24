@@ -2,18 +2,20 @@
 
 [ext_resource type="Script" uid="uid://dy3gyiunap2ot" path="res://addons/gpf_core/scenes/plugin_database/schema_data_value_root.gd" id="1_suqeu"]
 
-[node name="DataValueRoot" type="HBoxContainer"]
+[node name="SchemaPanelDataValue" type="HBoxContainer"]
 visible = false
 size_flags_horizontal = 4
 theme_override_constants/separation = 20
 script = ExtResource("1_suqeu")
 
 [node name="Key" type="LineEdit" parent="."]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "KeyName"
 
 [node name="Value" type="OptionButton" parent="."]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_horizontal = 8
