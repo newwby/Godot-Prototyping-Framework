@@ -121,7 +121,7 @@ func toggle_version_id_error(is_valid: bool) -> void:
 
 
 func _on_add_new_pressed():
-	add_new_data_value("KeyName", 0)
+	add_new_data_value("KeyName", "Value")
 
 
 func _on_confirm_button_pressed():
