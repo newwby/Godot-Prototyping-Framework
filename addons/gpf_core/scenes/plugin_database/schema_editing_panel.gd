@@ -45,6 +45,10 @@ func add_new_data_value(key, value):
 		new_data_value_item.key_name = str(key)
 		new_data_value_item.value_type = typeof(value)
 		data_value_container.call_deferred("add_child", new_data_value_item)
+		version_data[key] = value
+		new_data_value_item.deleted.connect(_on_data_value_deleted)
+		new_data_value_item.edited.connect(_on_data_value_edited)
+		new_data_value_item.key_changed.connect(_on_data_value_key_changed)
 
 
 func close_panel(save: bool) -> void:
@@ -120,6 +124,25 @@ func toggle_version_id_error(is_valid: bool) -> void:
 # private methods
 
 
+#//TODO this is duplicated from schema_root, could be static func somewhere
+# supports fixed value types
+# if the data type has changed, insert fake value
+#//TODO adjust schema editor to allow custom default values instead of hardcoded
+func _get_typed_dummy_data(value_type: int):
+	match value_type:
+		TYPE_STRING:
+			return ""
+		TYPE_FLOAT:
+			return 1.0
+		TYPE_ARRAY:
+			return []
+		TYPE_DICTIONARY:
+			return {}
+		_:
+			Log.error(self, "_get_typed_dummy_data passed invalid value type")
+			return null
+
+
 func _on_add_new_pressed():
 	add_new_data_value("KeyName", "Value")
 
@@ -130,6 +153,32 @@ func _on_confirm_button_pressed():
 
 func _on_cancel_button_pressed():
 	close_panel(false)
+
+
+func _on_data_value_deleted(key_name) -> void:
+	if key_name in version_data:
+		version_data.erase(key_name)
+
+
+func _on_data_value_edited(key_name, value_type) -> void:
+	if key_name in version_data:
+		var new_data = _get_typed_dummy_data(value_type)
+		if new_data != null:
+			version_data[key_name] = new_data
+
+
+func _on_data_value_key_changed(old_key, new_key) -> void:
+	print("changing {0} -> {1}".format([old_key, new_key]))
+	var has_changed := false
+	if old_key == new_key:
+		return
+	if old_key in version_data:
+		var value = version_data[old_key]
+		if new_key != null:
+			version_data[new_key] = value
+			has_changed = true
+	if has_changed:
+		version_data.erase(old_key)
 
 
 func _on_id_edit_text_changed(new_text):
