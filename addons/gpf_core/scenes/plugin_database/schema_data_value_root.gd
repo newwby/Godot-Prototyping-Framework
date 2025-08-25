@@ -75,3 +75,7 @@ func _on_delete_pressed():
 			delete_button.visible = false
 		return
 	self.call_deferred("queue_free")
+
+
+func _on_value_item_selected(index):
+	value_type = ALLOWED_VALUE_TYPES.find_key(index)
