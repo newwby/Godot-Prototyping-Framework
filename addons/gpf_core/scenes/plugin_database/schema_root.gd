@@ -15,7 +15,7 @@ var tree_root: TreeItem
 # keys() includes versions
 var active_version_list := {}
 # corresponds to filter_schema_id text and Data.schema_register.keys()
-var active_schema := ""
+var active_schema_id := ""
 
 @onready var database_tree = %SchemaDBTree
 @onready var schema_editing_panel = %SchemaEditingPanel
@@ -46,7 +46,7 @@ func open_editing_panel(version_id, version_data):
 func select_schema_id(schema_id_name):
 	active_version_list = Data.schema_register.get(schema_id_name)
 	if typeof(active_version_list) == TYPE_DICTIONARY:
-		active_schema = schema_id_name
+		active_schema_id = schema_id_name
 		_reload_database()
 	else:
 		active_version_list = {}
@@ -163,7 +163,7 @@ func _on_filter_schema_id_item_selected(index):
 
 
 # on return from editing panel
-# need to force overwrite the entry for that version in active_schema
+# need to force overwrite the entry for that version in active_schema_id
 #	then push that change back to the file
 func _on_schema_editing_panel_update_schema(reference_version_id, updated_version_data):
 	if typeof(updated_version_data) == TYPE_DICTIONARY:
@@ -181,7 +181,13 @@ func _reload_database() -> void:
 
 # saves the version list/active schema to disk
 func _save_schema() -> void:
-	pass
+	if active_schema_id in Data.schema_unique_path_map.keys():
+		print("active schema is: ", active_schema_id)
+		for row in tree_root.get_children():
+			if row is TreeItem:
+				var id = row.get_text(0)
+				var data = Data.encode_tags(row.get_text(1))
+				print("version: {0}, data: {1}".format([str(id), str(data)]))
 
 
 # updates the active schema in preparation to resave the entire file
