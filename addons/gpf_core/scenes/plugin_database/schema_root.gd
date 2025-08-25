@@ -4,8 +4,6 @@ extends MarginContainer
 
 # docs
 
-#//TODO need to track schema ID
-
 ##############################################################################
 
 # variables
@@ -16,6 +14,8 @@ var tree_root: TreeItem
 
 # keys() includes versions
 var active_version_list := {}
+# corresponds to filter_schema_id text and Data.schema_register.keys()
+var active_schema := ""
 
 @onready var database_tree = %SchemaDBTree
 @onready var schema_editing_panel = %SchemaEditingPanel
@@ -46,6 +46,7 @@ func open_editing_panel(version_id, version_data):
 func select_schema_id(schema_id_name):
 	active_version_list = Data.schema_register.get(schema_id_name)
 	if typeof(active_version_list) == TYPE_DICTIONARY:
+		active_schema = schema_id_name
 		_reload_database()
 	else:
 		active_version_list = {}
@@ -157,25 +158,26 @@ func _on_edit_version_pressed():
 # when the schema ID is changed
 func _on_filter_schema_id_item_selected(index):
 	if is_instance_valid(filter_schema_id):
-		var schema_id_name = filter_schema_id.get_item_text(index)
-		select_schema_id(schema_id_name)
+		var schema_id = filter_schema_id.get_item_text(index)
+		select_schema_id(schema_id)
 
 
 # on return from editing panel
 # need to force overwrite the entry for that version in active_schema
 #	then push that change back to the file
 func _on_schema_editing_panel_update_schema(reference_version_id, updated_version_data):
-	#//TODO temp comparison
-	var original_data = active_version_list.get(reference_version_id, {})
-	for key in updated_version_data:
-		if original_data.has(key):
-			print("key is ", key, " and new value is ", updated_version_data[key], " and old value is ", original_data[key])
+	_save_schema(reference_version_id, updated_version_data)
 
 
 func _reload_database() -> void:
 	_load_tree_structure()
 	_load_data_list()
 	call_deferred("_select_first_item")
+
+
+func _save_schema(ver_id, schema_data) -> void:
+	print("\nPlaceholder schema saving function for "+\
+			"{0}.{1}:\n{2}\n".format([active_schema, ver_id, schema_data]))
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded
