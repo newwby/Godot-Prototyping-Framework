@@ -48,6 +48,9 @@ var EXPECTED_DATA_STRUCTURE := {
 	"data": TYPE_DICTIONARY,
 }
 
+# file paths are indexed
+# structure is {schema_id: path} {String: String}
+var schema_unique_path_map := {}
 
 # all json entries are cached by unique id here
 #//TODO .values() replaces data_collection, can deprecate that
@@ -132,6 +135,7 @@ func apply_json(given_object: Object, json_data: Dictionary) -> void:
 # call with caution - loading from disk at runtime could be intensive
 #	depending on user data
 func clear_all_data() -> void:
+	schema_unique_path_map.clear()
 	all_id_map.clear()
 	schema_register.clear()
 	data_collection.clear()
@@ -656,6 +660,8 @@ func _load_schema(schema_file_path: String) -> void:
 						# setup schema_register entry for the schema
 						if schema_register.has(filename_no_ext) == false:
 							schema_register[filename_no_ext] = {}
+						# store path under schema_id
+						schema_unique_path_map[filename_no_ext] = path
 						# sort versions into the schema_register
 						for key in schema_file:
 							schema_register[filename_no_ext][key] = schema_file[key]
