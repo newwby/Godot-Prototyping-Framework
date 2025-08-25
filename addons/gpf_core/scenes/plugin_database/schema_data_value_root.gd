@@ -54,6 +54,9 @@ func set_key_field() -> void:
 
 
 func set_value_field() -> void:
+	# root is skipped as value always null
+	if is_root:
+		return
 	if is_instance_valid(value_field):
 		var index = ALLOWED_VALUE_TYPES.get(value_type, -1)
 		if index == -1:
