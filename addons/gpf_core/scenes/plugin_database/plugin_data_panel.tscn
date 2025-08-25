@@ -45,6 +45,7 @@ size_flags_vertical = 3
 
 [node name="DataPanel" parent="VBox/ViewContainer" instance=ExtResource("1_t6hkm")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 
 [node name="SchemaPanel" parent="VBox/ViewContainer" instance=ExtResource("3_334vp")]
