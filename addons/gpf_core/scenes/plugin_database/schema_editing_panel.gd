@@ -68,7 +68,6 @@ func close_panel(save: bool) -> void:
 						TYPE_DICTIONARY:
 							data = {}
 					if data != null:
-						print("key is ", child.key_name, ", data is ", data, " and type was ", child.value_type)
 						version_data[child.key_name] = data
 		update_schema.emit(version_id, version_data)
 	
