@@ -61,7 +61,8 @@ layout_mode = 2
 [node name="VSeparator" type="VSeparator" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox"]
 layout_mode = 2
 
-[node name="Path" type="Label" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox"]
+[node name="SchemaPath" type="Label" parent="Scroll/VBox/TopBar/DBFilters/LeftHBox/HBox"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "user://_schema/schema.json"
 

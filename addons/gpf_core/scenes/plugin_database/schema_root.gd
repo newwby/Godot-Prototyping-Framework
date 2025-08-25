@@ -20,6 +20,7 @@ var active_schema_id := ""
 @onready var database_tree = %SchemaDBTree
 @onready var schema_editing_panel = %SchemaEditingPanel
 @onready var filter_schema_id = %FilterSchemaID
+@onready var schema_path_label = %SchemaPath
 
 ##############################################################################
 
@@ -47,6 +48,9 @@ func select_schema_id(schema_id_name):
 	active_version_list = Data.schema_register.get(schema_id_name)
 	if typeof(active_version_list) == TYPE_DICTIONARY:
 		active_schema_id = schema_id_name
+		if is_instance_valid(schema_path_label):
+			var path = Data.schema_unique_path_map.get(active_schema_id, "")
+			schema_path_label.text = path
 		_reload_database()
 	else:
 		active_version_list = {}
