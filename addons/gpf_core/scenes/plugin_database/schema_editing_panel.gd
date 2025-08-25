@@ -109,7 +109,8 @@ func reset_panel() -> void:
 
 func set_version_id(new_version_id: String) -> void:
 	if is_instance_valid(version_id_edit_field):
-		version_id_edit_field.text = new_version_id
+		if version_id_edit_field.text != new_version_id:
+			version_id_edit_field.text = new_version_id
 		var is_semantic = Data.is_version_semantic(new_version_id)
 		toggle_version_id_error(is_semantic)
 
