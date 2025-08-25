@@ -62,6 +62,7 @@ func close_panel(save: bool) -> void:
 	
 	# clear everything else
 	hide()
+	reset_panel()
 	if is_instance_valid(version_id_edit_field):
 		version_id_edit_field.text = ""
 	if is_instance_valid(id_invalid_error_warning_label):
@@ -73,8 +74,8 @@ func close_panel(save: bool) -> void:
 
 func open_panel(selected_version_id, selected_version_data) -> void:
 	version_id = selected_version_id
-	version_data = selected_version_data
 	if typeof(selected_version_data) == TYPE_DICTIONARY:
+		version_data = selected_version_data.duplicate()
 		reset_panel()
 		var value_data
 		for key in selected_version_data.keys():
