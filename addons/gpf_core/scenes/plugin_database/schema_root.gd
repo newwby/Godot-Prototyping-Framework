@@ -65,6 +65,8 @@ func _clear_tree() -> void:
 		var next = child.get_next()
 		child.call_deferred("free")
 		child = next
+	database_tree.clear()
+	tree_root = database_tree.create_item()
 
 
 func _initial_tree_setup() -> void:
@@ -111,6 +113,7 @@ func _load_version_item(version_key) -> void:
 func _load_tree_structure() -> void:
 	# refresh the tree root
 	_clear_tree()
+	
 	# column headers are always the same for schema
 	var tree_columns = ["version", "values"]
 	database_tree.columns = tree_columns.size()
