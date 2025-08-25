@@ -86,11 +86,7 @@ func _initial_tree_setup() -> void:
 	database_tree.clear()
 	database_tree.hide_root = true
 	tree_root = database_tree.create_item()
-	
-	# setup the schema id filter
-	if is_instance_valid(filter_schema_id):
-		for schema_id in Data.schema_register.keys():
-			filter_schema_id.add_item(schema_id)
+	_reload_filters()
 
 
 func _load_data_list() -> void:
@@ -156,8 +152,16 @@ func _on_create_new_pressed():
 
 
 #//TODO should delete the schema file and reload database/GData
+#//TODO definitely need a confirm
 func _on_delete_all_pressed():
-	pass # Replace with function body.
+	var schema_file_path = Data.schema_unique_path_map[active_schema_id]
+	if schema_file_path != null:
+		#DataUtility.save_json(data_to_save, schema_file_path)
+		DataUtility.delete_file(schema_file_path)
+		Data.reload_data()
+		_reload_filters()
+		call_deferred("_reload_database")
+		call_deferred("_on_filter_schema_id_item_selected", 0)
 
 
 #//TODO definitely needs confirmation button
@@ -199,6 +203,14 @@ func _reload_database() -> void:
 	_load_tree_structure()
 	_load_data_list()
 	call_deferred("_select_first_item")
+
+
+func _reload_filters() -> void:
+	# setup the schema id filter
+	if is_instance_valid(filter_schema_id):
+		filter_schema_id.clear()
+		for schema_id in Data.schema_register.keys():
+			filter_schema_id.add_item(schema_id)
 
 
 # saves the version list/active schema to disk
