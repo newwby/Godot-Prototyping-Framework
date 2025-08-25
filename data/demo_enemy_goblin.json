@@ -4,14 +4,15 @@
 		"health": 5.2,
 		"name": "Goblin"
 	},
-	"id_author": "gpf",
-	"id_name": "gobbo",
-	"id_package": "test",
+	"id_author": "gpf2",
+	"id_name": "gobbin2",
+	"id_package": "demo",
 	"schema_id": "demo_enemy",
 	"schema_version": "1.0",
 	"tags": [
 		"goblinoid",
-		"mook"
+		"mook",
+		3.0
 	],
-	"type": "undefined"
+	"type": "sfdfd'"
 }
