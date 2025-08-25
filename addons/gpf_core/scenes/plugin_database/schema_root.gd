@@ -73,6 +73,14 @@ func _clear_tree() -> void:
 	tree_root = database_tree.create_item()
 
 
+func _get_selected_version() -> String:
+	var selected_row = database_tree.get_selected()
+	if selected_row == null:
+		return ""
+	var version_key = selected_row.get_text(0)
+	return version_key
+
+
 func _initial_tree_setup() -> void:
 	# tree setup
 	database_tree.clear()
@@ -141,23 +149,30 @@ func _on_add_version_pressed():
 	open_editing_panel(placeholder_version, placeholder_data)
 
 
+#//TODO need a popup to enter schema name (also edit functionality)
+#//on creating new schema should reload the filter, reload database/GData
 func _on_create_new_pressed():
 	pass # Replace with function body.
 
 
+#//TODO should delete the schema file and reload database/GData
 func _on_delete_all_pressed():
 	pass # Replace with function body.
 
 
+#//TODO definitely needs confirmation button
 func _on_delete_version_pressed():
-	pass # Replace with function body.
+	var version_key = _get_selected_version()
+	if version_key in active_version_list.keys():
+		print("erasing ", version_key, " from ", active_version_list)
+		active_version_list.erase(version_key)
+		print("new list is ", active_version_list)
+		_save_schema()
+		_reload_database()
 
 
 func _on_edit_version_pressed():
-	var selected_row = database_tree.get_selected()
-	if selected_row == null:
-		return
-	var version_key = selected_row.get_text(0)
+	var version_key = _get_selected_version()
 	var selected_version = active_version_list.get(version_key, {})
 	open_editing_panel(version_key, selected_version)
 
