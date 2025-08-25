@@ -185,12 +185,12 @@ func _reload_database() -> void:
 # saves the version list/active schema to disk
 func _save_schema() -> void:
 	if active_schema_id in Data.schema_unique_path_map.keys():
-		print("active schema is: ", active_schema_id)
-		for row in tree_root.get_children():
-			if row is TreeItem:
-				var id = row.get_text(0)
-				var data = Data.encode_tags(row.get_text(1))
-				print("version: {0}, data: {1}".format([str(id), str(data)]))
+		var schema_file_path = Data.schema_unique_path_map[active_schema_id]
+		var data_to_save = active_version_list.duplicate()
+		if schema_file_path != null:
+			DataUtility.save_json(data_to_save, schema_file_path)
+			Data.reload_data()
+			call_deferred("_reload_database")
 
 
 # used in _update_schema_version
@@ -231,7 +231,6 @@ func _update_schema_version(ver_id: String, new_schema_data: Dictionary) -> void
 					data_to_save[key] = new_data
 	
 	active_version_list[ver_id] = data_to_save
-	_reload_database()
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded

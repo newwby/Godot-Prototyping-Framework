@@ -1,7 +1,13 @@
 {
 	"1.0": {
-		"name": "",
+		"damage": 3.0,
 		"health": 10.0,
-		"damage": 3.0
+		"name": ""
+	},
+	"1.1": {
+		"damage": 1.0,
+		"health": 1.0,
+		"move_speed": 1.0,
+		"name": ""
 	}
 }
