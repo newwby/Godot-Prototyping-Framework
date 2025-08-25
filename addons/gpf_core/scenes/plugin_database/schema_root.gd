@@ -166,7 +166,10 @@ func _on_filter_schema_id_item_selected(index):
 # need to force overwrite the entry for that version in active_schema
 #	then push that change back to the file
 func _on_schema_editing_panel_update_schema(reference_version_id, updated_version_data):
-	_save_schema(reference_version_id, updated_version_data)
+	if typeof(updated_version_data) == TYPE_DICTIONARY:
+		_save_schema(str(reference_version_id), updated_version_data)
+	else:
+		Log.error(self, "invalid data type passed to _on_schema_editing_panel_update_schema")
 
 
 func _reload_database() -> void:
@@ -175,9 +178,43 @@ func _reload_database() -> void:
 	call_deferred("_select_first_item")
 
 
-func _save_schema(ver_id, schema_data) -> void:
-	print("\nPlaceholder schema saving function for "+\
-			"{0}.{1}:\n{2}\n".format([active_schema, ver_id, schema_data]))
+func _save_schema(ver_id: String, new_schema_data: Dictionary) -> void:
+	var original_schema_data = active_version_list.get(ver_id, {})
+	var data_to_save = original_schema_data.duplicate()
+	print("\n---")
+	print("\noriginal schema data is \n", original_schema_data)
+	print("\nnew schema data is \n", new_schema_data)
+	# verify if any key types have changed
+	if typeof(original_schema_data) == TYPE_DICTIONARY:
+		for new_key in new_schema_data.keys():
+			var new_key_type = typeof(new_schema_data[new_key])
+			if new_key in original_schema_data.keys():
+				#print(new_key, " exists")
+				if typeof(original_schema_data[new_key]) != new_key_type:
+					var new_data = null
+					match new_key_type:
+						TYPE_STRING:
+							new_data = ""
+						TYPE_FLOAT:
+							new_data = 1.0
+						TYPE_ARRAY:
+							new_data = []
+						TYPE_DICTIONARY:
+							new_data = {}
+					if new_data != null:
+						data_to_save[new_key] = new_data
+						print("key {0} was {1} and is now {2} due to type change from type {3} to type {4}".\
+								format([
+									new_key, str(original_schema_data[new_key]), str(data_to_save[new_key]),
+									typeof(original_schema_data[new_key]), new_key_type
+								]))
+					else:
+						print("new data is set to ", new_data, ", new key type was ", new_key_type)
+				else:
+					pass
+					#print("key {0} is unchanged type, remained {1}".\
+							#format([new_key, original_schema_data[new_key]]))
+		print("\ndata to save is:\n ", data_to_save)
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded

@@ -49,7 +49,6 @@ func add_new_data_value(key, value):
 
 func close_panel(save: bool) -> void:
 	if save:
-		var new_version_data = {}
 		if is_instance_valid(data_value_container):
 			for child in data_value_container.get_children():
 				if child == data_value_root:
@@ -57,7 +56,20 @@ func close_panel(save: bool) -> void:
 				# else
 				if "key_name" in child\
 				and "value_type" in child:
-					version_data[child.key_name] = child.value_type
+					# to compare types need to pass back dummy data
+					var data = null
+					match child.value_type:
+						TYPE_STRING:
+							data = ""
+						TYPE_FLOAT:
+							data = 1.0
+						TYPE_ARRAY:
+							data = []
+						TYPE_DICTIONARY:
+							data = {}
+					if data != null:
+						print("key is ", child.key_name, ", data is ", data, " and type was ", child.value_type)
+						version_data[child.key_name] = data
 		update_schema.emit(version_id, version_data)
 	
 	# clear everything else
