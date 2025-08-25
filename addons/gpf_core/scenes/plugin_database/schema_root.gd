@@ -190,32 +190,45 @@ func _save_schema() -> void:
 				print("version: {0}, data: {1}".format([str(id), str(data)]))
 
 
+# used in _update_schema_version
+# supports fixed values
+# if the data type has changed, insert fake value
+#//TODO adjust schema editor to allow custom default values instead of hardcoded
+func _get_typed_dummy_data(value_type: int):
+	match value_type:
+		TYPE_STRING:
+			return ""
+		TYPE_FLOAT:
+			return 1.0
+		TYPE_ARRAY:
+			return []
+		TYPE_DICTIONARY:
+			return {}
+		_:
+			Log.error(self, "_get_typed_dummy_data passed invalid value type")
+			return null
+
+
 # updates the active schema in preparation to resave the entire file
 func _update_schema_version(ver_id: String, new_schema_data: Dictionary) -> void:
 	var original_schema_data = active_version_list.get(ver_id, {})
-	var data_to_save = original_schema_data.duplicate()
 	
-	# verify if any key types have changed
-	if typeof(original_schema_data) == TYPE_DICTIONARY:
-		for new_key in new_schema_data.keys():
-			var new_key_type = typeof(new_schema_data[new_key])
-			if new_key in original_schema_data.keys():
-				if typeof(original_schema_data[new_key]) != new_key_type:
-					# if the data type has changed, insert fake value
-					#//TODO adjust schema editor to allow custom default values instead of hardcoded
-					var new_data = null
-					match new_key_type:
-						TYPE_STRING:
-							new_data = ""
-						TYPE_FLOAT:
-							new_data = 1.0
-						TYPE_ARRAY:
-							new_data = []
-						TYPE_DICTIONARY:
-							new_data = {}
-					if new_data != null:
-						data_to_save[new_key] = new_data
-		active_version_list[ver_id] = data_to_save
+	# new_schema_data is the authortiy
+	var data_to_save = new_schema_data.duplicate()
+	
+	# if key already existed, and type hasn't changed, preserve value
+	for key in new_schema_data.keys():
+		if key in original_schema_data.keys():
+			# check types
+			var new_type = typeof(new_schema_data[key])
+			var original_type = typeof(original_schema_data[key])
+			if new_type != original_type:
+				var new_data = _get_typed_dummy_data(new_type)
+				if new_data != null:
+					data_to_save[key] = new_data
+	
+	active_version_list[ver_id] = data_to_save
+	_reload_database()
 
 
 # called to default the selection to top of spreadsheet when sheet is reloaded
