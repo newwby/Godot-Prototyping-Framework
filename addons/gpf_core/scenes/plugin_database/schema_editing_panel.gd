@@ -168,7 +168,6 @@ func _on_data_value_edited(key_name, value_type) -> void:
 
 
 func _on_data_value_key_changed(old_key, new_key) -> void:
-	print("changing {0} -> {1}".format([old_key, new_key]))
 	var has_changed := false
 	if old_key == new_key:
 		return
