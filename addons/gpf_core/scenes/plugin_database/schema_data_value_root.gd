@@ -55,9 +55,11 @@ func _ready():
 # public methods
 
 
+#//TODO need to implement value migration if a key field name changes without type change
 func set_key_field() -> void:
 	if is_instance_valid(key_field):
-		key_field.text = key_name
+		if key_field.text != key_name:
+			key_field.text = key_name
 
 
 func set_value_field() -> void:
@@ -91,3 +93,5 @@ func _on_value_item_selected(index):
 
 func _on_key_text_changed(new_text):
 	key_name = new_text
+	#if is_instance_valid(key_field):
+		#key_field.
